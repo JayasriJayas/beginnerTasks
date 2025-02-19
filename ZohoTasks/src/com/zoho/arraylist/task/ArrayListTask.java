@@ -2,16 +2,21 @@ package com.zoho.arraylist.task;
 
 
 import com.zoho.arraylist.util.Util;
+
 import com.zoho.arraylist.exception.InvalidException;
 import com.zoho.arraylist.exception.OutOfBoundException;
-import java.util.ArrayList;
+
+import java.lang.reflect.InvocationTargetException;
+//import java.util.ArrayList;
 import java.util.List;
 
 public class ArrayListTask{
 
     
-    public <T> List<T> getArrayList() {
-        return new ArrayList<>();
+    public <T> List<T> getArrayList(String path)throws ClassNotFoundException, InstantiationException,IllegalAccessException,NoSuchMethodException,InvocationTargetException{
+        Class<?> arraylist = Class.forName(path);
+        Object object =  arraylist .getDeclaredConstructor().newInstance();
+        return (List<T>)object;
     }
 
     public <T> int getLength(List<T> arraylist) throws InvalidException {
@@ -64,7 +69,7 @@ public class ArrayListTask{
     }
     public <T> List<T> getSubList(List<T> arraylist, int fromIndex, int toIndex) throws InvalidException {
         Util.validate(arraylist);
-        return new ArrayList<>(arraylist.subList(fromIndex, toIndex));
+        return arraylist.subList(fromIndex, toIndex);
     }
 
    

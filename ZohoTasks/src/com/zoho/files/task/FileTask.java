@@ -1,28 +1,20 @@
 package com.zoho.files.task;
 import java.io.BufferedReader;
+import java.io.FileReader;
 import java.util.Properties;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.BufferedWriter;
 import java.io.IOException;
 
-public class FileTask extends Exception{
+public class FileTask {
 		public void FileOperation(String directory,String fileName,String[] content)throws IOException {
-			if(directory == null || directory.isEmpty()) {
-				directory = System.getProperty("user.dir");
-			}
-			File directoryObj = new File(directory);
-			makeDirectory(directoryObj);
-			File file = new File(fileName);
-			createFile(file);
+			File file=getFileObject(directory,fileName);
 			for(String text : content) {
 				writeFile(file,text);
 			}
 		}
 		public File getFileObject (String directory,String fileName)throws IOException {
-			if(directory == null || directory.isEmpty()) {
-				directory = System.getProperty("user.dir");
-			}
 			File directoryObj = new File(directory);
 			makeDirectory(directoryObj);
 			File file = new File(fileName);
@@ -40,18 +32,21 @@ public class FileTask extends Exception{
 		public Properties getNewProperties() {
 			return new Properties();
 		}
-		public void setPropertyValue(Properties properties, String key, String value) throws IOException{
-			properties.setProperty(key, value);
+		public Properties setPropertyValue(Properties properties, String key, String value) throws IOException{
+			 properties.setProperty(key, value);
+			 return properties;
 		}
-		public void storeProperty(Properties properties,File file,String comment)throws IOException {
+		public Properties storeProperty(Properties properties,File file,String comment)throws IOException {
 			try(BufferedWriter writer = new BufferedWriter(new FileWriter(file))){
 			properties.store(writer, comment);
 			}
+			return properties;
 		}
-	    public void loadProperty(Properties properties,File file) throws IOException{
+	    public Properties loadProperty(Properties properties,File file) throws IOException{
 	    	try(BufferedReader reader = new BufferedReader(new FileReader(file))){
 	    	properties.load(reader);
 	    	}
+	    	return properties;
 	    }
 	    public boolean makeDirectory(File file) {
 	    	return file.mkdirs();

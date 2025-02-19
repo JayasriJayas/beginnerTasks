@@ -43,23 +43,23 @@ class Runner {
             
         try {
         	do {
-                logger.info("1. Create a file");
-                logger.info("2.Write properties and load properties in file");
-                logger.info("3.Store back properties from file and print it");
-                logger.info("4.In given directory crete file and properties ");
-                logger.info("5.Use Instance to print the string");
-                logger.info("6.Create a Pojo class and print its instance");
-                logger.info("7.Invoke getter and setter methods");
-                logger.info("8.Using reflection in invoking constructors,methods");
-                logger.info("9.Create enum and print its oridinal and constants");
-                logger.info("10.Singleton class pattern");
-                logger.info("11.Time Calculations");
+                logger.info("1. In given directory crete file and properties");
+                logger.info("2.Use Instance to print the string");
+                logger.info("3.Create a Pojo class and print its instance");
+                logger.info("4.Invoke getter and setter methods");
+                logger.info("5.Using reflection in invoking constructors,methods");
+                logger.info("6.Create enum and print its oridinal and constants");
+                logger.info("7.Singleton class pattern");
+                logger.info("8.Time Calculations");
                 logger.info("Enter your choice (Enter -1 to exit)");
                 choice = sc.nextInt();
             switch(choice) {
                 case 1:
                 	logger.info("Enter directory");
                 	directory = sc.next();
+                	if(directory == null || directory.isEmpty()) {
+                		directory = System.getProperty("user.dir");
+                	}
                     logger.info("Enter the filename");
                     fileName=sc.next();
                     logger.info("Enter the numbe of lines to write");
@@ -86,7 +86,6 @@ class Runner {
             		}
                 	fileObj = task.getFileObject(directory,fileName);
                     task.storeProperty(prop, fileObj, "File Properties");
-                    
                     logger.info("Data written to file");
                     
                     Properties readProps = new Properties();
@@ -95,7 +94,6 @@ class Runner {
                     for (Map.Entry<Object, Object> entry : readProps.entrySet()) {
                     	logger.info(entry.getKey() + " : " + entry.getValue());
                     }
-                    
                     break;
                     
                 case 2:
@@ -169,7 +167,7 @@ class Runner {
                 	BillPugh billinstanceOne = BillPugh.getInstance();
                 	BillPugh billinstanceTwo = BillPugh.getInstance();
                 	if(billinstanceOne == billinstanceTwo) {
-                		logger.info("Both are same instances");
+                		logger.info("One instance is created");
                 	}
                 	break;
 
