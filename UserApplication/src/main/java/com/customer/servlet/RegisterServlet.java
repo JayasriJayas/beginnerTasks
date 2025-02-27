@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -17,6 +19,10 @@ public class RegisterServlet extends HttpServlet {
     private String jdbcURL = "jdbc:mysql://localhost:3306/application";
     private String jdbcUsername = "root";
     private String jdbcPassword = "root";
+    
+    private static final String emailRegex = "^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$";
+    private static final String phoneRegex= "^[0-9]{10}$";
+    private static final String passwordRegex = "^(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$";
     
     @Override
     public void init() throws ServletException {
@@ -32,7 +38,7 @@ public class RegisterServlet extends HttpServlet {
         String action = request.getParameter("action");
         String id = request.getParameter("id");
 
-        if ("delete".equals(action)) {
+        if("delete".equals(action)) {
             deleteUser(request, response);
         } else if ("edit".equals(action) && id != null) {
             getUserDetails(request, response, id);
@@ -87,17 +93,24 @@ public class RegisterServlet extends HttpServlet {
         request.getRequestDispatcher("users.jsp").forward(request, response);
     }
 
-    private void deleteUser(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    private void deleteUser(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String id = request.getParameter("id");
-        try (Connection conn = DriverManager.getConnection(jdbcURL, jdbcUsername, jdbcPassword);
-             PreparedStatement stmt = conn.prepareStatement("DELETE FROM users WHERE id=?")) {
-            stmt.setInt(1, Integer.parseInt(id));
-            stmt.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
+
+        if (id != null && !id.isEmpty()) {
+            try (Connection conn = DriverManager.getConnection(jdbcURL, jdbcUsername, jdbcPassword);
+                 PreparedStatement stmt = conn.prepareStatement("DELETE FROM users WHERE id=?")) {
+                stmt.setInt(1, Integer.parseInt(id));
+                stmt.executeUpdate(); 
+                
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
-        response.sendRedirect("RegisterServlet");
+
+     
+        listUsers(request, response);
     }
+
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -106,11 +119,39 @@ public class RegisterServlet extends HttpServlet {
         String surname = request.getParameter("surname");
         String username = request.getParameter("username");
         String password = request.getParameter("password");
+        String confirmPassword = request.getParameter("confirmpass");
         String dob = request.getParameter("dob");
         String gender = request.getParameter("gender");
         String address = request.getParameter("address");
         String email = request.getParameter("email");
         String phone = request.getParameter("phone");
+        if (!validateInputs(firstname, surname, username, password, dob, gender, address, email, phone)) {
+        	System.out.println(validateInputs(firstname, surname, username, password, dob, gender, address, email, phone));
+            request.setAttribute("error", "Invalid input fields. Please check your details.");
+            request.getRequestDispatcher("register.jsp").forward(request, response);
+            return;
+        }
+        if(!checkPassword(password,confirmPassword)) {
+        	request.setAttribute("error", " Password and ConfirmPassword are not matching ");
+            request.getRequestDispatcher("register.jsp").forward(request, response);
+            return;
+        }
+        if(!checkStrongPassword(password)) {
+        	request.setAttribute("error","Please provide a password with 8 characters with atleast one letter,digit,uppercase letter and special characters");
+            request.getRequestDispatcher("register.jsp").forward(request, response);
+            return;
+        }
+        if(!checkMail(email)) {
+        	request.setAttribute("error", " Provide a valid email");
+            request.getRequestDispatcher("register.jsp").forward(request, response);
+            return;
+        }
+        if(!checkPhoneNo(phone)) {
+        	request.setAttribute("error", " Provide a valid phone number");
+            request.getRequestDispatcher("register.jsp").forward(request, response);
+            return;
+        }
+
 
         try (Connection conn = DriverManager.getConnection(jdbcURL, jdbcUsername, jdbcPassword)) {
             if (id == null || id.isEmpty()) {
@@ -149,9 +190,42 @@ public class RegisterServlet extends HttpServlet {
         response.sendRedirect("RegisterServlet");
 
     }
+    private boolean validateInputs(String firstname, String surname, String username, String password, String dob, String gender, String address, String email, String phone) {
+    	
+        return firstname != null && !firstname.isEmpty() &&
+               surname != null && !surname.isEmpty() &&
+               username != null && !username.isEmpty() &&
+               password != null && !password.isEmpty() &&
+               dob != null && !dob.isEmpty() &&
+               gender != null && !gender.isEmpty() &&
+               address != null && !address.isEmpty() &&
+               email != null &&
+               phone != null;
+    }
+    private boolean checkPassword(String password ,String confirmPassword ) {
+    	return password.equals(confirmPassword);
+    }
+    private boolean checkStrongPassword(String password) {
+    	if(!Pattern.matches(passwordRegex,password)) {
+    		return false;
+    	}
+    	return true;
+    }
+    private boolean checkMail(String email) {
+    	if(! Pattern.matches(emailRegex, email)) {
+    		return false;
+    	}
+    	return true;
+    }
+    private boolean checkPhoneNo(String phone) {
+    	if(!Pattern.matches(phoneRegex, phone)) {
+    		return false;
+    	}
+    	return true;
+    }
+  
+
 }
 
-
-//storing of password handle itt
 
 

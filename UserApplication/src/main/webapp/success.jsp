@@ -5,7 +5,7 @@
     <title>Registration Successful</title>
 </head>
 <body>
-    <h2>✅ Registration Successful!</h2>
+    <h2>Registration Successful!</h2>
     <a href="register.jsp">Go Back</a>
 </body>
 </html>
