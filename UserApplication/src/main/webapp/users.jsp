@@ -1,7 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 
 <%@ page import="java.util.List" %>
-<%@ page import="com.customer.servlet.User" %>
+<%@ page import="com.customer.model.User" %>
 
 <html>
 <head>
@@ -19,12 +19,18 @@
 </head>
 <body>
 	<header>
-	 <img src="assets/logo.png"/>
-     <a href="register.jsp" class="i">
-        <i class="fa-solid fa-user-plus" ></i>
-        <span class="tittle">Add User</span>
-    </a>
-    </header>
+    <img src="assets/logo.png"/>
+    
+    <div class="header-links">
+        <a href="register.jsp" class="btn">
+            <i class="fa-solid fa-user-plus"></i> Add User
+        </a>
+        <a href="#" class="btn">
+            <i class="fa-solid fa-house"></i> Home
+        </a>
+    </div>
+</header>
+
 
     	<div class="table">
     	<section class="table-head">

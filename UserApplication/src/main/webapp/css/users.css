@@ -17,7 +17,7 @@ body {
 .table{
     background-color:#edf1f3; ;
     width:82vw;
-    height:90vh;
+    height:82vh;
     border-radius: 5px;
     overflow: hidden;
     border: none;
@@ -30,13 +30,18 @@ header {
     background-color: rgb(229, 183, 241);
     border-radius: 8px;
     height: 8%;
-    width: 100%; 
-    display: flex; 
+    width: 100%;
+    display: flex;
     justify-content: space-between;
-    align-items: center; 
+    align-items: center;
     padding: 10px 20px;
-    
 }
+
+.header-links {
+    display: flex;
+    gap: 15px; 
+}
+
 
 
 .i {
@@ -61,6 +66,7 @@ header {
     overflow-y: auto; 
     overflow-x: auto; 
 }
+
 table{
     border-collapse: collapse;
     overflow: auto;
@@ -69,6 +75,11 @@ table{
 table,th,td{
     padding: 1rem;
     border: none;
+        margin-left: 100px;
+    padding: 1rem;
+    border: none;
+    position: relative;
+
 }
 thead th{
     position: sticky;
@@ -123,23 +134,26 @@ button:hover {
 .i:hover .tittle, button:hover .tittle{
     opacity: 1;
 }
-.i {
+.i{
+ 
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 50px; 
-    height: 50px; 
+    width: 134px;
+    height: 50px;
     background-color: #7b5889;
-    border-radius: 50%;
-    transition: background-color 0.3s ease-in-out;
+    border-radius: 25px;
+    transition: background-color 0.3sease-in-out;
     text-decoration: none;
     position: relative;
 }
 
 .i i {
-    color:white;
+    color: white;
     font-size: 20px;
-    transition: color 0.3s ease-in-out;
+    transition: color 0.3sease-in-out;
+    position: relative;
+    margin-right: 64px;
 }
 
 .i:hover {
@@ -148,5 +162,28 @@ button:hover {
 
 .i:hover i {
     color: white;
+}
+
+
+.btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 15px;
+    background-color: #7b5889;
+    color: white;
+    text-decoration: none;
+    border-radius: 25px;
+    font-weight: bold;
+    transition: background-color 0.3s ease-in-out;
+}
+
+.btn i {
+    font-size: 16px;
+}
+
+.btn:hover {
+    background-color: rgb(128, 90, 213);
 }
 

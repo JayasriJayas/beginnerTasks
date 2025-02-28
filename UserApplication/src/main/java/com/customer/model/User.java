@@ -1,4 +1,4 @@
-package com.customer.servlet;
+package com.customer.model;
 
 public class User {
     private int id;
@@ -46,8 +46,5 @@ public class User {
     public void setAddress(String address) { this.address = address; }
     public void setEmail(String email) { this.email = email; }
     public void setPhone(String phone) { this.phone = phone; }
-//    @Override
-//    public String toString() {
-//        return "User{id=" + id + ", name='" + firstname + "', email='" + email + "'}";
-//    }
+
 }

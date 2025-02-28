@@ -105,6 +105,7 @@ input{
     cursor: pointer; 
     transition: all 0.3s ease-in-out; 
     width: 63%;
+    margin-left:82px;
 }
 
 #button:hover {
@@ -166,6 +167,9 @@ button:hover {
 .eye{
 	margin-left:356px;
 }
+.eye:hover{
+	cursor:pointer;
+}
 .tittle{
     position: absolute;
     background: black;
@@ -192,4 +196,37 @@ button:hover {
 .i:hover .tittle, button:hover .tittle {
     opacity: 1;
     
+}
+.header-links {
+    display: flex;
+    gap: 15px;
+    align-items: center; 
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 5px 15px;
+    background-color: #7b5889;
+    color: white;
+    text-decoration: none;
+    border-radius: 25px;
+    font-weight: bold;
+    transition: background-color 0.3s ease-in-out;
+    border: none;
+    cursor: pointer;
+}
+
+.btn i {
+    font-size: 16px;
+}
+
+.btn:hover {
+    background-color: rgb(128, 90, 213);
+}
+form.btn {
+    display: inline-flex; /* Makes the form behave like a button */
+    align-items: center;
 }

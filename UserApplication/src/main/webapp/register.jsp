@@ -1,6 +1,6 @@
 	<%@ page language="java" contentType="text/html; charset=UTF-8"
 	    pageEncoding="UTF-8"%>
-	<%@ page import="com.customer.servlet.User" %>
+	<%@ page import="com.customer.model.User" %>
 	<!DOCTYPE html>
 	<html>
 	<head>
@@ -86,20 +86,22 @@
 	                confirmEyeIcon.classList.add("fa-eye");
 	            }
 	        }
-
-	      
-
-
 	    </script>
 	</head>
 	<body>
-	     <header>
-	        <img src="assets/logo.png"/>
-	        <form class ="view-form" action="RegisterServlet" method="get">
-	    	<input type="hidden" name="action" value="list">
-	    	<button type="submit"><i class="fa-solid fa-circle-user view-icon"></i><span class="tittle">View Users</span></button>
-	    </form>
-	    </header>
+	    <header>
+    <a href="#"><img src="assets/logo.png"/></a>
+    <div class="header-links">
+        <form class="btn" action="RegisterServlet" method="get">
+            <input type="hidden" name="action" value="list">
+            <button type="submit"><i class="fa-solid fa-circle-user"></i><span>View</span></button>
+        </form>
+        <a href="#" class="btn">
+            <i class="fa-solid fa-house"></i> Home
+        </a>
+    </div>
+</header>
+
 	    <div class="box"> 
 	        
 	        <div class="imgbox">
@@ -109,7 +111,7 @@
 	      <%
 	    		User user = (User) request.getAttribute("user");
 		  %>
-		<% String errorMessage = (String) request.getAttribute("error"); %>
+		  <% String errorMessage = (String) request.getAttribute("error"); %>
 			<% if (errorMessage != null) { %>
 	  			  <div class="error-message">
 	        	  <%= errorMessage %>
@@ -132,8 +134,7 @@
 	
 	    <div class="input-div">
 	        <div class="i"><i class="fa-solid fa-pen-to-square"></i></div>
-	        <input type="text" id="surname" name="surname" placeholder="Surname" 
-	            value="<%= (user != null) ? user.getSurname() : "" %>" required>
+	        <input type="text" id="surname" name="surname" placeholder="Surname"  value="<%= (user != null) ? user.getUsername() : "" %>"required>
 	    </div>
 	
 	    <div class="input-div">
@@ -144,7 +145,7 @@
 	
 	    <div class="input-div">
 	    	 <div class="i"><i class="fa-solid fa-lock"></i></div>
-    		<input type="password" id="pass" name="password" placeholder="Password" required>
+    		<input type="password" id="pass" name="password" placeholder="Password" value="<%= (user != null) ? user.getPassword() : "" %>"required >
     		<span class="i eye" onclick="togglePassword()">
       			  <i id="eyeIcon" class="fa fa-eye"></i>
    			 </span>
@@ -152,10 +153,10 @@
 	
 	    <div class="input-div">
 	        <div class="i"><i class="fa-solid fa-lock"></i></div>
-	        <input type="password" id="confirmpass" name="confirmpass" placeholder="Confirm Password" required>
+	        <input type="password" id="confirmpass" name="confirmpass" placeholder="Confirm Password" value="<%= (user != null) ? user.getPassword() : "" %>"required>
 	         
 	        <span class="i eye" onclick="toggleConfirm()">
-      			  <i id="confirmEyeIcon" class="fa fa-eye" onclick="toggleConfirm()"></i>
+      			  <i id="confirmEyeIcon" class="fa fa-eye"></i>
    			 </span>
 	    </div>
 	
@@ -195,7 +196,7 @@
 	            value="<%= (user != null) ? user.getPhone() : "" %>" required>
 	    </div>
 	
-	    <input id="button" type="submit" value="Register">
+	    <input id="button" type="submit" value="<%= (user != null) ? "Update": "Register" %>">
 	        </div>
 	</form>
 		 
