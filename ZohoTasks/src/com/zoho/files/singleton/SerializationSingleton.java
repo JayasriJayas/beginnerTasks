@@ -20,7 +20,7 @@ import java.io.Serializable;
 
 
 public class SerializationSingleton implements Serializable {
-    private static final long serialVersionUID = 1L; // Corrected the variable name
+    private static final long serialVersionUID = 1L; 
 
     private SerializationSingleton() { }
 

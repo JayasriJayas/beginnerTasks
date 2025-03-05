@@ -35,8 +35,6 @@ header h1{
     margin-left: 30px;
     height: 500px;
 }
-
-
 .inputbox img{
     width: 60px;
     height: 60px;
@@ -79,6 +77,8 @@ header h1{
     outline: none;
     background: none;
     padding: 5px; 
+    text-align:left;
+    vertical-align:top;
 }
 input{
     border: none;
@@ -227,6 +227,47 @@ button:hover {
     background-color: rgb(128, 90, 213);
 }
 form.btn {
-    display: inline-flex; /* Makes the form behave like a button */
+    display: inline-flex; 
     align-items: center;
 }
+.header-links .btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 120px; 
+    height: 40px;  
+    background-color: #7b5889; 
+    color: white;
+    border-radius: 25px;
+    text-align: center;
+    text-decoration: none;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+}
+
+.header-links .btn button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%; 
+    height: 100%;
+    background: none;
+    border: none;
+    color: inherit;
+    font-size: inherit;
+    font-weight:bold;
+    cursor: pointer;
+}
+
+.header-links .btn button i {
+    margin-right: 8px;
+    font-size: 18px; 
+}
+.header-links .btn:hover{
+	  background-color: rgb(128, 90, 213);
+}
+
+
+
+

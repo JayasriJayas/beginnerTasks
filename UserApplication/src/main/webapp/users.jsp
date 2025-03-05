@@ -19,13 +19,13 @@
 </head>
 <body>
 	<header>
-    <img src="assets/logo.png"/>
+    <a href=register.jsp><img src="assets/logo.png"/></a>
     
     <div class="header-links">
         <a href="register.jsp" class="btn">
             <i class="fa-solid fa-user-plus"></i> Add User
         </a>
-        <a href="#" class="btn">
+        <a href="register.jsp" class="btn">
             <i class="fa-solid fa-house"></i> Home
         </a>
     </div>

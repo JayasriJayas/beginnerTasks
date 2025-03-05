@@ -1,7 +1,14 @@
 package com.zoho.files.runner;
 import com.zoho.files.task.FileTask;
+
 import com.zoho.files.singleton.SerializationSingleton;
+import com.zoho.files.singleton.SingleCheckSingleton;
+import com.zoho.files.singleton.StaticBlockInitialization;
+import com.zoho.files.singleton.ThreadSafe;
 import com.zoho.files.singleton.BillPugh;
+import com.zoho.files.singleton.DoubleCheckLocking;
+import com.zoho.files.singleton.EagarInitialization;
+import com.zoho.files.singleton.LazyInitialization;
 import com.zoho.files.time.Time;
 import com.zoho.files.applicant.Applicant;
 import com.zoho.files.customer.Customer;
@@ -30,7 +37,7 @@ class Runner {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
         int count,lines;
-       
+        SerializationSingleton instanceTwo =null;
         String key,value,applicantName,DOB,address,directory;
         int choice,applicantNo,age;
         File sample,propertiesFile,fileObj;
@@ -164,10 +171,51 @@ class Runner {
                 	break;
                 
                 case 7:
+                	EagarInitialization eagarOne = EagarInitialization.getInstance();
+                	EagarInitialization eagarTwo = EagarInitialization.getInstance();
+                	if(eagarOne == eagarTwo) {
+                		logger.info("One instance of EagarInitialization is created");
+                	}
+                	StaticBlockInitialization staticOne = StaticBlockInitialization.getInstance();
+                	StaticBlockInitialization staticTwo = StaticBlockInitialization.getInstance();
+                	if(staticOne == staticTwo) {
+                		logger.info("One instance of StaticBlockInitialization is created");
+                	}
+                	LazyInitialization lazyOne = LazyInitialization.getInstance();
+                	LazyInitialization lazyTwo = LazyInitialization.getInstance();
+                	if(lazyOne == lazyTwo) {
+                		logger.info("One instance of LazyInitialization is created");
+                	}
+                	ThreadSafe threadOne =ThreadSafe.getInstance();
+                	ThreadSafe threadTwo =ThreadSafe.getInstance();
+                	if(threadOne == threadTwo) {
+                		logger.info("One instance of ThreadSafe is created");
+                	}
+                	SingleCheckSingleton singleOne =SingleCheckSingleton.getInstance();
+                	SingleCheckSingleton singleTwo =SingleCheckSingleton.getInstance();
+                	if(singleOne == singleTwo) {
+                		logger.info("One instance of SingleCheckSingleton is created");
+                	}
+                	DoubleCheckLocking doubleOne =DoubleCheckLocking.getInstance();
+                	DoubleCheckLocking doubleTwo =DoubleCheckLocking.getInstance();
+                	if(doubleOne == doubleTwo) {
+                		logger.info("One instance of DoublecheckLocking is created");
+                	}
                 	BillPugh billinstanceOne = BillPugh.getInstance();
                 	BillPugh billinstanceTwo = BillPugh.getInstance();
                 	if(billinstanceOne == billinstanceTwo) {
-                		logger.info("One instance is created");
+                		logger.info("One instance of BillPugh is created");
+                	}
+                	SerializationSingleton instanceOne = SerializationSingleton.getInstance();
+                	try(ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("test.ser"))){
+                	out.writeObject(instanceOne);
+                	}
+                	
+                	try(ObjectInputStream in = new ObjectInputStream(new FileInputStream("test.ser"))){
+                	instanceTwo = (SerializationSingleton) in.readObject();
+                	}
+                	if(instanceOne== instanceTwo) {
+                		logger.info("One instance for serialization is created");
                 	}
                 	break;
 
@@ -286,14 +334,3 @@ class Runner {
 //reader.close();
 //
 
-
-//SerializationSingleton instanceOne = SerializationSingleton.getInstance();
-//ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("test.ser"));
-//out.writeObject(instanceOne);
-//out.close();
-//
-//ObjectInputStream in = new ObjectInputStream(new FileInputStream("test.ser"));
-//SerializationSingleton instanceTwo = (SerializationSingleton) in.readObject();
-//in.close();
-//System.out.println("Instance One HashCode: " + instanceOne.hashCode());
-//System.out.println("Instance Two HashCode: " + instanceTwo.hashCode());

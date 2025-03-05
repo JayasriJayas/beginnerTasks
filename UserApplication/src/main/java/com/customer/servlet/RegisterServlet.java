@@ -115,14 +115,14 @@ public class RegisterServlet extends HttpServlet {
         } 
 
     	catch (SQLException e) {
-            throw new ServletException("Error processing user data", e);
+            throw new ServletException("Error in inserting  user data", e);
         }
 
         response.sendRedirect("RegisterServlet");
     }
 
     @Override
-    public void destroy() {
+    public void destroy(){
         try {
             dbConnection.closeConnection();
         } catch (SQLException e) {
