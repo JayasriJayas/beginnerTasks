@@ -8,6 +8,7 @@ import com.zoho.files.singleton.ThreadSafe;
 import com.zoho.files.singleton.BillPugh;
 import com.zoho.files.singleton.DoubleCheckLocking;
 import com.zoho.files.singleton.EagarInitialization;
+import com.zoho.files.singleton.EnumSingleton;
 import com.zoho.files.singleton.LazyInitialization;
 import com.zoho.files.time.Time;
 import com.zoho.files.applicant.Applicant;
@@ -16,6 +17,7 @@ import com.zoho.files.rainbow.RainbowColors;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.time.ZoneId;
 import java.io.IOException;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -30,6 +32,7 @@ import java.util.Scanner;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.HashMap;
 import java.util.Map;
 
 class Runner {
@@ -45,7 +48,9 @@ class Runner {
         FileTask task = new FileTask(); 
         Time time = new Time();
         Customer customer;
-       
+//        HashMap<Integer,String> zoneId = new HashMap<>();
+//        zoneId.put(, value);	
+//        
         
             
         try {
@@ -176,6 +181,15 @@ class Runner {
                 	if(eagarOne == eagarTwo) {
                 		logger.info("One instance of EagarInitialization is created");
                 	}
+                	try{
+                		EagarInitialization eagarThree = (EagarInitialization)eagarOne.clone();
+                		if(eagarOne !=eagarThree) {
+                			logger.info("Cloning violates singleton pattern");
+                		}
+                	}catch(CloneNotSupportedException e) {
+                		logger.log(Level.SEVERE,e.getMessage());
+                    	e.printStackTrace();
+                	}
                 	StaticBlockInitialization staticOne = StaticBlockInitialization.getInstance();
                 	StaticBlockInitialization staticTwo = StaticBlockInitialization.getInstance();
                 	if(staticOne == staticTwo) {
@@ -217,6 +231,32 @@ class Runner {
                 	if(instanceOne== instanceTwo) {
                 		logger.info("One instance for serialization is created");
                 	}
+                	LazyInitialization reflectOne = LazyInitialization.getInstance();
+                	LazyInitialization reflectTwo = null;
+                	try{
+                		Constructor[] construct = LazyInitialization.class.getConstructors();
+                		for(Constructor cons: construct) {
+                			cons.setAccessible(true);
+                			reflectTwo = (LazyInitialization)cons.newInstance();
+                			break;
+                		}
+                	}
+                	catch(Exception e) {
+                		logger.log(Level.SEVERE,e.getMessage());
+                    	e.printStackTrace();
+                		
+                		
+                	}
+                	if(reflectOne != reflectTwo) {
+                		logger.info("Singleton pattern is violated using reflection");
+                	}
+                	EnumSingleton enumOne = EnumSingleton.Instance;
+                	EnumSingleton enumTwo = EnumSingleton.Instance;
+                	if(enumOne == enumTwo ) {
+                		logger.info("Single instance of enumSingleton is created");
+                	}
+                	
+                	
                 	break;
 
                 	
@@ -224,14 +264,24 @@ class Runner {
                 case 8:
                 	logger.info("Current Time:" + time.getCurrentTime());
                 	logger.info("Current time in millis:" + time.getInMillis());
-                	logger.info("Enter the Zones");
+                    for(String zone:time.getZoneIds()) {
+                    	System.out.println(zone);
+                    }
+                    logger.info("Enter the ZoneId");
                 	String zoneOne = sc.next();
                 	logger.info("The Current Time at" + zoneOne +"is"+ time.getZoneTime(zoneOne) );
+                	logger.info("Enter the ZoneId");
                 	String zoneTwo =sc.next();
                 	logger.info("The Current Time at" + zoneTwo +"is"+ time.getZoneTime(zoneTwo) );
-                	logger.info("Week Day:" + time.getWeekDay());
-                	logger.info("Current Month" + time.getCurrentMonth());
-                	logger.info("CurrentYear" + time.getCurrentYear());
+                	logger.info("Enter the ZoneId to get current day");
+                	String zoneThree =sc.next();
+                	logger.info("Week Day:" + time.getWeekDay(zoneThree));
+                	logger.info("Enter the ZoneId to get current month");
+                	String zoneFour =sc.next();
+                	logger.info("Current Month" + time.getCurrentMonth(zoneFour));
+                	logger.info("Enter the ZoneId to get current year");
+                	String zoneFive =sc.next();
+                	logger.info("CurrentYear" + time.getCurrentYear(zoneFive));
                 	break;   	
                 	
                 	
