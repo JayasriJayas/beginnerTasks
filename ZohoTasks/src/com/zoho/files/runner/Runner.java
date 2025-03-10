@@ -35,6 +35,7 @@ import java.util.logging.Logger;
 import java.util.HashMap;
 import java.util.Map;
 
+
 class Runner {
 	static final Logger logger = Logger.getLogger(Runner.class.getName());
     public static void main(String[] args) {
@@ -48,9 +49,7 @@ class Runner {
         FileTask task = new FileTask(); 
         Time time = new Time();
         Customer customer;
-//        HashMap<Integer,String> zoneId = new HashMap<>();
-//        zoneId.put(, value);	
-//        
+       
         
             
         try {
@@ -264,8 +263,10 @@ class Runner {
                 case 8:
                 	logger.info("Current Time:" + time.getCurrentTime());
                 	logger.info("Current time in millis:" + time.getInMillis());
+                	int number=1;
                     for(String zone:time.getZoneIds()) {
-                    	System.out.println(zone);
+                    	System.out.println(number+" "+ zone);
+                    	number++;
                     }
                     logger.info("Enter the ZoneId");
                 	String zoneOne = sc.next();

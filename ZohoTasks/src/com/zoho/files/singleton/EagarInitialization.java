@@ -11,7 +11,7 @@ public class EagarInitialization implements Cloneable	 {
 	}
 	@Override
 	public Object clone() throws CloneNotSupportedException {
-	    return super.clone(); 
+	    throw new CloneNotSupportedException("Cloning cannot be done"); 
 	}
 
 

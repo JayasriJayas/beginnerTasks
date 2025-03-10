@@ -13,24 +13,24 @@ public class Time {
 		public long getInMillis() {
 			return System.currentTimeMillis();
 		}
-		public ZonedDateTime getZoneTime(String place) {
-			return ZonedDateTime.now(ZoneId.of(place));
+		public ZonedDateTime getZoneTime(String zoneid) {
+			return ZonedDateTime.now(ZoneId.of(zoneid));
 		}
-		public String getWeekDay(String place) {
+		public String getWeekDay(String zoneid) {
 			Instant instant = Instant.ofEpochMilli(getInMillis());
-			ZonedDateTime zone = instant.atZone(ZoneId.of(place));
+			ZonedDateTime zone = instant.atZone(ZoneId.of(zoneid));
 			return zone.getDayOfWeek().toString();
 			
 		}
-		public String getCurrentMonth(String place) {
+		public String getCurrentMonth(String zoneid) {
 			Instant instant = Instant.ofEpochMilli(getInMillis());
-			ZonedDateTime zone = instant.atZone(ZoneId.of(place));
+			ZonedDateTime zone = instant.atZone(ZoneId.of(zoneid));
 			return zone.getMonth().toString();
 			
 		}
-		public int getCurrentYear(String place) {
+		public int getCurrentYear(String zoneid) {
 			Instant instant = Instant.ofEpochMilli(getInMillis());
-			ZonedDateTime zone = instant.atZone(ZoneId.of(place));
+			ZonedDateTime zone = instant.atZone(ZoneId.of(zoneid));
 			return zone.getYear();
 			
 		}
