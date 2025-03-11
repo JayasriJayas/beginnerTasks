@@ -1,39 +1,41 @@
 package com.zoho.files.runner;
-import com.zoho.files.task.FileTask;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.Month;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Scanner;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.FileHandler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 
-import com.zoho.files.singleton.SerializationSingleton;
-import com.zoho.files.singleton.SingleCheckSingleton;
-import com.zoho.files.singleton.StaticBlockInitialization;
-import com.zoho.files.singleton.ThreadSafe;
+import com.zoho.files.applicant.Applicant;
+import com.zoho.files.customer.Customer;
+import com.zoho.files.rainbow.RainbowColors;
 import com.zoho.files.singleton.BillPugh;
 import com.zoho.files.singleton.DoubleCheckLocking;
 import com.zoho.files.singleton.EagarInitialization;
 import com.zoho.files.singleton.EnumSingleton;
 import com.zoho.files.singleton.LazyInitialization;
+import com.zoho.files.singleton.SerializationSingleton;
+import com.zoho.files.singleton.SingleCheckSingleton;
+import com.zoho.files.singleton.StaticBlockInitialization;
+import com.zoho.files.singleton.ThreadSafe;
+import com.zoho.files.task.FileTask;
 import com.zoho.files.time.Time;
-import com.zoho.files.applicant.Applicant;
-import com.zoho.files.customer.Customer;
-import com.zoho.files.rainbow.RainbowColors;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.time.ZoneId;
-import java.io.IOException;
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.ObjectOutputStream;
-import java.io.FileOutputStream;
-import java.io.ObjectInputStream;
-import java.io.FileInputStream;
-import java.io.File;
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.util.Scanner;
-import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.HashMap;
-import java.util.Map;
 
 
 class Runner {
@@ -49,48 +51,48 @@ class Runner {
         FileTask task = new FileTask(); 
         Time time = new Time();
         Customer customer;
+        configureLogger();
        
-        
-            
+                
         try {
         	do {
-                logger.info("1. In given directory crete file and properties");
-                logger.info("2.Use Instance to print the string");
-                logger.info("3.Create a Pojo class and print its instance");
-                logger.info("4.Invoke getter and setter methods");
-                logger.info("5.Using reflection in invoking constructors,methods");
-                logger.info("6.Create enum and print its oridinal and constants");
-                logger.info("7.Singleton class pattern");
-                logger.info("8.Time Calculations");
-                logger.info("Enter your choice (Enter -1 to exit)");
+                System.out.println("1. In given directory crete file and properties");
+                System.out.println("2.Use Instance to print the string");
+                System.out.println("3.Create a Pojo class and print its instance");
+                System.out.println("4.Invoke getter and setter methods");
+                System.out.println("5.Using reflection in invoking constructors,methods");
+                System.out.println("6.Create enum and print its oridinal and constants");
+                System.out.println("7.Singleton class pattern");
+                System.out.println("8.Time Calculations");
+                System.out.println("Enter your choice (Enter -1 to exit)");
                 choice = sc.nextInt();
             switch(choice) {
                 case 1:
-                	logger.info("Enter directory");
+                	System.out.println("Enter directory");
                 	directory = sc.next();
                 	if(directory == null || directory.isEmpty()) {
                 		directory = System.getProperty("user.dir");
                 	}
-                    logger.info("Enter the filename");
+                	System.out.println("Enter the filename");
                     fileName=sc.next();
-                    logger.info("Enter the numbe of lines to write");
+                    System.out.println("Enter the numbe of lines to write");
                 	lines = sc.nextInt();
                 	sc.nextLine();
                 	String[] text = new String[lines];
-                	logger.info("Enter the text");
+                	System.out.println("Enter the text");
                 	for(int i=0;i<lines;i++) {
                 		text[i] = sc.nextLine();
                 	}
                 	task.FileOperation(directory, fileName, text);
                 	logger.info("Data written to file ");
 
-                	logger.info("Enter the file name with .properties");
+                	System.out.println("Enter the file name with .properties");
                 	fileName=sc.next();
                     Properties prop = task.getNewProperties();
-                    logger.info("No of properties ");
+                    System.out.println("No of properties ");
                 	count = sc.nextInt();
                 	for(int i=0;i<count;i++) {
-                		logger.info("Enter the keys and values");
+                		System.out.println("Enter the keys and values");
                 		key = sc.next();
                 		value= sc.next();  
                 		task.setPropertyValue(prop, key, value);
@@ -105,17 +107,22 @@ class Runner {
                     for (Map.Entry<Object, Object> entry : readProps.entrySet()) {
                     	logger.info(entry.getKey() + " : " + entry.getValue());
                     }
+                
                     break;
                     
                 case 2:
-                	logger.info("Enter the Customer name");
+                	System.out.println("Enter the Customer name");
                 	String name=sc.next();
                 	customer = new Customer(name);
                 	logger.info("Customer Details"+ customer);
                 	break;
                 case 3:
-              
-                	logger.info("Enter the applicant name,no,age,DOB,address");
+                    try {
+                        int result = 10 / 0;  // This will throw an ArithmeticException
+                    } catch (ArithmeticException e) {
+                        logger.severe("Error: Division by zero occurred - " + e.getMessage());
+                    }
+                    System.out.println("Enter the applicant name,no,age,DOB,address");
                     applicantName = sc.next();  
                 	applicantNo = sc.nextInt();
                 	age = sc.nextInt();
@@ -127,7 +134,7 @@ class Runner {
                 	
                 case 4:
                 	Applicant applicantTwo = new Applicant();
-                	logger.info("Enter the applicant name,no,age,DOB,address");
+                	System.out.println("Enter the applicant name,no,age,DOB,address");
                 	applicantName = sc.next();  
                 	applicantTwo.setName(applicantName);
                 	applicantNo = sc.nextInt();
@@ -150,7 +157,7 @@ class Runner {
                 	Object objectOne = pojo.getDeclaredConstructor().newInstance();
                 	logger.info("Default Constructor"+ objectOne);
                 	Constructor<?> constructor = pojo.getDeclaredConstructor(String.class, int.class);
-                	logger.info("Enter the student name and age");
+                	System.out.println("Enter the student name and age");
                 	String studentName = sc.next();
                 	int studentAge = sc.nextInt();
                 	Object objectTwo = constructor.newInstance(studentName,studentAge);
@@ -159,7 +166,7 @@ class Runner {
                 	String stuName = (String) nameMethod.invoke(objectTwo);
                 	logger.info("Get Method"+ stuName);
                 	Method ageMethod = pojo.getMethod("setAge",int.class);
-                	logger.info("Enter the age");
+                	System.out.println("Enter the age");
                 	int setAge=sc.nextInt();
                 	ageMethod.invoke(objectTwo, setAge);
                 	Method ageGet = pojo.getMethod("getAge");
@@ -248,13 +255,13 @@ class Runner {
                 	}
                 	if(reflectOne != reflectTwo) {
                 		logger.info("Singleton pattern is violated using reflection");
-                	}
+                	}	
                 	EnumSingleton enumOne = EnumSingleton.Instance;
                 	EnumSingleton enumTwo = EnumSingleton.Instance;
                 	if(enumOne == enumTwo ) {
                 		logger.info("Single instance of enumSingleton is created");
                 	}
-                	
+                
                 	
                 	break;
 
@@ -268,21 +275,46 @@ class Runner {
                     	System.out.println(number+" "+ zone);
                     	number++;
                     }
-                    logger.info("Enter the ZoneId");
+                    System.out.println("Enter the ZoneId");
                 	String zoneOne = sc.next();
                 	logger.info("The Current Time at" + zoneOne +"is"+ time.getZoneTime(zoneOne) );
-                	logger.info("Enter the ZoneId");
+                	System.out.println("Enter the ZoneId");
                 	String zoneTwo =sc.next();
                 	logger.info("The Current Time at" + zoneTwo +"is"+ time.getZoneTime(zoneTwo) );
-                	logger.info("Enter the ZoneId to get current day");
+                	System.out.println("Enter the ZoneId to get current day");
                 	String zoneThree =sc.next();
                 	logger.info("Week Day:" + time.getWeekDay(zoneThree));
-                	logger.info("Enter the ZoneId to get current month");
+                	System.out.println("Enter the ZoneId to get current month");
                 	String zoneFour =sc.next();
                 	logger.info("Current Month" + time.getCurrentMonth(zoneFour));
-                	logger.info("Enter the ZoneId to get current year");
+                	System.out.println("Enter the ZoneId to get current year");
                 	String zoneFive =sc.next();
-                	logger.info("CurrentYear" + time.getCurrentYear(zoneFive));
+                
+                	int currYear = time.getCurrentYear(zoneFive);
+                	logger.info("CurrentYear" + currYear);
+                	System.out.println("Enter the hr and min");
+                	int hour = sc.nextInt();
+                	int minutes = sc.nextInt();
+                	LocalTime localtime = time.getLocalTime(hour,minutes);
+                	System.out.println("Enter two month code for summer and winter");
+                	int val =1;
+                	 for (Month month : Month.values()) {
+                         System.out.println(val+" "+month);
+                         val++;
+                     }
+                	 int summermonth = sc.nextInt();
+                	 int wintermonth = sc.nextInt();
+                	 System.out.println("Enter the date");
+                	 int date = sc.nextInt();
+                	LocalDate winterDate = time.getDates(currYear, summermonth, date);
+                	LocalDate summerDate = time.getDates(currYear, wintermonth, date);
+                	System.out.println("Enter the zone");
+                	String dstZone = sc.next();
+                	ZoneId dstzoneId = time.getId(dstZone);
+                	ZonedDateTime summerzonedtime = time.getZonesTime(summerDate, localtime, dstzoneId);
+                	ZonedDateTime winterzonedtime = time.getZonesTime(winterDate, localtime, dstzoneId);
+                	logger.info("Time : " + summerzonedtime);
+                	logger.info("Offset : "+time.getZoneOffset(winterzonedtime));
                 	break;   	
                 	
                 	
@@ -330,9 +362,36 @@ class Runner {
         	
         }
         
+        
 
 
 }
+    private static void configureLogger() {
+        try {
+//            logger.setUseParentHandlers(false); // Disable default console output
+
+            // FileHandler for severe messages
+            FileHandler fileHandler = new FileHandler("severe.log", true);
+            fileHandler.setFormatter(new SimpleFormatter());
+            fileHandler.setLevel(Level.SEVERE);
+            
+            FileHandler infoHandler = new FileHandler("info.log",true);
+            infoHandler.setFormatter(new SimpleFormatter());
+            infoHandler.setLevel(Level.INFO);
+            infoHandler.setFilter(record -> record.getLevel() == Level.INFO); // Only INFO
+
+          
+
+    
+            // Add handlers to logger
+            logger.addHandler(fileHandler);
+            logger.addHandler(infoHandler);
+//            logger.setLevel(Level.INFO);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }
 
 
