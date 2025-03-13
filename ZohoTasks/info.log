@@ -1,0 +1,56 @@
+Mar 12, 2025 3:13:22 PM com.zoho.files.runner.Runner main
+INFO: Name: jaya
+Mar 12, 2025 3:13:22 PM com.zoho.files.runner.Runner main
+INFO: ApplicantNo: 22
+Mar 12, 2025 3:13:22 PM com.zoho.files.runner.Runner main
+INFO: Age: 22
+Mar 12, 2025 3:13:22 PM com.zoho.files.runner.Runner main
+INFO: DOB: ue
+Mar 12, 2025 3:13:22 PM com.zoho.files.runner.Runner main
+INFO: Address: ww
+Mar 12, 2025 3:15:03 PM com.zoho.files.runner.Runner main
+INFO: Applicant detailsName: jaya Age: 11 Applicant No: 11 DOB: 12/08/222 Address: asdd 
+Mar 12, 2025 3:15:22 PM com.zoho.files.runner.Runner main
+INFO: Name: jjjj
+Mar 12, 2025 3:15:22 PM com.zoho.files.runner.Runner main
+INFO: ApplicantNo: 12
+Mar 12, 2025 3:15:22 PM com.zoho.files.runner.Runner main
+INFO: Age: 21
+Mar 12, 2025 3:15:22 PM com.zoho.files.runner.Runner main
+INFO: DOB: 12/09/2003
+Mar 12, 2025 3:15:22 PM com.zoho.files.runner.Runner main
+INFO: Address: asd
+Mar 12, 2025 3:15:28 PM com.zoho.files.runner.Runner main
+INFO: code for VIOLET is 1 its ordinal value is 0
+Mar 12, 2025 3:15:28 PM com.zoho.files.runner.Runner main
+INFO: code for INDIGO is 2 its ordinal value is 1
+Mar 12, 2025 3:15:28 PM com.zoho.files.runner.Runner main
+INFO: code for BLUE is 3 its ordinal value is 2
+Mar 12, 2025 3:15:28 PM com.zoho.files.runner.Runner main
+INFO: code for GREEN is 4 its ordinal value is 3
+Mar 12, 2025 3:15:28 PM com.zoho.files.runner.Runner main
+INFO: code for YELLOW is 5 its ordinal value is 4
+Mar 12, 2025 3:15:28 PM com.zoho.files.runner.Runner main
+INFO: code for ORANGE is 6 its ordinal value is 5
+Mar 12, 2025 3:15:28 PM com.zoho.files.runner.Runner main
+INFO: code for RED is 7 its ordinal value is 6
+Mar 12, 2025 3:15:32 PM com.zoho.files.runner.Runner main
+INFO: One instance of EagarInitialization is created
+Mar 12, 2025 3:15:32 PM com.zoho.files.runner.Runner main
+INFO: One instance of StaticBlockInitialization is created
+Mar 12, 2025 3:15:32 PM com.zoho.files.runner.Runner main
+INFO: One instance of LazyInitialization is created
+Mar 12, 2025 3:15:32 PM com.zoho.files.runner.Runner main
+INFO: One instance of ThreadSafe is created
+Mar 12, 2025 3:15:32 PM com.zoho.files.runner.Runner main
+INFO: One instance of SingleCheckSingleton is created
+Mar 12, 2025 3:15:32 PM com.zoho.files.runner.Runner main
+INFO: One instance of DoublecheckLocking is created
+Mar 12, 2025 3:15:32 PM com.zoho.files.runner.Runner main
+INFO: One instance of BillPugh is created
+Mar 12, 2025 3:15:32 PM com.zoho.files.runner.Runner main
+INFO: One instance for serialization is created
+Mar 12, 2025 3:15:32 PM com.zoho.files.runner.Runner main
+INFO: Singleton pattern is violated using reflection
+Mar 12, 2025 3:15:32 PM com.zoho.files.runner.Runner main
+INFO: Single instance of enumSingleton is created

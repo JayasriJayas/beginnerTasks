@@ -15,7 +15,8 @@ public class ExtendedThread extends Thread {
 		@Override
 	    public void run() {
 			try {
-			while(running) {
+				while(running) {
+					
 				System.out.println("Inside run method:");
 				System.out.println("Thread Name: " + Thread.currentThread().getName());
 				System.out.println("Thread Priority: " + Thread.currentThread().getPriority());

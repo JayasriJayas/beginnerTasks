@@ -117,11 +117,6 @@ class Runner {
                 	logger.info("Customer Details"+ customer);
                 	break;
                 case 3:
-                    try {
-                        int result = 10 / 0;  // This will throw an ArithmeticException
-                    } catch (ArithmeticException e) {
-                        logger.severe("Error: Division by zero occurred - " + e.getMessage());
-                    }
                     System.out.println("Enter the applicant name,no,age,DOB,address");
                     applicantName = sc.next();  
                 	applicantNo = sc.nextInt();
@@ -150,10 +145,11 @@ class Runner {
                 	logger.info("Age: " + applicantTwo.getAge());
                 	logger.info("DOB: " + applicantTwo.getDOB());
                 	logger.info("Address: " + applicantTwo.getAddress());
+
                 	break;
                 	
                 case 5:
-                	Class<?> pojo = Class.forName("com.zoho.files.student.Student");
+                	Class<?> pojo = Class.forName("com.zoho.files.student.Stu");
                 	Object objectOne = pojo.getDeclaredConstructor().newInstance();
                 	logger.info("Default Constructor"+ objectOne);
                 	Constructor<?> constructor = pojo.getDeclaredConstructor(String.class, int.class);
@@ -333,7 +329,7 @@ class Runner {
         }
         catch(ClassNotFoundException e) {
         	logger.log(Level.SEVERE,e.getMessage());
-        	e.printStackTrace();
+        
         }
         catch(InvocationTargetException e){
         	logger.log(Level.SEVERE,e.getMessage());
@@ -368,9 +364,8 @@ class Runner {
 }
     private static void configureLogger() {
         try {
-//            logger.setUseParentHandlers(false); // Disable default console output
+            logger.setUseParentHandlers(false);
 
-            // FileHandler for severe messages
             FileHandler fileHandler = new FileHandler("severe.log", true);
             fileHandler.setFormatter(new SimpleFormatter());
             fileHandler.setLevel(Level.SEVERE);
@@ -378,15 +373,10 @@ class Runner {
             FileHandler infoHandler = new FileHandler("info.log",true);
             infoHandler.setFormatter(new SimpleFormatter());
             infoHandler.setLevel(Level.INFO);
-            infoHandler.setFilter(record -> record.getLevel() == Level.INFO); // Only INFO
+            infoHandler.setFilter(record -> record.getLevel() == Level.INFO);  
 
-          
-
-    
-            // Add handlers to logger
             logger.addHandler(fileHandler);
             logger.addHandler(infoHandler);
-//            logger.setLevel(Level.INFO);
 
         } catch (IOException e) {
             e.printStackTrace();
