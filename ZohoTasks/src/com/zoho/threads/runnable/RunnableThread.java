@@ -1,8 +1,15 @@
 package com.zoho.threads.runnable;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import com.zoho.threads.log.ThreadLog;
+import com.zoho.threads.util.Util;
+
 public class RunnableThread implements Runnable {
 	long milliseconds;
 	boolean running = true;
+	private static final Logger logger = ThreadLog.getLogger();
 	public RunnableThread() {
 		
 	}
@@ -13,23 +20,24 @@ public class RunnableThread implements Runnable {
 
 	@Override
 	public void run() {
+		Util.configureLogger(logger);
 		
 			try {
 				while(running) {
 					
-				System.out.println("Inside run method:");
-				System.out.println("Thread Name: " + Thread.currentThread().getName());
-				System.out.println("Thread Priority: " + Thread.currentThread().getPriority());
-				System.out.println("Thread State: " + Thread.currentThread().getState());
-				System.out.println("Thread going to  sleep:"+Thread.currentThread().getName() );
+				logger.info("Inside run method:");
+				logger.info("Thread Name: " + Thread.currentThread().getName());
+				logger.info("Thread Priority: " + Thread.currentThread().getPriority());
+				logger.info("Thread State: " + Thread.currentThread().getState());
+				logger.info("Thread going to  sleep:"+Thread.currentThread().getName() );
 				Thread.sleep(milliseconds);
-				System.out.println("After sleeping"+ Thread.currentThread().getName());
+				logger.info("After sleeping"+ Thread.currentThread().getName());
 				}
 	        
 	      
 			}
 			catch(InterruptedException e) {
-				System.out.println("Thread was interrupted.");
+				logger.log(Level.SEVERE,e.getMessage());
 			}
 		  
 	 }

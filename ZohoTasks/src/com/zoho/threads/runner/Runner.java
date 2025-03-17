@@ -1,31 +1,31 @@
 package com.zoho.threads.runner;
-import com.zoho.threads.extendedthread.ExtendedThread;
-import com.zoho.threads.runnable.RunnableThread;
-
-import java.io.IOException;
-import java.lang.management.ManagementFactory;
-import java.lang.management.ThreadInfo;
-import java.lang.management.ThreadMXBean;
-import com.zoho.threads.threaddump.ThreadDumpTask;
-
-import java.util.logging.FileHandler;
+import java.util.Map;
+import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.logging.SimpleFormatter;
-import java.util.Scanner;
+
+import com.zoho.threads.extendedthread.ExtendedThread;
+import com.zoho.threads.log.ThreadLog;
+import com.zoho.threads.runnable.RunnableThread;
+import com.zoho.threads.synchronize.Synchronized;
+import com.zoho.threads.threaddump.ThreadDumpTask;
+import com.zoho.threads.util.Util;
 
 public class Runner {
-	static final Logger logger = Logger.getLogger(Runner.class.getName());
+	private static final Logger logger = ThreadLog.getLogger();
 
 	public static void main(String[] args) {
+		 Util.configureLogger(logger);
 		 ExtendedThread thread;
 		 Thread threadOne;
 		 ExtendedThread[] exthreads;
 		 Thread threaddump;
 		 Thread[] runthreads ;
+		 long sleepmilli;
+		 Thread[] synchthreads;
 		 Scanner sc = new Scanner(System.in);
-	     int choice,noOfThreads;
-	     configureLogger();
+	     int choice,noOfThreads,noOfDumps,interval;
+	     
 		 try {
 			 do {
 				 System.out.println("1.Get current thread name,priority,state using ExtendedThread class");
@@ -71,9 +71,11 @@ public class Runner {
 				         logger.info("Thread Name: " + thread.getName());
 				         logger.info("Thread Priority: " + thread.getPriority());
 				         logger.info("Thread State: " + thread.getState());
+				         System.out.println("Enter the thread name");
+					 	 String extendedName = sc.next();
 				        
 				         thread.start();
-				         thread.setName("ExtendedThread");
+				         thread.setName(extendedName);
 					 		
 				         logger.info("After calling start method:");
 				         logger.info("Thread Name: " + thread.getName());
@@ -85,9 +87,11 @@ public class Runner {
 					     logger.info("Thread Name: " + threadOne.getName());
 					     logger.info("Thread Priority: " + threadOne.getPriority());
 					     logger.info("Thread State: " + threadOne.getState());
+					     System.out.println("Enter the thread name");
+					 	 String runnName = sc.next();
 					         
 					     threadOne.start();
-					     thread.setName("RunnableThread");
+					     thread.setName(runnName);
 					         
 					     logger.info("After calling start method:");
 					     logger.info("Thread Name: " + threadOne.getName());
@@ -95,90 +99,135 @@ public class Runner {
 					     logger.info("Thread State: " + threadOne.getState());
 					     break;
 				 	case 4:
-				 		logger.info("Enter the number of threads to be spawned in ExtendedThreads");
+				 		System.out.println("Enter the number of threads to be spawned in ExtendedThreads");
 				 		noOfThreads = sc.nextInt();
 				 		exthreads = new ExtendedThread[noOfThreads];
+				 		System.out.println("Enter the thread name");
+				 		String extendName = sc.next();
+				 		System.out.println("Enter te milliseconds to make thread sleep ");
+			 			long milli = sc.nextInt();
 				 		for(int i=0;i<noOfThreads;i++) {
-				 			logger.info("Enter te milliseconds to make thread sleep ");
-				 			long milli = sc.nextInt();
+				 			
 				 			thread = new ExtendedThread(milli);
 				 			thread.start();
-				 		    thread.setName("ExtendedThread:"+i);
+				 		    thread.setName(extendName + ": "+i);
 				 		    exthreads[i]=thread;
 				 			
 				 		}
-				 		logger.info("Enter the number of threads to be spawned in RunnableThreads");
+				 		System.out.println("Enter the number of threads to be spawned in RunnableThreads");
 				 		int noOfRunThreads = sc.nextInt();
 				 		runthreads = new Thread[noOfThreads];
+				 		System.out.println("Enter the thread name");
+				 		String runName = sc.next();
+				 		System.out.println("Enter te milliseconds to make thread sleep ");
+			 			long millis = sc.nextInt();
 				 		for(int i=0;i<noOfRunThreads;i++) {
-				 			logger.info("Enter te milliseconds to make thread sleep ");
-				 			long milli = sc.nextInt();
-				 			threadOne = new Thread(new RunnableThread(milli));
+				 			
+				 			threadOne = new Thread(new RunnableThread(millis));
 				 			threadOne.start();
-				 		    threadOne.setName("RunnableThread:"+i);
+				 		    threadOne.setName(runName+" "+i);
 				 		    runthreads[i]=threadOne;
 				 			
 				 		}
 				 		break;
 				 	case 5:
-				 		logger.info("Enter the number of threads to be spawned in ExtendedThreads");
+				 		System.out.println("Enter the number of threads to be spawned in ExtendedThreads");
 				 		noOfThreads = sc.nextInt();
+				 	
 				 		exthreads = new ExtendedThread[noOfThreads];
 				 		for (int i = 0; i < noOfThreads; i++) {
 				 		    thread = new ExtendedThread();
-				 		    thread.setName("ExtendedThread:" + i);
 				 		    thread.start();
 				 		    exthreads[i] = thread;
 				 		}
-				 		
-				 		Thread.sleep(120000);
-				 		threaddump = new Thread(new ThreadDumpTask(3,30000));
-				 		threaddump.start();
+				 		System.out.println("Enter the no  of millisecnds to sleep");	
+				 		sleepmilli = sc.nextLong();
+				 		Thread.sleep(sleepmilli);
+				 		System.out.println("Enter the no of threadDumps and intervals");
+				 		noOfDumps = sc.nextInt();
+				 		interval = sc.nextInt();
+				 	    Map<Thread, StackTraceElement[]> stackTraces = Thread.getAllStackTraces();
+
+				 	    for (Thread threadd : stackTraces.keySet()) {
+				 	        System.out.println("Thread: " + threadd.getName());
+				 	        StackTraceElement[] stackTrace = stackTraces.get(threadd);
+				 	        for (StackTraceElement element : stackTrace) {
+				 	            System.out.println("  " + element);
+				 	        }
+				 	    }
+
+//				 		threaddump = new Thread(new ThreadDumpTask(noOfDumps,interval));
+//				 		threaddump.start();
 
 				 		for (ExtendedThread t : exthreads) {
 				 		    t.setRunning(false);
 				 		}
 				 		break;
 				 	case 6:
-				 		logger.info("Enter the number of threads to be spawned in ExtendedThreads");
+				 		System.out.println("Enter the number of threads to be spawned in ExtendedThreads");
 				 		noOfThreads = sc.nextInt();
 				 		exthreads = new ExtendedThread[noOfThreads];
 				 		for(int i=0;i<noOfThreads;i++) {
 				 			thread = new ExtendedThread();
 				 			thread.start();
-				 		    thread.setName("ExtendedThread:"+i);
 				 		    exthreads[i]=thread;
 				 			
 				 		}
-				 	   Thread.sleep(12000);
-				 	   for (ExtendedThread t : exthreads) {
-				 		   Thread.sleep(60000);
+				 		System.out.println("Enter the no  of millisecnds to sleep");	
+				 		sleepmilli = sc.nextLong();
+				 	    Thread.sleep(sleepmilli);
+				 	    System.out.println("Enter the no  of millisecnds to stop threads");	
+				 		long stopmilli = sc.nextLong();
+				 	    for (ExtendedThread t : exthreads) {
+				 		   Thread.sleep(stopmilli);
 				 		    t.setRunning(false); 
-				 	   }
-				 	  boolean alive = false; 
-				 	 for (ExtendedThread t : exthreads) { 
+				 	    }
+				 	    boolean alive = false; 
+				 	    for (ExtendedThread t : exthreads) { 
 				 	     if (t.isAlive()) {  
 				 	         alive = true;  
 				 	         break; 
-				 	     }
-				 	 }
-				 	 if (!alive) {  
-				 	     logger.info("Task completed"); 
-				 	 }
+				 	      }
+				 	   }
+				 	   if (!alive) {  
+				 	      logger.info("Task completed"); 
+				 	   }
 
-				 		
-				       Thread.sleep(12000);
-				       threaddump = new Thread(new ThreadDumpTask(10,45000));
+				 	   System.out.println("Enter the no of millisecnds to create thread dump ");	
+				 	   long dumpmilli = sc.nextLong();
+				       Thread.sleep(dumpmilli);
+				       System.out.println("Enter the no of threadDumps and intervals");
+				 	   noOfDumps = sc.nextInt();
+				 	   interval = sc.nextInt();
+				       threaddump = new Thread(new ThreadDumpTask(noOfDumps,interval));
 				 	   threaddump.start();
 				 		
 				 	   threaddump = new Thread(new ThreadDumpTask());
 					   threaddump.start();
 				 		
 				 		break;
-				 		
+				 	case 7:
+				 		System.out.println("Enter the number of threads to be spawned in ExtendedThreads");
+				 		noOfThreads = sc.nextInt();
+				 	
+				        Thread[] synchthreadss = new Thread[noOfThreads];
+				        Synchronized syncInstance = new Synchronized(5000); 
+				        for (int i = 0; i < noOfThreads; i++) {
+				            Thread threadSync = new Thread(syncInstance, "Thread-" + (i + 1));
+				            threadSync.start();
+				            synchthreadss[i] = threadSync;
+				        }
 
-				 		
-				 
+				        System.out.println("Enter the number of thread dumps and interval (ms):");
+				        noOfDumps = sc.nextInt();
+				         interval = sc.nextInt();
+
+				      
+				        Thread threadump = new Thread(new ThreadDumpTask(noOfDumps, interval));
+				        threadump.start();
+				        syncInstance.setRunning(false);
+				        break;
+
 				 }
 		
 			 }while(choice!=-1);
@@ -192,30 +241,13 @@ public class Runner {
 		 }
 		 catch(Exception e) { 
 			 logger.log(Level.SEVERE,e.getMessage());
-			 e.printStackTrace();
-		
+			
 		 }
+	
 
 	}
-	private static void configureLogger() {
-		try {
-		logger.setUseParentHandlers(false);
-		FileHandler severeFile = new FileHandler("threadsevere.log");
-		severeFile.setFormatter(new SimpleFormatter());
-		severeFile.setLevel(Level.SEVERE);
-		
-		FileHandler infoFile = new FileHandler("threadsevere.log");
-		infoFile.setFormatter(new SimpleFormatter());
-		infoFile.setLevel(Level.SEVERE);
-		infoFile.setFilter(record -> record.getLevel()==Level.INFO);
-		
-		logger.addHandler(severeFile);
-		logger.addHandler(infoFile);
+
 		
 	}
-		catch(IOException e) {
-			e.printStackTrace();
-}
-	}
-}
+
 

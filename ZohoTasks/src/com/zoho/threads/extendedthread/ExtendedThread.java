@@ -1,40 +1,48 @@
-package com.zoho.threads.extendedthread;
+	package com.zoho.threads.extendedthread;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import com.zoho.threads.log.ThreadLog;
+import com.zoho.threads.util.Util;
+
 
 
 public class ExtendedThread extends Thread {
-		long milliseconds;
-		boolean running = true;
-		public ExtendedThread() {
+	 		private static final Logger logger = ThreadLog.getLogger();
+			long milliseconds;
+			boolean running = true;
+			public ExtendedThread() {
+				
+			}
+			public ExtendedThread(long milliseconds) {
+				this.milliseconds = milliseconds;
+			}
 			
-		}
-		public ExtendedThread(long milliseconds) {
-			this.milliseconds = milliseconds;
-		}
-	  
-	
-		@Override
-	    public void run() {
-			try {
-				while(running) {
-					
-				System.out.println("Inside run method:");
-				System.out.println("Thread Name: " + Thread.currentThread().getName());
-				System.out.println("Thread Priority: " + Thread.currentThread().getPriority());
-				System.out.println("Thread State: " + Thread.currentThread().getState());
-				System.out.println("Thread going to  sleep:"+Thread.currentThread().getName() );
-				Thread.sleep(milliseconds);
-				System.out.println("After sleeping"+ Thread.currentThread().getName());
+		
+			@Override
+		    public void run() {
+				Util.configureLogger(logger);
+				try {
+					while(running) {
+						
+					logger.info("Inside run method:");
+					logger.info("Thread Name: " + Thread.currentThread().getName());
+					logger.info("Thread Priority: " + Thread.currentThread().getPriority());
+					logger.info("Thread State: " + Thread.currentThread().getState());
+					logger.info("Thread going to  sleep:"+Thread.currentThread().getName() );
+					Thread.sleep(milliseconds);
+					logger.info("After sleeping"+ Thread.currentThread().getName());
+					}
+		        
+		      
 				}
-	        
-	      
+				catch(InterruptedException e) {
+					logger.log(Level.SEVERE,e.getMessage());
+				}
+			  
+		  }
+			public void setRunning(boolean running) {
+				this.running = running;
 			}
-			catch(InterruptedException e) {
-				System.out.println("Thread was interrupted.");
-			}
-		  
-	  }
-		public void setRunning(boolean running) {
-			this.running = running;
-		}
-
-}
+	
+	}
