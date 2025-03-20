@@ -9,6 +9,7 @@ import com.zoho.threads.log.ThreadLog;
 import com.zoho.threads.runnable.RunnableThread;
 import com.zoho.threads.synchronize.Synchronized;
 import com.zoho.threads.threaddump.ThreadDumpTask;
+import com.zoho.threads.threadlocal.ThreadClass;
 import com.zoho.threads.util.Util;
 
 public class Runner {
@@ -22,7 +23,7 @@ public class Runner {
 		 Thread threaddump;
 		 Thread[] runthreads ;
 		 long sleepmilli;
-		 Thread[] synchthreads;
+		 Thread threadLocal;
 		 Scanner sc = new Scanner(System.in);
 	     int choice,noOfThreads,noOfDumps,interval;
 	     
@@ -218,15 +219,29 @@ public class Runner {
 				            synchthreadss[i] = threadSync;
 				        }
 
-				        System.out.println("Enter the number of thread dumps and interval (ms):");
+				        System.out.println("Enter the number of thread dumps and interval ms:");
 				        noOfDumps = sc.nextInt();
-				         interval = sc.nextInt();
+				        interval = sc.nextInt();
 
 				      
 				        Thread threadump = new Thread(new ThreadDumpTask(noOfDumps, interval));
 				        threadump.start();
 				        syncInstance.setRunning(false);
 				        break;
+				 	case 8:
+				 		System.out.println("Enter the number of threads to be spawned in ExtendedThreads");
+				 		noOfThreads = sc.nextInt();
+				 		ThreadClass threadInstance = new ThreadClass(); 
+				 		Thread[] local = new Thread[noOfThreads];
+
+				 		for (int i = 0; i < noOfThreads; i++) {
+				 		    System.out.println("Enter the value to set");
+				 		    int input = sc.nextInt();
+				 		    threadInstance.setValue(input); 
+				 		    local[i] = new Thread(threadInstance); 
+				 		    local[i].start();
+				 		    local[i].join();
+				 		}
 
 				 }
 		
