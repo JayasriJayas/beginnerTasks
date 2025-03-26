@@ -20,7 +20,6 @@ public class JdbcRunner {
 		Scanner sc = new Scanner(System.in);
         Employee employee;
         List<Employee> list;
-        List<DependentDetails> dependents;
         int noOfEmp,id,age,modify;
         String name,relation,update="";
         DependentDetails dependent;
@@ -82,7 +81,8 @@ public class JdbcRunner {
                     case 3:
         				System.out.println("Enter the employee name to reterive the details");
         				String empName = sc.next();
-        				System.out.println(dbConn.getByName(empName));
+        				String empDetail = dbConn.getByName(empName).toString(4);
+        				System.out.println(empDetail);
         				break;
         			case 4:
         				System.out.println("Enter the employee id to modify details");
@@ -112,10 +112,8 @@ public class JdbcRunner {
         			case 5:
         				System.out.println("Enter the no of employees to be displayed");
         				noOfEmp = sc.nextInt();
-        				list = dbConn.getRows(noOfEmp);
-        				for(int i=0;i<noOfEmp;i++) {
-        					System.out.println(list.get(i));
-        				}
+        				String empDetails = dbConn.getRows(noOfEmp).toString(4);
+        				System.out.println(empDetails);
         				break;
         			case 6:
         				System.out.println("Enter the no of employees to be displayed");
@@ -123,10 +121,8 @@ public class JdbcRunner {
         				System.out.println("Enter the field to order");
         				String order = sc.next();
         				String upper =order.toUpperCase();
-        				list = dbConn.orderBy(noOfEmp,upper);
-        				for(int i=0;i<noOfEmp;i++) {
-        					System.out.println(list.get(i));
-        				}
+        				String display = dbConn.orderBy(noOfEmp,upper).toString(4);
+        				System.out.println("Employees"+display);
         				break;
         			case 7:
         				System.out.println("Enter the employee id to delete");
@@ -163,21 +159,15 @@ public class JdbcRunner {
         			case 10:
         				System.out.println("Enter the employee id");
         				id=sc.nextInt();
-        				dependents = dbConn.getDependentDetails(id);
-        				int len = dependents.size();
-        				for(int i=0;i<len;i++) {
-        					System.out.println(dependents.get(i));
-        				}
+        				String dependents = dbConn.getDependentDetails(id).toString(4);
+        				System.out.println("DependentDetails"+ dependents);
         				break;
         				
         			case 11:
         				System.out.println("Enter the no of employees to be displayed");
         				noOfEmp = sc.nextInt();
-        				dependents = dbConn.getAllDependent(noOfEmp);
-        				int length = dependents.size();
-        				for(int i=0;i<length;i++) {
-        					System.out.println(dependents.get(i));
-        				}
+        				String details = dbConn.getAllDependent(noOfEmp).toString(4);
+        				System.out.println("DependentDetails"+ details);
         				break;
         				
                     case -1:

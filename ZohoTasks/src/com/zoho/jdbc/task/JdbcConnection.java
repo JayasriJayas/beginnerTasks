@@ -8,6 +8,10 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import com.zoho.jdbc.dependent.DependentDetails;
 import com.zoho.jdbc.employee.Employee;
 import com.zoho.jdbc.exception.DatabaseException;
@@ -60,9 +64,8 @@ public class JdbcConnection  {
         }
     }
     
-	public List<Employee> getByName(String name) throws DatabaseException {
-		Employee employee;
-		List<Employee> list = new ArrayList<>();
+	public JSONArray getByName(String name) throws DatabaseException {
+		JSONArray jsonArray = new JSONArray();
 		String query = "SELECT * FROM Employee WHERE NAME LIKE ?;";
 		try(Connection conn = getConnection();
 			PreparedStatement stmt = conn.prepareStatement(query))
@@ -74,13 +77,13 @@ public class JdbcConnection  {
 
 		
             while (rs.next()) {
-            	employee = new Employee();
-            	employee.setEmpId(rs.getInt("EMPLOYEE_ID"));
-                employee.setEmpName(rs.getString("NAME"));
-                employee.setMobile(rs.getString("MOBILE"));
-                employee.setEmail(rs.getString("EMAIL"));
-                employee.setDepartment(rs.getString("DEPARTMENT"));
-                list.add(employee);
+            	JSONObject jsonObj = new JSONObject();
+				jsonObj.put("EMPLOYEE_ID", rs.getInt("EMPLOYEE_ID"));
+				jsonObj.put("NAME", rs.getString("NAME"));
+				jsonObj.put("MOBILE", rs.getString("MOBILE"));
+				jsonObj.put("EMAIL", rs.getString("EMAIL"));
+				jsonObj.put("DEPARTMENT", rs.getString("DEPARTMENT"));
+                jsonArray.put(jsonObj);
               
             }
         }
@@ -88,7 +91,7 @@ public class JdbcConnection  {
 		catch (SQLException e) {
             throw new DatabaseException("Error: Cannot retrive data", e);
         }
-		return list;
+		return jsonArray;
 	}
 	
 	public void updateDetails(String update,String value,int id)throws DatabaseException {
@@ -105,8 +108,8 @@ public class JdbcConnection  {
         }
 	}
 	
-	public List<Employee> getRows(int rows)throws DatabaseException {
-		List<Employee> list = new ArrayList<>();
+	public JSONArray getRows(int rows)throws DatabaseException {
+		JSONArray jsonArray = new JSONArray();
 		Employee employee;
 		String query = "SELECT * FROM Employee LIMIT ?;";
 		try(Connection conn = getConnection();
@@ -117,14 +120,13 @@ public class JdbcConnection  {
 			
 			
 			while(rs.next()) {
-					employee = new Employee(); 
-				    employee.setEmpId(rs.getInt("EMPLOYEE_ID"));
-	                employee.setEmpName(rs.getString("NAME"));
-	                employee.setMobile(rs.getString("MOBILE"));
-	                employee.setEmail(rs.getString("EMAIL"));
-	                employee.setDepartment(rs.getString("DEPARTMENT"));
-	                
-	                list.add(employee); 
+				JSONObject jsonObj = new JSONObject();
+				jsonObj.put("EMPLOYEE_ID", rs.getInt("EMPLOYEE_ID"));
+				jsonObj.put("NAME", rs.getString("NAME"));
+				jsonObj.put("MOBILE", rs.getString("MOBILE"));
+				jsonObj.put("EMAIL", rs.getString("EMAIL"));
+				jsonObj.put("DEPARTMENT", rs.getString("DEPARTMENT"));
+                jsonArray.put(jsonObj);
 	               
 	
 			}
@@ -133,13 +135,12 @@ public class JdbcConnection  {
 		catch (SQLException e) {
 			throw new DatabaseException("Error while retriving rows", e);
         }
-		return list;
+		return jsonArray;
 		
 	} 
 
-	public List<Employee> orderBy(int number,String column)throws DatabaseException{
-		List<Employee> list = new ArrayList<>();
-		
+	public JSONArray orderBy(int number,String column)throws DatabaseException{
+		JSONArray jsonArray = new JSONArray();
 		String query = "SELECT * FROM Employee ORDER BY " + column + " DESC LIMIT ?";
 		try(Connection conn = getConnection();
 			PreparedStatement stmt = conn.prepareStatement(query)){
@@ -148,14 +149,13 @@ public class JdbcConnection  {
 		
 		   
 			while(rs.next()) {
-				Employee employee = new Employee(); 
-                employee.setEmpId(rs.getInt("EMPLOYEE_ID"));
-                employee.setEmpName(rs.getString("NAME"));
-                employee.setMobile(rs.getString("MOBILE"));
-                employee.setEmail(rs.getString("EMAIL"));
-                employee.setDepartment(rs.getString("DEPARTMENT"));
-                
-                list.add(employee); 
+				JSONObject jsonObj = new JSONObject();
+				jsonObj.put("EMPLOYEE_ID", rs.getInt("EMPLOYEE_ID"));
+				jsonObj.put("NAME", rs.getString("NAME"));
+				jsonObj.put("MOBILE", rs.getString("MOBILE"));
+				jsonObj.put("EMAIL", rs.getString("EMAIL"));
+				jsonObj.put("DEPARTMENT", rs.getString("DEPARTMENT"));
+                jsonArray.put(jsonObj);
 		}
 		}
 		}
@@ -163,7 +163,7 @@ public class JdbcConnection  {
 			throw new DatabaseException("Error: Query is not affected", e);
         }
 		
-		return list;
+		return jsonArray;
 			
 		
 	}
@@ -214,72 +214,71 @@ public class JdbcConnection  {
 		
 		}
 		
-		public List<DependentDetails> getDependentDetails(int id)throws DatabaseException{
-			String query = "SELECT Employee.EMPLOYEE_ID, Employee.NAME,Dependent.DEPENDENT_ID, Dependent.NAME AS Dependent_Name,Dependent.AGE, Dependent.RELATIONSHIP "
-					+ "FROM Employee "
-					+ "INNER JOIN Dependent ON Employee.EMPLOYEE_ID = Dependent.EMPLOYEE_ID WHERE Employee.EMPLOYEE_ID = ?;";
-			List<DependentDetails> dependents = new ArrayList<>(); 
-			DependentDetails dependent;
-			try (Connection conn = getConnection();
-				 PreparedStatement stmt = conn.prepareStatement(query)){
-				 stmt.setInt(1,id);
-				
-				try(ResultSet rs = stmt.executeQuery()){
-				 
-				
-		            while (rs.next()) {
-		                 dependent = new DependentDetails();
-		            	 dependent.setEmployeeId(rs.getInt("EMPLOYEE_ID"));
-		                 dependent.setEmployeeName(rs.getString("NAME"));
-		                 dependent.setDependentId(rs.getInt("DEPENDENT_ID"));
-		                 dependent.setDependentName(rs.getString("Dependent_Name"));
-		                 dependent.setAge(rs.getInt("AGE"));
-		                 dependent.setRelationship(rs.getString("RELATIONSHIP"));
-		             
-		                 dependents.add(dependent);
-		            			
-		            }
-				}
-		          
-		}catch (SQLException e) {
-			throw new DatabaseException("Error while retriving rows", e);
-        }
-			  return dependents;
-		}
-		
-		public List<DependentDetails> getAllDependent(int limit)throws DatabaseException{
-			String query = "SELECT Employee.EMPLOYEE_ID, Employee.NAME,"
-					+ "Dependent.DEPENDENT_ID, Dependent.NAME AS Dependent_Name,Dependent.AGE, Dependent.RELATIONSHIP"
-					+ " FROM Employee"
-					+ " INNER JOIN Dependent ON Employee.EMPLOYEE_ID = Dependent.EMPLOYEE_ID ORDER BY Employee.NAME ASC LIMIT ?;";
-			List<DependentDetails> dependents = new ArrayList<>(); 
-			DependentDetails dependent;
-			try (Connection conn = getConnection();
-				PreparedStatement stmt = conn.prepareStatement(query)){
-				 stmt.setInt(1,limit);
-			
-				 try(ResultSet rs = stmt.executeQuery()){
-				
-		            while (rs.next()) {
-		            	 dependent = new DependentDetails();
-		            	 dependent.setEmployeeId(rs.getInt("EMPLOYEE_ID"));
-		                 dependent.setEmployeeName(rs.getString("NAME"));
-		                 dependent.setDependentId(rs.getInt("DEPENDENT_ID"));
-		                 dependent.setDependentName(rs.getString("Dependent_Name"));
-		                 dependent.setAge(rs.getInt("AGE"));
-		                 dependent.setRelationship(rs.getString("RELATIONSHIP"));
-		             
-		                 dependents.add(dependent);
-		            			
-		            }
-				 }
-		          
-		}catch (SQLException e) {
-			throw new DatabaseException("Error while retriving rows", e);
-        }
-			  return dependents;
-		}
-}
+		public JSONArray getDependentDetails(int id) throws DatabaseException {
+	        String query = "SELECT Employee.EMPLOYEE_ID, Employee.NAME, Dependent.DEPENDENT_ID, "
+	                + "Dependent.NAME AS Dependent_Name, Dependent.AGE, Dependent.RELATIONSHIP "
+	                + "FROM Employee INNER JOIN Dependent ON Employee.EMPLOYEE_ID = Dependent.EMPLOYEE_ID "
+	                + "WHERE Employee.EMPLOYEE_ID = ?;";
+	        
+	        JSONArray jsonArray = new JSONArray();
+	        
+	        try (Connection conn = getConnection();
+	             PreparedStatement stmt = conn.prepareStatement(query)) {
+	            
+	            stmt.setInt(1, id);
+	            
+	            try (ResultSet rs = stmt.executeQuery()) {
+	                while (rs.next()) {
+	                    JSONObject jsonObj = new JSONObject();
+	                    jsonObj.put("EMPLOYEE_ID", rs.getInt("EMPLOYEE_ID"));
+	                    jsonObj.put("EMPLOYEE_NAME", rs.getString("NAME"));
+	                    jsonObj.put("DEPENDENT_ID", rs.getInt("DEPENDENT_ID"));
+	                    jsonObj.put("DEPENDENT_NAME", rs.getString("Dependent_Name"));
+	                    jsonObj.put("AGE", rs.getInt("AGE"));
+	                    jsonObj.put("RELATIONSHIP", rs.getString("RELATIONSHIP"));
+	                    jsonArray.put(jsonObj);
+	                }
+	            }
+	        } catch (SQLException e) {
+	            throw new DatabaseException("Error while retrieving rows", e);
+	        }
+	        
+	        return jsonArray; 
+	    }
+
+	    public JSONArray getAllDependent(int limit) throws DatabaseException {
+	        String query = "SELECT Employee.EMPLOYEE_ID, Employee.NAME, Dependent.DEPENDENT_ID, "
+	                + "Dependent.NAME AS Dependent_Name, Dependent.AGE, Dependent.RELATIONSHIP "
+	                + "FROM Employee INNER JOIN Dependent ON Employee.EMPLOYEE_ID = Dependent.EMPLOYEE_ID "
+	                + "ORDER BY Employee.NAME ASC LIMIT ?;";
+	        
+	        JSONArray jsonArray = new JSONArray();
+	        
+	        try (Connection conn = getConnection();
+	             PreparedStatement stmt = conn.prepareStatement(query)) {
+	            
+	            stmt.setInt(1, limit);
+	            
+	            try (ResultSet rs = stmt.executeQuery()) {
+	                while (rs.next()) {
+	                    JSONObject jsonObj = new JSONObject();
+	                    jsonObj.put("EMPLOYEE_ID", rs.getInt("EMPLOYEE_ID"));
+	                    jsonObj.put("EMPLOYEE_NAME", rs.getString("NAME"));
+	                    jsonObj.put("DEPENDENT_ID", rs.getInt("DEPENDENT_ID"));
+	                    jsonObj.put("DEPENDENT_NAME", rs.getString("Dependent_Name"));
+	                    jsonObj.put("AGE", rs.getInt("AGE"));
+	                    jsonObj.put("RELATIONSHIP", rs.getString("RELATIONSHIP"));
+	                    jsonArray.put(jsonObj);
+	                }
+	            }
+	        } catch (SQLException e) {
+	            throw new DatabaseException("Error while retrieving rows", e);
+	        }
+	        
+	        return jsonArray; 
+	    }
+	}
+
 
 
 
