@@ -9,15 +9,6 @@ public class DependentDetails {
     private String relationship;
 
 
-    public DependentDetails(int employeeId, String employeeName, int dependentId, String dependentName, int age, String relationship) {
-        this.employeeId = employeeId;
-        this.employeeName = employeeName;
-        this.dependentId = dependentId;
-        this.dependentName = dependentName;
-        this.age = age;
-        this.relationship = relationship;
-    }
-
     public int getEmployeeId() {
     	return employeeId; 	
     }
@@ -36,11 +27,29 @@ public class DependentDetails {
     public String getRelationship() { 
     	return relationship; 
     }
+    public void setDependentId(int id) {
+    	this.dependentId = id;    	
+    }
+    public void setDependentName(String name) {
+    	this.dependentName = name;
+    }
+    public void setAge(int age) {
+    	this.age = age;
+    }
+    public void setRelationship(String relation) {
+    	this.relationship = relation;
+    }
+    public void setEmployeeId(int id) {
+    	this.employeeId = id;
+    }
+    public void setEmployeeName(String name) {
+    	this.employeeName = name;
+    }
 
     @Override
     public String toString() {
         return String.format(
-            "Employee ID   : %d\n Employee Name : %s\n Dependent ID  : %d\n Dependent Name: %s\n  Age : %d\n Relationship  : %s\n", employeeId, employeeName, dependentId, dependentName, age, relationship);
+            "EmployeeID: %d\n EmployeeName:%s\n Dependent ID  : %d\n Dependent Name: %s\n  Age : %d\n Relationship  : %s\n",employeeId,employeeName,dependentId, dependentName, age, relationship);
 
     }
 

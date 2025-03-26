@@ -1,0 +1,8 @@
+package com.zoho.jdbc.exception;
+
+
+public class DatabaseException extends Exception {
+    public DatabaseException(String message, Throwable cause) {
+        super(message, cause);
+    }
+}

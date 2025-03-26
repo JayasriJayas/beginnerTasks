@@ -6,16 +6,7 @@ public class Employee {
 	private String mobile;
 	private String email;
 	private String department;
-	public Employee() {
-		
-	}
-	public Employee(int empId,String EmpName,String mobile,String email,String department) {
-		this.EmpId = empId;
-		this.EmpName = EmpName;
-		this.mobile = mobile;
-		this.email = email;
-		this.department = department;
-	}
+
 	public int getEmpId() {
 		return this.EmpId;
 	}

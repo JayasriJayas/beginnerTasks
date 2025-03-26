@@ -1,40 +1,58 @@
 package com.zoho.jdbc.runner;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.zoho.jdbc.dependent.DependentDetails;
 import com.zoho.jdbc.employee.Employee;
+import com.zoho.jdbc.exception.DatabaseException;
 import com.zoho.jdbc.task.JdbcConnection;
+import com.zoho.threads.log.ThreadLog;
 
 public class JdbcRunner {
+	  private static final Logger logger = Logger.getLogger(JdbcRunner.class.getName());
 
 	public static void main(String[] args) {
 		Scanner sc = new Scanner(System.in);
         Employee employee;
         List<Employee> list;
         List<DependentDetails> dependents;
-        int noOfEmp,id,age;
-        String name,relation;
-
+        int noOfEmp,id,age,modify;
+        String name,relation,update="";
+        DependentDetails dependent;
         try {
             JdbcConnection dbConn = new JdbcConnection();
             int choice;
 
             do {
-                System.out.println("Enter choice (1: Create Table, 2: Insert Data, -1: Exit)");
+            	System.out.println("1.Create employee table");
+            	System.out.println("2.Add Employees");
+            	System.out.println("3.Get Employee details ");
+            	System.out.println("4.Modify the detail");
+            	System.out.println("5.Print first n employee details");
+            	System.out.println("6.Print first n employee details and order by name in descending order");
+            	System.out.println("7.Delete Employee");
+            	System.out.println("8.Create Dependent table");
+            	System.out.println("9.Insert dependent employees");
+            	System.out.println("10.List all dependent employees");
+            	System.out.println("11.List all dependent employees with limit and order by name");
+                System.out.println("Enter your choice (Enter -1 to Exit)");
                 choice = sc.nextInt();
 
                 switch (choice) {
                     case 1:
                         dbConn.createTable();
-                        System.out.println("Table created successfully.");
+                        logger.info("Table created successfully.");
                         break;
 
                     case 2:
                         System.out.println("Enter the number of employees to be added:");
                         int entries = sc.nextInt();
+                        List<Employee> lists = new ArrayList<>();
                         for (int i = 0; i < entries; i++) {
                             System.out.println("Enter Employee ID:");
                             int empId = sc.nextInt();
@@ -47,14 +65,18 @@ public class JdbcRunner {
                             String email = sc.nextLine();
                             System.out.println("Enter Department:");
                             String department = sc.nextLine();
-                            employee = new Employee(empId, empName, mobile, email, department);
-                            if (employee == null) {
-                                System.out.println("Error: Employee object is null.");
-                            } else {
-                                dbConn.insertuser(employee);
-                            }
-                            System.out.println("Data inserted successfully.");
+                            employee = new Employee();
+                            employee.setEmpId(empId);
+                            employee.setEmpName(empName);
+                            employee.setEmail(email);
+                            employee.setDepartment(department);
+                            employee.setMobile(mobile);
+                            lists.add(employee);
+                            
+                           
                         }
+                        dbConn.insertUser(lists);
+                        logger.info("Data inserted successfully.");
                         break;
                         
                     case 3:
@@ -65,10 +87,27 @@ public class JdbcRunner {
         			case 4:
         				System.out.println("Enter the employee id to modify details");
         				id = sc.nextInt();
-        				System.out.println("Enter the data to modify");
-        				String mobile = sc.next();
-        				dbConn.updateDetails(mobile, id);
-        				System.out.println("Data has been updated successfully");
+        				do {
+        				System.out.println("Enter the data to modify\n 1.Mobile\n 2.Depertment\n 3.Email\n");
+        				modify = sc.nextInt();
+        				
+        				if(modify==1) {
+        					update = "MOBILE";
+        				}
+        				else if(modify == 2) {
+        					update = "DEPARTMENT";
+        				}
+        				else if(modify == 3) {
+        					update = "EMAIL";
+        				}
+        				else {
+        					modify = -1;
+        				}
+        				}while(modify==-1);
+        				System.out.println("Enter the value to modify");
+        				String value = sc.next();
+        				dbConn.updateDetails(update,value, id);
+        				logger.info("Data has been updated successfully");
         				break;
         			case 5:
         				System.out.println("Enter the no of employees to be displayed");
@@ -93,25 +132,33 @@ public class JdbcRunner {
         				System.out.println("Enter the employee id to delete");
         				id = sc.nextInt();
         				dbConn.deleteID(id);
-        				System.out.println("Data successfully deleted");
+        				logger.info("Data successfully deleted");
         			case 8:
         				dbConn.createDependentTable();
-                        System.out.println("Table created successfully.");
+        				logger.info("Table created successfully.");
                         break;
         			case 9:
         				System.out.println("Enter the number of employee dependents need to be added");
         				noOfEmp = sc.nextInt();
+        				List<DependentDetails> dependentList = new ArrayList<>();
         				for (int i = 0; i < noOfEmp; i++) {
+        					dependent = new DependentDetails();
         					System.out.println("Enter the employee id");
         					id= sc.nextInt();
+                            dependent.setDependentId(id);
         					System.out.println("Enter the dependent name");
         					name=sc.next();
+        					dependent.setDependentName(name);
         					System.out.println("Enter the age");
         					age=sc.nextInt();
+        					dependent.setAge(age);
         					System.out.println("Enter the relationship");
         					relation =sc.next();
-        					dbConn.insertDependent(id,name,age,relation);
+        					dependent.setRelationship(relation);
+        					dependentList.add(dependent);
         				}
+        				dbConn.insertDependent(dependentList);
+        				logger.info("Data inserted successfully.");
         				break;
         			case 10:
         				System.out.println("Enter the employee id");
@@ -134,30 +181,26 @@ public class JdbcRunner {
         				break;
         				
                     case -1:
-                        System.out.println("Exiting program.");
+                    	logger.info("Exiting program.");
                         break;
 
                     default:
-                        System.out.println("Invalid choice! Try again.");
+                    	logger.info("Invalid choice! Try again.");
                         break;
                 }
 
             } while (choice != -1);
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
+        } catch (DatabaseException e) {
+        	System.out.println("Error:" + e.getMessage());
+        	if (e.getCause() != null) {
+       			System.out.println("Cause: " + e.getCause().getMessage());
+        	}
+        } 
+        finally {
             sc.close();
         }
-    
-
-
-	
-
-
-
-				
-				
+    				
 
 	}
 
