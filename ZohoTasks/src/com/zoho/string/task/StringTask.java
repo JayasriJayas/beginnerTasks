@@ -16,13 +16,13 @@ public class StringTask {
     }
 
     public char penultimateChar(String string,int position)throws InvalidException, OutOfBoundException{
-	if(string==""){
-		throw new InvalidException("Error:Input string cannot be empty");
-	}
+//	if(string==""){
+//		throw new InvalidException("Error:Input string cannot be empty");
+//	}
         int length =findLength(string);
-	if(length==0){
-		throw new InvalidException("Error:Input string cannot be empty");
-	}
+//	if(length==0){
+//		throw new InvalidException("Error:Input string cannot be empty");
+//	}
         Util.indexValidation(length,position);
         return string.charAt(length - position);
     }
@@ -123,7 +123,7 @@ public class StringTask {
 
     public String[] stringArrayWithWords(String lineword,String splitSymbol)throws InvalidException { 
         Util.validate(lineword);
-	Util.validate(splitSymbol);
+	    Util.validate(splitSymbol);
         return lineword.split(splitSymbol);
     }
 

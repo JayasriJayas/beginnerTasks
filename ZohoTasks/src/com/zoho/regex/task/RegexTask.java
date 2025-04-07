@@ -31,28 +31,28 @@ public class RegexTask {
 		return matcher.find();
 	}
 	public boolean validateStarts(String given,String check) {
-		String regex = "^"+"check"+".*$";
+		String regex = "^"+ Pattern.quote(check)+".*$";
 		Pattern pattern = getPattern(regex);
 		Matcher matcher = pattern.matcher(given);
 		return matcher.find();	
 
 	}
 	public boolean validateEnds(String given,String check) {
-		String regex = "^.*"+"check"+"$";
+		String regex = "^.*"+ Pattern.quote(check)+"$";
 		Pattern pattern = getPattern(regex);
 		Matcher matcher = pattern.matcher(given);
 		return matcher.find();	
 
 	}
 	public boolean validateContains(String given,String check) {
-		String regex = "^.*"+"check"+".*$";
+		String regex = "^.*"+ Pattern.quote(check)+".*$";
 		Pattern pattern = getPattern(regex);
 		Matcher matcher = pattern.matcher(given);
 		return matcher.find();	
 
 	}
 	public boolean validateExactString(String given,String check) {
-		String regex = "^"+"check"+"$";
+		String regex = "^"+ Pattern.quote(check)+"$";
 		Pattern pattern = getPattern(regex);
 		Matcher matcher = pattern.matcher(given);
 		return matcher.find();	
@@ -96,7 +96,7 @@ public class RegexTask {
         return resultMap;
     }
     public static List<String> extractHtmlTags(String htmlString) {
-    	 String regex = "</?\\\\w+[^>]*>"; 
+    	 String regex = "(</?[a-z]*>)"; 
         List<String> tagList = new ArrayList<>();
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(htmlString);

@@ -46,24 +46,24 @@ public class Runner {
 				
 			case 3:
 				System.out.println("Enter a string to validate");
-				String input = sc.next();
+				String input = sc.nextLine();
 				System.out.println("Enter a string to be started with");
-				String start = sc.next();
+				String start = sc.nextLine();
 				logger.info("Is it valid string that starts with "+start+" "+task.validateStarts(input,start));
 				System.out.println("Enter a string to validate");
-				String inputContains = sc.next();
+				String inputContains = sc.nextLine();
 				System.out.println("Enter a string that contains in string");
-				String contains = sc.next();
+				String contains = sc.nextLine();
 				logger.info("Is it valid string that contains"+contains+" "+task.validateContains(inputContains, contains));
 				System.out.println("Enter a string to validate");
-				String inputEnd = sc.next();
+				String inputEnd = sc.nextLine();
 				System.out.println("Enter a string to end with");
-				String end = sc.next();
+				String end = sc.nextLine();
 				logger.info("Is it valid string that ends with"+end+" "+task.validateEnds(inputEnd, end));
 				System.out.println("Enter a string to validate");
-				String inputExact = sc.next();
+				String inputExact = sc.nextLine();
 				System.out.println("Enter a string ");
-				String exact = sc.next(); 
+				String exact = sc.nextLine(); 
 				logger.info("Is it valid exact string"+task.validateExactString(inputExact, exact));
 				break;
 			case 4:
@@ -76,6 +76,7 @@ public class Runner {
 				System.out.println("Enter a string to validate");
 				String caseOne = sc.next();
 				logger.info("Is a valid list of strings" + task.validateCaseInSensitive(strList, caseOne));
+				break;
 				
 				
 			case 5:
