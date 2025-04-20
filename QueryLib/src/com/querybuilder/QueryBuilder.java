@@ -3,31 +3,42 @@ package com.querybuilder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 import com.dialect.DatabaseDialect;
-
+//about final
 public class QueryBuilder {
 	 private String table;
-     private Optional<List<String>> columns = Optional.empty();
-     private Optional<List<String>> dmlcolumns = Optional.empty();
-     private Optional<List<String>> values = Optional.empty();
-	 private Optional<List<String>> primaryKeys = Optional.empty();
-	 private Optional<List<String>> foreignKeys = Optional.empty();
-	 private Optional<List<String>> alterTableClauses = Optional.empty();
+	 private List<String> columns;
+	 private List<String> values;
+	 private List<String> primaryKeys;
+	 private List<String> foreignKeys;
+	 private List<String> alterTableClauses;
+	 private List<String> setClauses;
+	 private List<String> orderByColumns;
+	 private List<String> whereConditions;
+	 private List<String> groupByColumns;
+	 private List<String> havingConditions;
+	 private List<String> parameters;
+	 private List<String[]> valueRows;
+	 private List<String> whereOperators;
+	 private List<String> havingOperators;
+	 private List<String> joins;
 	 private boolean isDropTable = false;
+	 private boolean useAllColumns = true;
 	 private boolean ifNotExists = false;
 	 private String queryType = "SELECT";
 	 private boolean isCreateTable = false;
 	 private boolean isAlterTable = false;
-	    
-
+	 private int limit;
+	 private boolean distinct;
+	 private String orderDirection;
 	 private DatabaseDialect dialect;
 
 	 public QueryBuilder(DatabaseDialect dialect) {
 	    this.dialect = dialect;
 	 }
 	 public QueryBuilder createTable(String tableName) {
+		    this.queryType = "CREATE";
 	        this.table = tableName;
 	        this.isCreateTable = true;
 	        return this;
@@ -36,100 +47,265 @@ public class QueryBuilder {
 	        this.ifNotExists = true;
 	        return this;
 	 }
+	 public QueryBuilder column(String name, String type) {
+	        StringBuilder fields = new StringBuilder(name + " " + type);
+	        this.columns = initIfNull(this.columns);
+	        columns.add(fields.toString());
+	        return this;
+	 }
 	 public QueryBuilder column(String name, String type, String... constraints) {
 	        StringBuilder fields = new StringBuilder(name + " " + type);
 	        for (String constraint : constraints) {
 	            fields.append(" ").append(constraint);
 	        }
-	        columns.get().add(fields.toString());
+	        this.columns = initIfNull(this.columns);
+	        columns.add(fields.toString());
 	        return this;
 	 }
-	  public QueryBuilder primaryKey(String... cols) {
-	        primaryKeys.get().addAll(Arrays.asList(cols));
+	  public QueryBuilder primaryKey(String... cols){
+		    this.primaryKeys = initIfNull(this.primaryKeys);
+	        primaryKeys.addAll(Arrays.asList(cols));
 	        return this;
 	  }
 	  public QueryBuilder foreignKey(String column, String refTable, String refColumn) {
-	        if (!foreignKeys.isPresent()) {
-	            foreignKeys = Optional.of(new ArrayList<>());
-	        }
-	        foreignKeys.get().add("FOREIGN KEY (" + column + ") REFERENCES " + refTable + "(" + refColumn + ")");
+		    this.foreignKeys = initIfNull(this.foreignKeys);
+	        foreignKeys.add("FOREIGN KEY (" + column + ") REFERENCES " + refTable + "(" + refColumn + ")");
 	        return this;
 	  }
-	  public QueryBuilder dropTable(String tableName) {
-	        this.table = tableName;
+	  public QueryBuilder dropTable(String table) {
+		    this.queryType = "DROP";
+	        this.table = table;
 	        this.isDropTable = true;
 	        return this;
+	  }
+	  public QueryBuilder alterTable(String table) {
+		  this.queryType ="ALTER";
+		  this.table = table;
+		  this.isAlterTable = true;
+		  return this;
+				  
 	  }
 	  public QueryBuilder addColumn(String name, String type, String... constraints) {
 	        StringBuilder querStrings = new StringBuilder("ADD " + name + " " + type);
 	        for (String constraint : constraints) {
 	        	querStrings.append(" ").append(constraint);
 	        }
-	        alterTableClauses.get().add(querStrings.toString());
+	        this.alterTableClauses = initIfNull(this.alterTableClauses);
+	        alterTableClauses.add(querStrings.toString());
 	        return this;
 	    }
 
 	    public QueryBuilder modifyColumn(String name, String newType) {
-	        alterTableClauses.get().add("MODIFY " + name + " " + newType);
+	    	this.alterTableClauses = initIfNull(this.alterTableClauses);
+	        alterTableClauses.add("MODIFY " + name + " " + newType);
 	        return this;
 	    }
 
 	    public QueryBuilder dropColumn(String name) {
-	        alterTableClauses.get().add("DROP COLUMN " + name);
+	    	this.alterTableClauses = initIfNull(this.alterTableClauses);
+	        alterTableClauses.add("DROP COLUMN " + name);
 	        return this;
 	    }
 	    public QueryBuilder select(String...columns) {
-	    	this.queryType = "SELECT";
-	    	dmlcolumns.get().addAll(Arrays.asList(columns));
-	    	return this;
-	    	
-	    }
-	    public QueryBuilder insertInto(String table, String... cols) {
-	        this.queryType = "INSERT";
-	        this.table = table;
-	        dmlcolumns.get().addAll(Arrays.asList(cols));
+	        this.queryType = "SELECT";
+	        this.columns = initIfNull(this.columns);
+	        this.columns.addAll(Arrays.asList(columns));
 	        return this;
 	    }
-	    public QueryBuilder values(String...vals) {
-	    	dmlcolumns.get().addAll(Arrays.asList(vals));
+
+
+	    public QueryBuilder from(String table) {
+	        this.table = table;
+	        return this;
+	    }
+	    
+	    public QueryBuilder insertInto(String table) {
+	    	this.queryType = "INSERT";
+	        this.table = table;
+	        return this;
+	    }
+
+	    public QueryBuilder insertInto(String table, String... columns) {
+	    	this.queryType = "INSERT";
+	        this.table= table;
+	        this.columns = initIfNull(this.columns);
+	        this.columns = Arrays.asList(columns);
+	        this.useAllColumns = false; // <-- Add this line!
+	        return this;
+	    }
+
+	    public QueryBuilder values(String... values) {
+	    	this.valueRows = initIfNull(this.valueRows);
+	        valueRows.add(values);
+	        this.parameters = initIfNull(this.parameters);
+	        parameters.addAll(Arrays.asList(values));
+	        return this;
+	    }
+
+	    public QueryBuilder update(String table) {
+	        this.queryType = "UPDATE";
+	        this.table = table;
+	        return this;
+	    }
+	    public QueryBuilder set(String... clauses) {
+	    	this.setClauses = initIfNull(this.setClauses);
+	        setClauses.addAll(Arrays.asList(clauses));
+	        return this;
+	    }
+	    public QueryBuilder deleteFrom(String table) {
+	        this.queryType = "DELETE";
+	        this.table = table;
+	        return this;
+	    }
+	    public QueryBuilder truncate(String table) {
+	        this.queryType = "TRUNCATE";
+	        this.table = table;
+	        return this;
+	    }
+	    public QueryBuilder orderBy(String column) {
+	    	this.orderByColumns = initIfNull(this.orderByColumns);
+	        orderByColumns.add(column);
+	        return this;
+	    }
+	    public QueryBuilder orderDirection(String direction) {
+	        this.orderDirection = direction.toUpperCase(); 
+	        return this;
+	    }
+
+	    public QueryBuilder limit(int limit) {
+	        this.limit = limit;
+	        return this;
+	    }
+	    
+	    public QueryBuilder aggregate(String function, String column) {
+	    	this.columns = initIfNull(this.columns);
+	        columns.add(function + "(" + column + ")");
+	        return this;
+	    }
+
+	    public QueryBuilder where(String condition) {
+	    	this.whereConditions = initIfNull(this.whereConditions);
+	        whereConditions.add(condition);
+	        return this;
+	    }
+
+	    public QueryBuilder andWhere(String condition) {
+	    	this.whereOperators = initIfNull(this.whereOperators);
+	        whereOperators.add("AND");
+	        this.whereConditions = initIfNull(this.whereConditions);
+	        whereConditions.add(condition);
+	        return this;
+	    }
+
+	    public QueryBuilder orWhere(String condition) {
+	    	this.whereOperators = initIfNull(this.whereOperators);
+	        whereOperators.add("OR");
+	        this.whereConditions = initIfNull(this.whereConditions);
+	        whereConditions.add(condition);
+	        return this;
+	    }
+
+	    public QueryBuilder groupBy(String... columns) {
+	    	this.groupByColumns = initIfNull(this.groupByColumns);
+	        groupByColumns.addAll(Arrays.asList(columns));
+	        return this;
+	    }
+	    public QueryBuilder whereAny(String column, String subquery) {
+	        this.whereConditions = initIfNull(this.whereConditions);
+	        whereConditions.add(column + " = ANY (" + subquery + ")");
+	        return this;
+	    }
+
+	    public QueryBuilder whereAll(String column, String subquery) {
+	        this.whereConditions = initIfNull(this.whereConditions);
+	        whereConditions.add(column + " = ALL (" + subquery + ")");
+	        return this;
+	    }
+
+
+	    public QueryBuilder having(String condition) {
+	    	this.havingConditions = initIfNull(this.havingConditions);
+	        havingConditions.add(condition);
+	        return this;
+	    }
+	    public QueryBuilder andHaving(String condition) {
+	    	this.havingOperators = initIfNull(this.havingOperators);
+	    	havingOperators.add("AND");
+	    	this.havingConditions = initIfNull(this.havingConditions);
+	    	havingConditions.add(condition);
 	    	return this;
 	    }
-	 
+	    public QueryBuilder orHaving(String condition) {
+	    	this.havingOperators = initIfNull(this.havingOperators);
+	    	havingOperators.add("OR");
+	    	this.havingConditions = initIfNull(this.havingConditions);
+	    	havingConditions.add(condition);
+	    	return this;
+	    }
+	    public QueryBuilder innerJoin(String table, String condition) {
+	        this.joins = initIfNull(this.joins);
+	        joins.add("INNER JOIN " + table + " ON " + condition);
+	        return this;
+	    }
+
+	    public QueryBuilder leftJoin(String table, String condition) {
+	        this.joins = initIfNull(this.joins);
+	        joins.add("LEFT JOIN " + table + " ON " + condition);
+	        return this;
+	    }
+
+	    public QueryBuilder rightJoin(String table, String condition) {
+	        this.joins = initIfNull(this.joins);
+	        joins.add("RIGHT JOIN " + table + " ON " + condition);
+	        return this;
+	    }
+	  
+
+	    
+	    public String buildConditionClause(List<String> conditions, List<String> operators) {
+	        if (conditions.isEmpty()) return "";
+
+	        StringBuilder clause = new StringBuilder(conditions.get(0));
+	        for (int i = 1; i < conditions.size(); i++) {
+	            clause.append(" ").append(operators.get(i - 1)).append(" ").append(conditions.get(i));
+	        }
+	        return clause.toString();
+	    }
+	    private <T> List<T> initIfNull(List<T> list) {
+	        return (list == null) ? new ArrayList<>() : list;
+	    }
+
  	 public String build()
 	 {
-		 if(isCreateTable)
-		 {
-			StringBuilder query = new StringBuilder("CREATE TABLE");
-			if (ifNotExists) query.append("IF NOT EXISTS ");
-            query.append(table).append(" (");
-            List<String> queryStrings = new ArrayList<>();
-            columns.ifPresent(queryStrings::addAll);
-            
-            if (primaryKeys.isPresent() && !primaryKeys.get().isEmpty()) {
-            	queryStrings.add("PRIMARY KEY"+String.join(",",primaryKeys.get())+")");
-            	
-            }
-            
-            foreignKeys.ifPresent(queryStrings::addAll);
-
-            query.append(String.join(", ", queryStrings)).append(");");
-            return query.toString();
-            
-            
-
-		 }
-		 else if (isDropTable) {
-	            return "DROP TABLE IF EXISTS " + table + ";";
-
-	     } else if (isAlterTable) {
-	            StringBuilder query = new StringBuilder("ALTER TABLE ");
-	            query.append(table).append(" ");
-	            query.append(String.join(", ", alterTableClauses.get())).append(";");
-	            return query.toString();
-	        }
-		 
 		 return dialect.buildQuery(this);
 	 }
-	 
+ 	public String getQueryType() { return queryType; }
+    public String getTable() { return table; }
+    public boolean getIsCreateTable() { return isCreateTable; }
+    public boolean getIfNotExists() { return ifNotExists; }
+    public boolean getIsAlterTable() { return isAlterTable; }
+    public boolean getIsDropTable() { return isDropTable; }
+    public List<String> getColumns() { return (columns == null) ? new ArrayList<>() : columns; }
+    public List<String> getPrimaryKeys() { return (primaryKeys == null) ? new ArrayList<>() : primaryKeys; }
+    public List<String> getForeignKeys() { return (foreignKeys == null) ? new ArrayList<>() : foreignKeys; }
+    public List<String> getValues() { return (values == null) ? new ArrayList<>() : values; }
+    public List<String> getSetClauses() { return (setClauses == null) ? new ArrayList<>() : setClauses; }
+    public List<String> getWhereConditions() { return (whereConditions == null) ? new ArrayList<>() : whereConditions; }
+    public List<String> getAlterTableClauses(){ return (alterTableClauses == null) ? new ArrayList<>() : alterTableClauses; } 
+    public List<String> getGroupByColumns() { return (groupByColumns == null) ? new ArrayList<>() : groupByColumns; }
+    public List<String> getHavingConditions() { return (havingConditions == null) ? new ArrayList<>() : havingConditions; }
+    public List<String> getOrderByColumns() { return (orderByColumns == null) ? new ArrayList<>() : orderByColumns; }
+    public Integer getLimit() { return limit; }
+    public boolean isDistinct() { return distinct; }
+    public String getOrderDirection() { return orderDirection; }
+    public boolean getUseAllColumns() { return useAllColumns; }
+    public List<String[]> getValueRows() { return (valueRows == null) ? new ArrayList<>() : valueRows; }
+    public List<String> getParameters() { return (parameters == null) ? new ArrayList<>() : parameters; }
+    public List<String> getWhereOperators() { return (whereOperators == null) ? new ArrayList<>() : whereOperators; }
+    public List<String> getHavingOperators(){ return (havingOperators == null) ? new ArrayList<>() : havingOperators; }
+    public List<String> getJoins() { return (joins == null) ? new ArrayList<>() : joins; }
+
+
+
 
 }

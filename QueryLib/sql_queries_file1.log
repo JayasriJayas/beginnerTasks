@@ -1,0 +1,33 @@
+2025-04-18T14:54:12.139 - CREATE TABLE Student (STUDENT_ID INT PRIMARY KEY, NAME VARCHAR(100), AGE INT, DEPARTMENT VARCHAR(100), GPA DOUBLE);
+2025-04-18T16:27:04.643 - INSERT INTO Student (student_id, name, age, department, gpa) VALUES (?, ?, ?, ?, ?), (?, ?, ?, ?, ?)
+2025-04-19T15:55:23.973 - INSERT INTO Student VALUES (?, ?, ?, ?, ?), (?, ?, ?, ?, ?), (?, ?, ?, ?, ?), (?, ?, ?, ?, ?)
+2025-04-19T19:09:22.165 - SELECT * FROM Student WHERE age > 18
+2025-04-19T19:11:16.232 - SELECT * FROM Student WHERE age > 18 AND department = 'CSE'
+2025-04-19T19:13:28.514 - DELETE FROM Student WHERE student_id = 2
+2025-04-19T20:43:37.792 - UPDATE Student SET age = 25 WHERE student_id = 1
+2025-04-19T20:44:46 - SELECT * FROM Student ORDER BY age
+2025-04-19T20:46:44.583 - SELECT * FROM Student ORDER BY age DESC
+2025-04-19T20:47:26.474 - SELECT * FROM Student LIMIT 2
+2025-04-20T16:58:08.494 - ALTER TABLE Student ADD marks INT, ADD grade VARCHAR(2) NOT NULL, ADD status VARCHAR(20) DEFAULT 'active';
+2025-04-20T17:53:05.520 - UPDATE Student SET marks = 99, grade = 'A' WHERE student_id = 1
+2025-04-20T17:55:57.908 - UPDATE Student SET marks = 82, grade = 'B' WHERE student_id = 3
+2025-04-20T17:56:17.512 - UPDATE Student SET marks = 93, grade = 'A' WHERE student_id = 4
+2025-04-20T17:56:45.427 - UPDATE Student SET marks = 70, grade = 'C' WHERE student_id = 4
+2025-04-20T17:57:08.631 - UPDATE Student SET marks = 92, grade = 'A' WHERE student_id = 5
+2025-04-20T17:57:27.646 - UPDATE Student SET marks = 82, grade = 'B' WHERE student_id = 6
+2025-04-20T17:58:14.813 - UPDATE Student SET marks = 72, grade = 'C' WHERE student_id = 5
+2025-04-20T21:55:23.597 - INSERT INTO Student (student_id, name, age, department, gpa, marks, grade) VALUES (?, ?, ?, ?, ?, ?, ?), (?, ?, ?, ?, ?, ?, ?)
+2025-04-20T22:03:20.257 - SELECT department, COUNT(*) FROM Student GROUP BY department
+2025-04-20T22:04:40.010 - SELECT department, COUNT(*) FROM Student GROUP BY department HAVING COUNT(*) < 2
+2025-04-20T22:06:01.841 - SELECT department, COUNT(*), AVG(marks) FROM Student GROUP BY department HAVING COUNT(*) < 2 AND AVG(marks) > 80
+2025-04-20T22:07:28.778 - SELECT department, COUNT(*), AVG(marks) FROM Student GROUP BY department HAVING COUNT(*) < 2 OR AVG(marks) > 80
+2025-04-20T22:07:37.603 - SELECT department, COUNT(*), AVG(marks) FROM Student GROUP BY department HAVING COUNT(*) < 2 OR AVG(marks) > 80
+2025-04-20T22:10:28.721 - SELECT COUNT(*), AVG(marks), MAX(marks), MIN(marks) FROM Student
+2025-04-20T22:15:20.774 - SELECT MAX(marks), MIN(marks) FROM Student
+2025-04-20T23:27:26.424 - SELECT MAX(marks), MIN(marks) FROM Student
+2025-04-21T00:02:33.977 - SELECT e.name AS employee, m.name AS manager FROM employees e INNER JOIN managers m ON e.manager_id = m.id
+2025-04-21T00:03:23.061 - SELECT e.name AS employee, e.manager_id, d.dept_name FROM employees e INNER JOIN departments d ON e.dept_id = d.id
+2025-04-21T00:04:00.641 - SELECT e.name AS employee, d.dept_name FROM employees e INNER JOIN departments d ON e.dept_id = d.id
+2025-04-21T00:07:15.767 - SELECT e.name AS employee, d.dept_name FROM employees e LEFT JOIN departments d ON e.dept_id = d.id
+2025-04-21T00:07:25.545 - SELECT e.name AS employee, d.dept_name FROM employees e RIGHT JOIN departments d ON e.dept_id = d.id
+2025-04-21T00:09:06.236 - SELECT d.dept_name, e.name AS employee FROM employees e RIGHT JOIN departments d ON e.dept_id = d.id
