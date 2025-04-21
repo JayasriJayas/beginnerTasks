@@ -12,7 +12,7 @@ public class SQLLogger {
         try (PrintWriter out = new PrintWriter(new FileWriter(LOG_FILE, true))) {
             out.println(LocalDateTime.now() + " - " + query);
         } catch (IOException e) {
-            System.err.println("Log error: " + e.getMessage());
+            System.out.println("Log error: " + e.getMessage());
         }
     }
 	

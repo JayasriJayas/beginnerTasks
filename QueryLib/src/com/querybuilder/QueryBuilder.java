@@ -5,7 +5,9 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.dialect.DatabaseDialect;
-//about final
+
+import exception.QueryException;
+
 public class QueryBuilder {
 	 private String table;
 	 private List<String> columns;
@@ -33,6 +35,7 @@ public class QueryBuilder {
 	 private boolean distinct;
 	 private String orderDirection;
 	 private DatabaseDialect dialect;
+	 private String unionClause;
 
 	 public QueryBuilder(DatabaseDialect dialect) {
 	    this.dialect = dialect;
@@ -130,7 +133,7 @@ public class QueryBuilder {
 	        this.table= table;
 	        this.columns = initIfNull(this.columns);
 	        this.columns = Arrays.asList(columns);
-	        this.useAllColumns = false; // <-- Add this line!
+	        this.useAllColumns = false;
 	        return this;
 	    }
 
@@ -242,6 +245,9 @@ public class QueryBuilder {
 	    	havingConditions.add(condition);
 	    	return this;
 	    }
+	    // need to add having for any and all
+	    //build clause
+	    
 	    public QueryBuilder innerJoin(String table, String condition) {
 	        this.joins = initIfNull(this.joins);
 	        joins.add("INNER JOIN " + table + " ON " + condition);
@@ -259,23 +265,24 @@ public class QueryBuilder {
 	        joins.add("RIGHT JOIN " + table + " ON " + condition);
 	        return this;
 	    }
-	  
 
-	    
 	    public String buildConditionClause(List<String> conditions, List<String> operators) {
-	        if (conditions.isEmpty()) return "";
+	        if (conditions == null) return "";
+	    
 
 	        StringBuilder clause = new StringBuilder(conditions.get(0));
 	        for (int i = 1; i < conditions.size(); i++) {
 	            clause.append(" ").append(operators.get(i - 1)).append(" ").append(conditions.get(i));
+	           
 	        }
+	      
 	        return clause.toString();
 	    }
 	    private <T> List<T> initIfNull(List<T> list) {
 	        return (list == null) ? new ArrayList<>() : list;
 	    }
 
- 	 public String build()
+ 	 public String build() throws QueryException
 	 {
 		 return dialect.buildQuery(this);
 	 }
@@ -285,27 +292,28 @@ public class QueryBuilder {
     public boolean getIfNotExists() { return ifNotExists; }
     public boolean getIsAlterTable() { return isAlterTable; }
     public boolean getIsDropTable() { return isDropTable; }
-    public List<String> getColumns() { return (columns == null) ? new ArrayList<>() : columns; }
-    public List<String> getPrimaryKeys() { return (primaryKeys == null) ? new ArrayList<>() : primaryKeys; }
-    public List<String> getForeignKeys() { return (foreignKeys == null) ? new ArrayList<>() : foreignKeys; }
-    public List<String> getValues() { return (values == null) ? new ArrayList<>() : values; }
-    public List<String> getSetClauses() { return (setClauses == null) ? new ArrayList<>() : setClauses; }
-    public List<String> getWhereConditions() { return (whereConditions == null) ? new ArrayList<>() : whereConditions; }
-    public List<String> getAlterTableClauses(){ return (alterTableClauses == null) ? new ArrayList<>() : alterTableClauses; } 
-    public List<String> getGroupByColumns() { return (groupByColumns == null) ? new ArrayList<>() : groupByColumns; }
-    public List<String> getHavingConditions() { return (havingConditions == null) ? new ArrayList<>() : havingConditions; }
-    public List<String> getOrderByColumns() { return (orderByColumns == null) ? new ArrayList<>() : orderByColumns; }
+    public List<String> getColumns() { return columns; }
+    public List<String> getPrimaryKeys() { return  primaryKeys; }
+    public List<String> getForeignKeys() { return foreignKeys; }
+    public List<String> getValues() { return values; }
+    public List<String> getSetClauses() { return  setClauses; }
+    public List<String> getWhereConditions() { return whereConditions; }
+    public List<String> getAlterTableClauses(){ return  alterTableClauses; } 
+    public List<String> getGroupByColumns() { return  groupByColumns; }
+    public List<String> getHavingConditions() { return  havingConditions; }
+    public List<String> getOrderByColumns() { return orderByColumns; }
     public Integer getLimit() { return limit; }
     public boolean isDistinct() { return distinct; }
     public String getOrderDirection() { return orderDirection; }
     public boolean getUseAllColumns() { return useAllColumns; }
-    public List<String[]> getValueRows() { return (valueRows == null) ? new ArrayList<>() : valueRows; }
-    public List<String> getParameters() { return (parameters == null) ? new ArrayList<>() : parameters; }
-    public List<String> getWhereOperators() { return (whereOperators == null) ? new ArrayList<>() : whereOperators; }
-    public List<String> getHavingOperators(){ return (havingOperators == null) ? new ArrayList<>() : havingOperators; }
-    public List<String> getJoins() { return (joins == null) ? new ArrayList<>() : joins; }
+    public List<String[]> getValueRows() { return valueRows; }
+    public List<String> getParameters() { return parameters; }
+    public List<String> getWhereOperators() { return  whereOperators; }
+    public List<String> getHavingOperators(){ return  havingOperators; }
+    public List<String> getJoins() { return  joins; }
 
 
 
 
 }
+

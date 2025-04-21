@@ -5,14 +5,15 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import exception.QueryException;
 import utils.SQLLogger;
 
 public class QueryExecutor {
 
     private static final Logger LOGGER = Logger.getLogger(QueryExecutor.class.getName());
 
-    // Method for queries without parameters (CREATE, SELECT *, etc.)
-    public static void execute(String query) {
+ 
+    public static void execute(String query) throws QueryException {
         try (Connection conn = DBConnector.getConnection();
              Statement stmt = conn.createStatement()) {
 
@@ -28,12 +29,12 @@ public class QueryExecutor {
             SQLLogger.log(query);
 
         } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "Execution failed: " + e.getMessage(), e);
+            throw new QueryException("Execution failed");
         }
     }
 
-    // Overloaded method for queries with parameter values (INSERT, UPDATE, etc.)
-    public static void execute(String query, List<String> parameters) {
+   
+    public static void execute(String query, List<String> parameters) throws QueryException {
         try (Connection conn = DBConnector.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(query)) {
 
@@ -54,11 +55,10 @@ public class QueryExecutor {
             SQLLogger.log(query);
 
         } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "Execution with parameters failed: " + e.getMessage(), e);
+        	throw new QueryException("Execution with parameters failed: " );
         }
     }
 
-    // Utility method to print ResultSet data
     private static void printResultSet(ResultSet rs) throws SQLException {
         ResultSetMetaData meta = rs.getMetaData();
         int columnCount = meta.getColumnCount();

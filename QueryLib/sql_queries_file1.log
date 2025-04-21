@@ -31,3 +31,20 @@
 2025-04-21T00:07:15.767 - SELECT e.name AS employee, d.dept_name FROM employees e LEFT JOIN departments d ON e.dept_id = d.id
 2025-04-21T00:07:25.545 - SELECT e.name AS employee, d.dept_name FROM employees e RIGHT JOIN departments d ON e.dept_id = d.id
 2025-04-21T00:09:06.236 - SELECT d.dept_name, e.name AS employee FROM employees e RIGHT JOIN departments d ON e.dept_id = d.id
+2025-04-21T11:02:02.513 - SELECT d.dept_name, e.name AS employee FROM employees e RIGHT JOIN departments d ON e.dept_id = d.id
+2025-04-21T11:02:02.543 - SELECT d.dept_name, e.name AS employee FROM employees e LEFT JOIN departments d ON e.dept_id = d.id
+2025-04-21T11:03:37.775 - SELECT d.dept_name, e.name AS employee FROM employees e RIGHT JOIN departments d ON e.dept_id = d.id
+2025-04-21T11:03:37.802 - SELECT d.dept_name, e.name AS employee FROM employees e LEFT JOIN departments d ON e.dept_id = d.id
+2025-04-21T11:51:29.568 - CREATE TABLE IF NOT EXISTS Customers (customer_id INT NOT NULL AUTO_INCREMENT, name VARCHAR(100) NOT NULL, email VARCHAR(100), PRIMARY KEY (customer_id));
+2025-04-21T11:51:55.172 - CREATE TABLE Orders (order_id INT NOT NULL AUTO_INCREMENT, customer_id INT NOT NULL, order_date DATE NOT NULL, PRIMARY KEY (order_id), FOREIGN KEY (customer_id) REFERENCES Customers(customer_id));
+2025-04-21T11:57:36.168 - SELECT * FROM Student
+2025-04-21T12:29:43.940 - SELECT * FROM Student
+2025-04-21T12:31:25.125 - SELECT * FROM Student WHERE age > 18
+2025-04-21T12:31:43.291 - SELECT * FROM Student WHERE age > 24
+2025-04-21T12:31:50.292 - SELECT * FROM Student WHERE age > 29
+2025-04-21T12:32:02.450 - SELECT * FROM Student WHERE age > 21
+2025-04-21T12:37:17.888 - SELECT * FROM Student WHERE age > 21
+2025-04-21T12:54:59.765 - SELECT * FROM Student WHERE age > 21
+2025-04-21T12:55:30.437 - SELECT * FROM Student WHERE age > 21
+2025-04-21T12:56:16.470 - SELECT * FROM Student WHERE age > 21 AND department = 'CSE'
+2025-04-21T12:57:16.395 - SELECT * FROM Student WHERE age > 21 AND department = 'CSE'

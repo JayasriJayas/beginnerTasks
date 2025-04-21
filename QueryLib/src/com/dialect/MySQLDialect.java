@@ -2,6 +2,8 @@ package com.dialect;
 
 import com.querybuilder.QueryBuilder;
 
+import exception.QueryException;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -10,52 +12,49 @@ import java.util.stream.Collectors;
 public class MySQLDialect implements DatabaseDialect {
 
     @Override
-    public String buildQuery(QueryBuilder qb) {
+    public String buildQuery(QueryBuilder qb) throws QueryException {
         StringBuilder sql = new StringBuilder();
         
         switch (qb.getQueryType()) {
         
             case "SELECT":
                 sql.append("SELECT ");
-                if (!qb.getColumns().isEmpty()) {
+                if (qb.getColumns()!= null) {
                     sql.append(String.join(", ", qb.getColumns()));
                 } else {
                     sql.append("*");
                 }
                 sql.append(" FROM ").append(qb.getTable()).append(" ");
-
-                for (String join : qb.getJoins()) {
-                    sql.append(join).append(" ");
+                
+                if (qb.getJoins() != null) {
+	                for (String join : qb.getJoins()) {
+	                    sql.append(join).append(" ");
+	                }
                 }
-
                 break;
 
-	            case "INSERT":
-	                sql.append("INSERT INTO ").append(qb.getTable());
-	
-	                // Check if columns are provided (if not using all columns)
-	                if (!qb.getUseAllColumns() && !qb.getColumns().isEmpty()) {
-	                    sql.append(" (").append(String.join(", ", qb.getColumns())).append(")");
-	                }
-	
-	                // Check if there are value rows to insert
-	                if (!qb.getValueRows().isEmpty()) {
-	                    sql.append(" VALUES ");
-	
-	                    List<String> rowPlaceholders = new ArrayList<>();
-	                    for (String[] row : qb.getValueRows()) {  // Change List<String> to String[]
-	                        // For each row, map each value to a placeholder ('?')
-	                        String placeholders = Arrays.stream(row)  // Use Arrays.stream() to process the String[] array
-	                                                     .map(v -> "?")
-	                                                     .collect(Collectors.joining(", "));
+            case "INSERT":
+	            sql.append("INSERT INTO ").append(qb.getTable());
+	      	 
+	            if (!qb.getUseAllColumns() && qb.getColumns() != null)                               
+	            {
+	                sql.append(" (").append(String.join(", ", qb.getColumns())).append(")");
+	            }
+	            if (qb.getValueRows() != null) {
+	                sql.append(" VALUES ");
+	                List<String> rowPlaceholders = new ArrayList<>();
+	                for (String[] row : qb.getValueRows()) {  
+	                        
+	                	String placeholders = Arrays.stream(row) 
+	                                                .map(v -> "?")
+	                                                .collect(Collectors.joining(", "));
 	                        rowPlaceholders.add("(" + placeholders + ")");
-	                    }
+	                 }
 	
-	                    // Join all rows together with commas
-	                    sql.append(String.join(", ", rowPlaceholders));
-	                }
+	                 sql.append(String.join(", ", rowPlaceholders));
+	              }
 	                
-	                break;
+	              break;
 
 
 
@@ -86,13 +85,13 @@ public class MySQLDialect implements DatabaseDialect {
                     sql.append(String.join(", ", qb.getColumns()));
                     
 
-                    if ( !qb.getPrimaryKeys().isEmpty()) {
+                    if ( qb.getPrimaryKeys() != null) {
                         sql.append(", PRIMARY KEY (")
                            .append(String.join(",", qb.getPrimaryKeys()))
                            .append(")");
                     }
 
-                    if (!qb.getForeignKeys().isEmpty()) {
+                    if (qb.getForeignKeys() != null) {
                         sql.append(", ");
                         sql.append(String.join(", ", qb.getForeignKeys()));
                     }
@@ -113,34 +112,33 @@ public class MySQLDialect implements DatabaseDialect {
                     sql.append(String.join(", ", qb.getAlterTableClauses())).append(";");
                 }
                 break;
+            default :
+            	throw new QueryException ("Not a valid query");
         }
 
-        // WHERE condition
-        if (!qb.getWhereConditions().isEmpty()) {
+        
+        if (qb.getWhereConditions()!= null) {
             String conditionClause = qb.buildConditionClause(qb.getWhereConditions(), qb.getWhereOperators());
             sql.append("WHERE ").append(conditionClause).append(" ");
         }
      
 
-        // ORDER BY condition
-        if (!qb.getOrderByColumns().isEmpty()) {
+        if (qb.getOrderByColumns() != null) {
             sql.append("ORDER BY ").append(String.join(", ", qb.getOrderByColumns())).append(" ");
             if (qb.getOrderDirection() != null) {
                 sql.append(qb.getOrderDirection());
             }
         }
 
-        // LIMIT condition
         if (qb.getLimit() > 0) {
             sql.append("LIMIT ").append(qb.getLimit()).append(" ");
         }
-     // GROUP BY clause
-        if (!qb.getGroupByColumns().isEmpty()) {
+
+        if (qb.getGroupByColumns() != null) {
             sql.append("GROUP BY ").append(String.join(", ", qb.getGroupByColumns())).append(" ");
         }
 
-        // HAVING clause
-        if (!qb.getHavingConditions().isEmpty()) {
+        if (qb.getHavingConditions()!=null) {
         	String conditionClause = qb.buildConditionClause(qb.getHavingConditions(), qb.getHavingOperators());
             sql.append("HAVING ").append(conditionClause).append(" ");
         }
