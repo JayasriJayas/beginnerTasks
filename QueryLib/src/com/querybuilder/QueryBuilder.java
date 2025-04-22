@@ -24,7 +24,11 @@ public class QueryBuilder {
 	 private List<String[]> valueRows;
 	 private List<String> whereOperators;
 	 private List<String> havingOperators;
-	 private List<String> joins;
+	 private List<String> joins; 
+	 private List<String> subSelectColumns;
+	 private List<String> subQueryFromClauses;
+	 private List<String> whereSubqueries;
+	 private String unionClause;
 	 private boolean isDropTable = false;
 	 private boolean useAllColumns = true;
 	 private boolean ifNotExists = false;
@@ -35,7 +39,7 @@ public class QueryBuilder {
 	 private boolean distinct;
 	 private String orderDirection;
 	 private DatabaseDialect dialect;
-	 private String unionClause;
+	
 
 	 public QueryBuilder(DatabaseDialect dialect) {
 	    this.dialect = dialect;
@@ -245,9 +249,18 @@ public class QueryBuilder {
 	    	havingConditions.add(condition);
 	    	return this;
 	    }
-	    // need to add having for any and all
-	    //build clause
-	    
+	    public QueryBuilder havingAny(String column, String subquery) {
+	        this.havingConditions = initIfNull(this.havingConditions);
+	        havingConditions.add(column + " = ANY (" + subquery + ")");
+	        return this;
+	    }
+
+	    public QueryBuilder havingAll(String column, String subquery) {
+	        this.havingConditions = initIfNull(this.havingConditions);
+	        havingConditions.add(column + " = ALL (" + subquery + ")");
+	        return this;
+	    }
+
 	    public QueryBuilder innerJoin(String table, String condition) {
 	        this.joins = initIfNull(this.joins);
 	        joins.add("INNER JOIN " + table + " ON " + condition);
@@ -265,6 +278,60 @@ public class QueryBuilder {
 	        joins.add("RIGHT JOIN " + table + " ON " + condition);
 	        return this;
 	    }
+	    public QueryBuilder distinct() {
+	        this.distinct = true;
+	        return this;
+	    }
+
+	    public QueryBuilder union(String query) {
+	        this.unionClause = "UNION " + query;
+	        return this;
+	    }
+	    public QueryBuilder unionAll(String query) {
+	        this.unionClause = "UNION ALL " + query;
+	        return this;
+	    }
+	    public QueryBuilder selectSubQuery(QueryBuilder subQuery, String alias) throws QueryException {
+	        this.subSelectColumns = initIfNull(this.subSelectColumns);
+	        subSelectColumns.add("(" + subQuery.build() + ") AS " + alias);
+	        return this;
+	    }
+
+	    public QueryBuilder fromSubQuery(QueryBuilder subQuery, String alias) throws QueryException {
+	        this.subQueryFromClauses = initIfNull(this.subQueryFromClauses);
+	        subQueryFromClauses.add("(" + subQuery.build() + ") AS " + alias);
+	        return this;
+	    }
+
+	    public QueryBuilder whereSubQuery(String condition, QueryBuilder subQuery) throws QueryException {
+	        this.whereConditions = initIfNull(this.whereConditions);
+	        whereConditions.add(condition + " (" + subQuery.build() + ")");
+	        return this;
+	    }
+	    public QueryBuilder havingSubQuery(String condition, QueryBuilder subQuery) throws QueryException {
+	        this.havingConditions = initIfNull(this.havingConditions);
+	        havingConditions.add(condition + " (" + subQuery.build() + ")");
+	        return this;
+	    }
+	    public QueryBuilder whereIn(String column, QueryBuilder subQuery) throws QueryException {
+	        this.whereConditions = initIfNull(this.whereConditions);
+	        whereConditions.add(column + " IN (" + subQuery.build() + ")");
+	        return this;
+	    }
+	    public QueryBuilder whereExists(QueryBuilder subQuery) throws QueryException {
+	        this.whereConditions = initIfNull(this.whereConditions);
+	        whereConditions.add("EXISTS (" + subQuery.build() + ")");
+	        return this;
+	    }
+	    public QueryBuilder whereNotExists(QueryBuilder subQuery) throws QueryException {
+	        this.whereConditions = initIfNull(this.whereConditions);
+	        whereConditions.add("NOT EXISTS (" + subQuery.build() + ")");
+	        return this;
+	    }
+
+
+
+
 
 	    public String buildConditionClause(List<String> conditions, List<String> operators) {
 	        if (conditions == null) return "";
@@ -311,9 +378,11 @@ public class QueryBuilder {
     public List<String> getWhereOperators() { return  whereOperators; }
     public List<String> getHavingOperators(){ return  havingOperators; }
     public List<String> getJoins() { return  joins; }
+    public String getUnionClause() { return unionClause; }
+    public List<String> getSubSelectColumns() { return subSelectColumns; }
+    public List<String> getSubQueryFromClauses() { return subQueryFromClauses; }
 
-
-
+    
 
 }
 

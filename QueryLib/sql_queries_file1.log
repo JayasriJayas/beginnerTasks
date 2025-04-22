@@ -48,3 +48,17 @@
 2025-04-21T12:55:30.437 - SELECT * FROM Student WHERE age > 21
 2025-04-21T12:56:16.470 - SELECT * FROM Student WHERE age > 21 AND department = 'CSE'
 2025-04-21T12:57:16.395 - SELECT * FROM Student WHERE age > 21 AND department = 'CSE'
+2025-04-21T14:51:41.380 - SELECT name FROM employees  UNION SELECT name FROM managers
+2025-04-21T14:52:09.626 - SELECT name FROM employees  UNION ALL SELECT name FROM managers
+2025-04-21T14:52:23.428 - SELECT DISTINCT name FROM employees
+2025-04-21T14:55:18.478 - SELECT name FROM Student
+2025-04-21T17:35:17.976 - SELECT * FROM Student WHERE marks >  (SELECT AVG(marks) FROM Student)
+2025-04-21T17:41:23.787 - SELECT *, avg_marks FROM (SELECT AVG(marks) AS avg_marks FROM Student) AS stats
+2025-04-21T17:43:05.146 - SELECT * FROM Student WHERE marks >  (SELECT AVG(marks) FROM Student)
+2025-04-22T10:48:52.654 - SELECT *, name FROM Student WHERE department IN (SELECT dept_name FROM departments)
+2025-04-22T10:50:07.813 - SELECT name FROM Student WHERE department IN (SELECT dept_name FROM departments)
+2025-04-22T10:50:08.383 - SELECT name FROM Student WHERE department IN (SELECT dept_name FROM departments)
+2025-04-22T10:52:20.502 - SELECT name FROM employees WHERE manager_id IN (SELECT id FROM managers)
+2025-04-22T10:57:18.277 - SELECT (SELECT id FROM departments d WHERE d.dept_name = Student.department) AS department_id FROM Student
+2025-04-22T11:14:04.038 - SELECT name FROM Student WHERE NOT EXISTS (SELECT 1 FROM employees e INNER JOIN departments d ON e.dept_id = d.id WHERE d.dept_name = Student.department)
+2025-04-22T11:17:55.282 - SELECT * FROM Student WHERE marks > (SELECT AVG(marks) FROM Student)

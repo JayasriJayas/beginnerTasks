@@ -12,13 +12,19 @@ import com.dialect.MySQLDialect;
 
 public class Runner {
 	public static void main(String[] args) throws QueryException {
+		QueryBuilder subQuery = new QueryBuilder(new MySQLDialect())
+				   .select()
+				   .aggregate("AVG", "marks")
+				    .from("Student");
+
 		QueryBuilder qb = new QueryBuilder(new MySQLDialect());
-		String query = qb.select("*")
-				.from("Student")
-				.where("age > 21")
-				.andWhere("department = 'CSE'")
-				.build();
-				
+		String query = qb
+				  .select("*")
+				    .from("Student")
+				    .whereSubQuery("marks >", subQuery)
+				    .build();
+
+
 
 
 

@@ -37,10 +37,9 @@ public class QueryExecutor {
     public static void execute(String query, List<String> parameters) throws QueryException {
         try (Connection conn = DBConnector.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(query)) {
-
-            // Set the parameters safely
+        	
             for (int i = 0; i < parameters.size(); i++) {
-                pstmt.setString(i + 1, parameters.get(i));  // Adjust this if you want to support multiple data types
+                pstmt.setString(i + 1, parameters.get(i));  
             }
 
             boolean isResultSet = pstmt.execute();

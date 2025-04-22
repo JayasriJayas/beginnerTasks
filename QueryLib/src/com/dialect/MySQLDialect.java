@@ -14,31 +14,58 @@ public class MySQLDialect implements DatabaseDialect {
     @Override
     public String buildQuery(QueryBuilder qb) throws QueryException {
         StringBuilder sql = new StringBuilder();
+        List<String> whereConditions = qb.getWhereConditions();
+        List<String> whereOperators = qb.getWhereOperators();
+        List<String> orderByColumns = qb.getOrderByColumns();
+        List<String> groupByColumns = qb.getGroupByColumns();
+        List<String> havingConditions = qb.getHavingConditions();
+        List<String> havingOperators = qb.getHavingOperators();
+        String unionClause = qb.getUnionClause();
+        String orderByDirection = qb.getOrderDirection();
+        int limit = qb.getLimit();
         
         switch (qb.getQueryType()) {
         
             case "SELECT":
+            	List<String> columns =qb.getColumns();
+            	List<String> joins = qb.getJoins();
+            	List<String> subSelects = qb.getSubSelectColumns();
+            	 List<String> subFromClauses = qb.getSubQueryFromClauses();
                 sql.append("SELECT ");
-                if (qb.getColumns()!= null) {
-                    sql.append(String.join(", ", qb.getColumns()));
+                if (qb.isDistinct()) {
+                    sql.append("DISTINCT ");
+                }
+                
+                if (subSelects != null && !subSelects.isEmpty()) {
+                    sql.append(String.join(", ", subSelects));
+                } else if (columns != null && !columns.isEmpty()) {
+                    sql.append(String.join(", ", columns));
                 } else {
                     sql.append("*");
                 }
-                sql.append(" FROM ").append(qb.getTable()).append(" ");
+
+               
+                if (subFromClauses != null && !subFromClauses.isEmpty()) {
+                    sql.append(" FROM ").append(String.join(", ", subFromClauses)).append(" ");
+                } else {
+                    sql.append(" FROM ").append(qb.getTable()).append(" ");
+                }
+
                 
-                if (qb.getJoins() != null) {
-	                for (String join : qb.getJoins()) {
+                if (joins!= null) {
+	                for (String join : joins) {
 	                    sql.append(join).append(" ");
 	                }
                 }
                 break;
 
             case "INSERT":
-	            sql.append("INSERT INTO ").append(qb.getTable());
+            	List<String> column =qb.getColumns();
+ 	            sql.append("INSERT INTO ").append(qb.getTable());
 	      	 
-	            if (!qb.getUseAllColumns() && qb.getColumns() != null)                               
+	            if (!qb.getUseAllColumns() && column  != null)                               
 	            {
-	                sql.append(" (").append(String.join(", ", qb.getColumns())).append(")");
+	                sql.append(" (").append(String.join(", ", column )).append(")");
 	            }
 	            if (qb.getValueRows() != null) {
 	                sql.append(" VALUES ");
@@ -74,6 +101,8 @@ public class MySQLDialect implements DatabaseDialect {
                 break;
 
             case "CREATE":
+            	List<String> primaryKeys = qb.getParameters();
+            	List<String> foreignKeys = qb.getForeignKeys();
                 if (qb.getIsCreateTable()) {
                     sql.append("CREATE TABLE");
                     if (qb.getIfNotExists()) {
@@ -85,15 +114,15 @@ public class MySQLDialect implements DatabaseDialect {
                     sql.append(String.join(", ", qb.getColumns()));
                     
 
-                    if ( qb.getPrimaryKeys() != null) {
+                    if (primaryKeys != null) {
                         sql.append(", PRIMARY KEY (")
-                           .append(String.join(",", qb.getPrimaryKeys()))
+                           .append(String.join(",", primaryKeys))
                            .append(")");
                     }
 
-                    if (qb.getForeignKeys() != null) {
+                    if (foreignKeys != null) {
                         sql.append(", ");
-                        sql.append(String.join(", ", qb.getForeignKeys()));
+                        sql.append(String.join(", ", foreignKeys));
                     }
 
                     sql.append(");");
@@ -117,30 +146,33 @@ public class MySQLDialect implements DatabaseDialect {
         }
 
         
-        if (qb.getWhereConditions()!= null) {
-            String conditionClause = qb.buildConditionClause(qb.getWhereConditions(), qb.getWhereOperators());
+        if (whereConditions!= null) {
+            String conditionClause = qb.buildConditionClause(whereConditions, whereOperators);
             sql.append("WHERE ").append(conditionClause).append(" ");
         }
      
 
-        if (qb.getOrderByColumns() != null) {
-            sql.append("ORDER BY ").append(String.join(", ", qb.getOrderByColumns())).append(" ");
-            if (qb.getOrderDirection() != null) {
-                sql.append(qb.getOrderDirection());
+        if (orderByColumns != null) {
+            sql.append("ORDER BY ").append(String.join(", ", orderByColumns)).append(" ");
+            if (orderByDirection != null) {
+                sql.append(orderByDirection );
             }
         }
 
-        if (qb.getLimit() > 0) {
-            sql.append("LIMIT ").append(qb.getLimit()).append(" ");
+        if (limit > 0) {
+            sql.append("LIMIT ").append(limit).append(" ");
         }
 
-        if (qb.getGroupByColumns() != null) {
-            sql.append("GROUP BY ").append(String.join(", ", qb.getGroupByColumns())).append(" ");
+        if (groupByColumns != null) {
+            sql.append("GROUP BY ").append(String.join(", ", groupByColumns)).append(" ");
         }
 
-        if (qb.getHavingConditions()!=null) {
-        	String conditionClause = qb.buildConditionClause(qb.getHavingConditions(), qb.getHavingOperators());
+        if (havingConditions!=null) {
+        	String conditionClause = qb.buildConditionClause(havingConditions, havingOperators);
             sql.append("HAVING ").append(conditionClause).append(" ");
+        }
+        if (unionClause != null) {
+            sql.append(" ").append(unionClause);
         }
 
 
