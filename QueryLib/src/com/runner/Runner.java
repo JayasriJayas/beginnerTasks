@@ -1,5 +1,6 @@
 package com.runner;
 
+import com.querybuilder.DBConnector;
 import com.querybuilder.QueryBuilder;
 import com.querybuilder.QueryExecutor;
 
@@ -19,7 +20,7 @@ public class Runner {
 
 		QueryBuilder qb = new QueryBuilder(new MySQLDialect());
 		String query = qb
-				  .select("*")
+				    .select("*")
 				    .from("Student")
 				    .whereSubQuery("marks >", subQuery)
 				    .build();
@@ -29,9 +30,9 @@ public class Runner {
 
 
 		System.out.println("Generated Query: " + query);
-		QueryExecutor.execute(query);
+		QueryExecutor qe = new QueryExecutor(DBConnector.getConnection());
+		qe.execute(query);
 		
-
 
     }
 

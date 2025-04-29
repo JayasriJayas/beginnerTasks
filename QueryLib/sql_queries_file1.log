@@ -5,7 +5,7 @@
 2025-04-19T19:11:16.232 - SELECT * FROM Student WHERE age > 18 AND department = 'CSE'
 2025-04-19T19:13:28.514 - DELETE FROM Student WHERE student_id = 2
 2025-04-19T20:43:37.792 - UPDATE Student SET age = 25 WHERE student_id = 1
-2025-04-19T20:44:46 - SELECT * FROM Student ORDER BY age
+2025-04-19T20:44:46.058 - SELECT * FROM Student ORDER BY age
 2025-04-19T20:46:44.583 - SELECT * FROM Student ORDER BY age DESC
 2025-04-19T20:47:26.474 - SELECT * FROM Student LIMIT 2
 2025-04-20T16:58:08.494 - ALTER TABLE Student ADD marks INT, ADD grade VARCHAR(2) NOT NULL, ADD status VARCHAR(20) DEFAULT 'active';
@@ -62,3 +62,4 @@
 2025-04-22T10:57:18.277 - SELECT (SELECT id FROM departments d WHERE d.dept_name = Student.department) AS department_id FROM Student
 2025-04-22T11:14:04.038 - SELECT name FROM Student WHERE NOT EXISTS (SELECT 1 FROM employees e INNER JOIN departments d ON e.dept_id = d.id WHERE d.dept_name = Student.department)
 2025-04-22T11:17:55.282 - SELECT * FROM Student WHERE marks > (SELECT AVG(marks) FROM Student)
+2025-04-29T10:21:57.515 - SELECT * FROM Student WHERE marks > (SELECT AVG(marks) FROM Student)
