@@ -71,14 +71,5 @@ public class Branch {
         this.active = active;
     }
 
-//    @Override
-//    public String toString() {
-//        return "Branch{" +
-//                "id=" + id +
-//                ", branchName='" + branchName + '\'' +
-//                ", branchCode='" + branchCode + '\'' +
-//                ", city='" + city + '\'' +
-//                '}';
-//    }
 }
 

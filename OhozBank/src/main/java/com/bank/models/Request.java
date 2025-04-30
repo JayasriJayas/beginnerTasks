@@ -2,7 +2,7 @@ package com.bank.models;
 import java.time.LocalDate;
 
 public class Request {
-    private int id;
+	private int id;
     private String username;
     private String password;
     private String email;
@@ -23,33 +23,135 @@ public class Request {
     private Integer processedBy; 
     private LocalDate processedDate;
 
-    public Request() {
-        this.requestDate = LocalDate.now();
-        this.status = "PENDING";
-    }
-    public User toUser() {
-        User user = new User();
-        user.setUsername(this.username);
-        user.setPassword(this.password);
-        user.setEmail(this.email);
-        user.setPhone(this.phone);
-        user.setGender(this.gender);
-        user.setDob(this.dob);
-        user.setAddress(this.address);
-        user.setMaritalStatus(this.maritalStatus);
-        user.setAadharNo(this.aadharNo);
-        user.setPanNo(this.panNo);
-        user.setBranchId(this.branchId);
-        user.setBranchName(this.branchName);
-        user.setOccupation(this.occupation);
-        user.setAnnualIncome(this.annualIncome);
-        user.setRoleId(3); // Default role ID for customers
-        user.setCreatedDate(LocalDate.now());
-        user.setActive(true);
-        return user;
-    }
+   
 
 
+	 public Request() {
+	        this.requestDate = LocalDate.now();
+	        this.status = "PENDING";
+	    }
+
+    public int getId() {
+		return id;
+	}
+	public void setId(int id) {
+		this.id = id;
+	}
+	public String getUsername() {
+		return username;
+	}
+	public void setUsername(String username) {
+		this.username = username;
+	}
+	public String getPassword() {
+		return password;
+	}
+	public void setPassword(String password) {
+		this.password = password;
+	}
+	public String getEmail() {
+		return email;
+	}
+	public void setEmail(String email) {
+		this.email = email;
+	}
+	public String getAddress() {
+		return address;
+	}
+	public void setAddress(String address) {
+		this.address = address;
+	}
+	public String getPhone() {
+		return phone;
+	}
+	public void setPhone(String phone) {
+		this.phone = phone;
+	}
+	public LocalDate getDob() {
+		return dob;
+	}
+	public void setDob(LocalDate dob) {
+		this.dob = dob;
+	}
+	public String getGender() {
+		return gender;
+	}
+	public void setGender(String gender) {
+		this.gender = gender;
+	}
+	public String getAadharNo() {
+		return aadharNo;
+	}
+	public void setAadharNo(String aadharNo) {
+		this.aadharNo = aadharNo;
+	}
+	public String getPanNo() {
+		return panNo;
+	}
+	public void setPanNo(String panNo) {
+		this.panNo = panNo;
+	}
+	public String getMaritalStatus() {
+		return maritalStatus;
+	}
+	public void setMaritalStatus(String maritalStatus) {
+		this.maritalStatus = maritalStatus;
+	}
+	public String getOccupation() {
+		return occupation;
+	}
+	public void setOccupation(String occupation) {
+		this.occupation = occupation;
+	}
+	public double getAnnualIncome() {
+		return annualIncome;
+	}
+	public void setAnnualIncome(double annualIncome) {
+		this.annualIncome = annualIncome;
+	}
+	public int getBranchId() {
+		return branchId;
+	}
+	public void setBranchId(int branchId) {
+		this.branchId = branchId;
+	}
+	public String getBranchName() {
+		return branchName;
+	}
+	public void setBranchName(String branchName) {
+		this.branchName = branchName;
+	}
+	public LocalDate getRequestDate() {
+		return requestDate;
+	}
+	public void setRequestDate(LocalDate requestDate) {
+		this.requestDate = requestDate;
+	}
+	public String getStatus() {
+		return status;
+	}
+	public void setStatus(String status) {
+		this.status = status;
+	}
+	public String getRejectionReason() {
+		return rejectionReason;
+	}
+	public void setRejectionReason(String rejectionReason) {
+		this.rejectionReason = rejectionReason;
+	}
+	public Integer getProcessedBy() {
+		return processedBy;
+	}
+	public void setProcessedBy(Integer processedBy) {
+		this.processedBy = processedBy;
+	}
+	public LocalDate getProcessedDate() {
+		return processedDate;
+	}
+	public void setProcessedDate(LocalDate processedDate) {
+		this.processedDate = processedDate;
+	}
+	
     
 
 }

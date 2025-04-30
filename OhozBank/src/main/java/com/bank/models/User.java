@@ -29,7 +29,6 @@ public class User {
         this.active = true;
     }
 
-    // Getters and setters for all fields
     public String getUsername() {
         return username;
     }
@@ -181,17 +180,4 @@ public class User {
   		this.modifiedBy = modifiedBy;
   	}
 
-
-//    @Override
-//    public String toString() {
-//        return "User{" +
-//                "username='" + username + '\'' +
-//                ", email='" + email + '\'' +
-//                ", phone='" + phone + '\'' +
-//                ", branchName='" + branchName + '\'' +
-//                ", roleId=" + roleId +
-//                ", createdDate=" + createdDate +
-//                ", active=" + active +
-//                '}';
-//    }
 }

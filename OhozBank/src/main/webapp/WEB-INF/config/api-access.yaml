@@ -1,0 +1,20 @@
+routes:
+  - path: /signup
+    method: POST
+    role: PUBLIC
+
+  - path: /login
+    method: POST
+    role: PUBLIC
+
+  - path: /approve
+    method: POST
+    role: ADMIN
+
+  - path: /dashboard
+    method: GET
+    role: USER
+
+  - path: /requests
+    method: GET
+    role: SUPER_ADMIN

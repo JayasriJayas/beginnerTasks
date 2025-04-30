@@ -7,6 +7,7 @@ import java.util.List;
 public interface UserDAO {
      
     int addUser(User user);
+    User authenticateUser(String username, String password);
     
 //    boolean updateUser(User user);
 //   
@@ -16,7 +17,7 @@ public interface UserDAO {
 //    
 //    User getUserByEmail(String email);
 //    
-//    User authenticateUser(String username, String password);
+   
 //    
 //    boolean changePassword(int userId, String newPassword);
 //

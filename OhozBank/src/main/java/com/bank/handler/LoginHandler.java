@@ -1,116 +1,68 @@
-//package com.bank.handler;
-//
-//
-//import com.bank.dao.UserDAO;
-//import com.bank.dao.impl.UserDAOImpl;
-//import com.bank.model.User;
-//import com.bank.util.ValidationUtil;
-//
-//import java.util.HashMap;
-//import java.util.Map;
-//import java.util.logging.Level;
-//import java.util.logging.Logger;
-//
-///**
-// * Handler for login-related business logic.
-// */
-//public class LoginHandler {
-//    private static final Logger LOGGER = Logger.getLogger(LoginHandler.class.getName());
-//    private final UserDAO userDAO;
-//
-//    /**
-//     * Constructor initializes the UserDAO
-//     */
-//    public LoginHandler() {
-//        this.userDAO = new UserDAOImpl();
-//    }
-//
-//    /**
-//     * Constructor with dependency injection for testing
-//     * @param userDAO UserDAO implementation
-//     */
-//    public LoginHandler(UserDAO userDAO) {
-//        this.userDAO = userDAO;
-//    }
-//
-//    /**
-//     * Authenticates a user with username and password
-//     * @param username Username to authenticate
-//     * @param password Password to verify
-//     * @return Map containing authentication result and user object if successful
-//     */
-//    public Map<String, Object> authenticateUser(String username, String password) {
-//        Map<String, Object> result = new HashMap<>();
-//        
-//        // Validate input
-//        if (username == null || username.trim().isEmpty()) {
-//            result.put("success", false);
-//            result.put("message", "Username cannot be empty");
-//            return result;
-//        }
-//        
-//        if (password == null || password.trim().isEmpty()) {
-//            result.put("success", false);
-//            result.put("message", "Password cannot be empty");
-//            return result;
-//        }
-//        
-//        try {
-//            // Attempt to authenticate the user
-//            User user = userDAO.authenticateUser(username, password);
-//            
-//            if (user != null) {
-//                result.put("success", true);
-//                result.put("user", user);
-//                result.put("message", "Login successful");
-//                LOGGER.info("User authenticated successfully: " + username);
-//            } else {
-//                result.put("success", false);
-//                result.put("message", "Invalid username or password");
-//                LOGGER.info("Failed login attempt for username: " + username);
-//            }
-//        } catch (Exception e) {
-//            LOGGER.log(Level.SEVERE, "Error during authentication for user: " + username, e);
-//            result.put("success", false);
-//            result.put("message", "System error during login. Please try again later.");
-//        }
-//        
-//        return result;
-//    }
-//
-//    /**
-//     * Gets the dashboard URL based on user role
-//     * @param user User object
-//     * @return URL of the appropriate dashboard for the user's role
-//     */
-//    public String getDashboardURLByRole(User user) {
-//        if (user == null) {
-//            return "login.jsp";
-//        }
-//        
-//        switch (user.getRoleId()) {
-//            case 1: // Super Admin
-//                return "dashboard/superadmin.jsp";
-//            case 2: // Admin
-//                return "dashboard/admin.jsp";
-//            case 3: // Customer
-//                return "dashboard/user.jsp";
-//            default:
-//                return "login.jsp";
-//        }
-//    }
-//
-//    /**
-//     * Logs a user out by updating their last login time
-//     * @param userId User ID
-//     * @return true if successful, false if failed
-//     */
-//    public boolean logoutUser(int userId) {
-//        try {
-//            return userDAO.updateLastLogin(userId);
-//        } catch (Exception e) {
-//            LOGGER.log(Level.SEVERE, "Error during logout for user ID: " + userId, e);
-//            return false;
-//        }
-//    }
-//}
+package com.bank.handler;
+
+import com.bank.dao.UserDAO;
+import com.bank.dao.impl.UserDAOImpl;
+import com.bank.enums.UserRole;
+import com.bank.models.User;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import java.io.PrintWriter;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+public class LoginHandler {
+
+    private static final Logger LOGGER = Logger.getLogger(LoginHandler.class.getName());
+    private final UserDAO userDAO;
+
+    public LoginHandler() {
+        this.userDAO = new UserDAOImpl();
+    }
+
+    public void handleLogin(HttpServletRequest req, HttpServletResponse res) {
+        try {
+            String username = req.getParameter("username");
+            String password = req.getParameter("password");
+
+            PrintWriter out = res.getWriter();
+            res.setContentType("text/html");
+
+            if (username == null || username.trim().isEmpty() ||
+                password == null || password.trim().isEmpty()) {
+                out.println("Username and password must not be empty.");
+                return;
+            }
+
+            User user = userDAO.authenticateUser(username, password);
+            if (user != null) {
+                UserRole role = getRoleById(user.getRoleId()); // Convert int to enum
+                HttpSession session = req.getSession();
+                session.setAttribute("username", user.getUsername());
+                session.setAttribute("role", role.name()); // Store enum name for filter use
+
+                LOGGER.info("User " + username + " logged in as " + role);
+                res.sendRedirect("dashboard");
+            } else {
+                out.println("Invalid username or password, or account not approved.");
+            }
+
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Login error", e);
+            try {
+                res.getWriter().println("System error. Please try again later.");
+            } catch (Exception ignored) {}
+        }
+    }
+
+    private UserRole getRoleById(int roleId) {
+        switch (roleId) {
+            case 1: return UserRole.SUPER_ADMIN;
+            case 2: return UserRole.ADMIN;
+            case 3: return UserRole.USER;
+            default: return UserRole.PUBLIC;
+        }
+    }
+}

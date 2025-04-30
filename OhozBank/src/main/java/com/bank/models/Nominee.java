@@ -25,19 +25,6 @@ public class Nominee {
         this.active = true;
     }
 
-    
-    
-//
-//	public Nominee(int userId, String name, String relation, double sharePercentage) {
-//        this.userId = userId;
-//        this.name = name;
-//        this.relation = relation;
-//        this.sharePercentage = sharePercentage;
-//        this.createdDate = new Date();
-//        this.active = true;
-//    }
-
-    // Getters and Setters
     public long getAccountId() {
         return accountId;
     }
@@ -127,15 +114,4 @@ public class Nominee {
 		this.modifiedBy = modifiedBy;
 	}
 
-
-//    @Override
-//    public String toString() {
-//        return "Nominee{" +
-//                "id=" + accountId +
-//                ", userId=" + userId +
-//                ", name='" + name + '\'' +
-//                ", relation='" + relation + '\'' +
-//                ", sharePercentage=" + sharePercentage +
-//                '}';
-//    }
 }

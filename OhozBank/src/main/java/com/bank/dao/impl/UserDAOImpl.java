@@ -11,6 +11,7 @@ import com.dialect.MySQLDialect;
 import exception.QueryException;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -124,6 +125,33 @@ public class UserDAOImpl implements UserDAO {
             return -1;
         }
     }
+
+@Override
+public User authenticateUser(String username, String password) {
+    QueryBuilder qb = new QueryBuilder(new MySQLDialect());
+    qb.select("*").from("users")
+      .where("username = '" + username + "'")
+      .andWhere("password = '" + password + "'")
+      .andWhere("active = true");
+
+    try (Connection conn = DBConnectionPool.getInstance().getConnection();
+         PreparedStatement stmt = conn.prepareStatement(qb.build());
+    		ResultSet rs = stmt.executeQuery()) {
+
+        if (rs.next()) {
+            User user = new User();
+            user.setUsername(rs.getString("username"));
+            user.setEmail(rs.getString("email"));
+            user.setPhone(rs.getString("phone"));
+            user.setRoleId(rs.getInt("roleId"));
+            // Add other fields as needed
+            return user;
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return null;
+}
 }
 
 

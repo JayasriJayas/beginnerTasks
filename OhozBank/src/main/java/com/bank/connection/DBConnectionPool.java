@@ -25,7 +25,6 @@ public class DBConnectionPool {
         dataSource = new org.apache.tomcat.jdbc.pool.DataSource(p);
     }
 
-    // Inner static class responsible for holding the Singleton instance
     private static class SingletonHelper {
         private static final DBConnectionPool INSTANCE = new DBConnectionPool();
     }

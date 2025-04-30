@@ -13,5 +13,7 @@
 	<classpathentry kind="lib" path="/home/jaya-pt7819/git/repository/QueryLib.jar"/>
 	<classpathentry kind="lib" path="/home/jaya-pt7819/Downloads/tomcat-jdbc-9.0.87.jar"/>
 	<classpathentry kind="lib" path="/home/jaya-pt7819/Downloads/apache-tomcat-9.0.100/bin/tomcat-juli.jar"/>
+	<classpathentry kind="lib" path="/home/jaya-pt7819/Downloads/snakeyaml-1.33.jar"/>
+	<classpathentry kind="lib" path="/home/jaya-pt7819/Downloads/jbcrypt-0.4.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>
