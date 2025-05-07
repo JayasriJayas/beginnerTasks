@@ -4,3 +4,4 @@
 2025-04-29T14:58:49.765 - INSERT INTO users (username, password, email, phone, gender, dob, address, marital_status, aadhar_no, pan_no, branch_id, occupation, annual_income, role_id, created_date, active) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 2025-04-29T15:24:41.695 - SELECT * FROM Student WHERE marks > (SELECT AVG(marks) FROM Student)
 2025-04-29T16:12:02.145 - INSERT INTO users (username, password, email, phone, gender, dob, address, marital_status, aadhar_no, pan_no, branch_id, occupation, annual_income, role_id, created_date, active) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2025-04-30T17:02:27.113 - INSERT INTO users (username, password, email, phone, gender, dob, address, marital_status, aadhar_no, pan_no, branch_id, occupation, annual_income, role_id, created_date, active) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)

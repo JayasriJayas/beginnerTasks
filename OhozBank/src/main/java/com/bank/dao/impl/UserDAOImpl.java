@@ -78,27 +78,6 @@ public class UserDAOImpl implements UserDAO {
                     Timestamp.valueOf(user.getCreatedDate().atStartOfDay()).toString(),
                     String.valueOf(user.isActive())
                 ).build();
-//                String query = queryBuilder.insertInto("Student",
-//                	    "STUDENT_ID", 
-//                	    "NAME", 
-//                	    "AGE", 
-//                	    "DEPARTMENT", 
-//                	    "GPA", 
-//                	    "marks", 
-//                	    "grade", 
-//                	    "status")
-//                	.values (
-//                	    "101", 
-//                	    "Alice Johnson", 
-//                	    "21", 
-//                	    "Computer Science", 
-//                	    "8.5", 
-//                	    "430", 
-//                	    "A", 
-//                	    "active"
-//                	)
-//                .build();
-
            
             System.out.println("Executing Query: " + query);  // Log the final query
 

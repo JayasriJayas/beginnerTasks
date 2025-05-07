@@ -1,7 +1,6 @@
 package com.bank.dao;
 
 import com.bank.models.Request;
-
 import java.util.List;
 
 public interface RequestDAO {

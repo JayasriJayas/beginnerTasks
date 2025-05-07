@@ -23,7 +23,7 @@ public class QueryExecutor {
         this.conn = connection;
     }
 
-    public void execute(String query) throws QueryException {
+    public int execute(String query) throws QueryException {
         try (Statement stmt = conn.createStatement()) {
 
             boolean isResultSet = stmt.execute(query);
@@ -33,6 +33,7 @@ public class QueryExecutor {
             } else {
                 int rowsAffected = stmt.getUpdateCount();
                 LOGGER.info("Rows affected: " + rowsAffected);
+                return rowsAffected;
             }
 
             SQLLogger.log(query);
@@ -40,9 +41,10 @@ public class QueryExecutor {
         } catch (SQLException e) {
             throw new QueryException("Execution failed");
         }
+        return 0;
     }
 
-    public void execute(String query, List<Object> parameters) throws QueryException {
+    public int execute(String query, List<Object> parameters) throws QueryException {
         try (PreparedStatement pstmt = conn.prepareStatement(query)) {
         	
        
@@ -75,13 +77,18 @@ public class QueryExecutor {
             } else {
                 int rowsAffected = pstmt.getUpdateCount();
                 LOGGER.info("Rows affected: " + rowsAffected);
+                return rowsAffected;
             }
 
             SQLLogger.log(query);
 
-        } catch (SQLException e) {
-            throw new QueryException("Execution with parameters failed");
+        }catch (SQLException e) {
+            
+            e.printStackTrace(); 
+            throw new QueryException("Execution with parameters failed: " + e.getMessage());
         }
+        return 0;
+
     }
     // need to check
     public void batchExecute(List<String> queries) throws QueryException {

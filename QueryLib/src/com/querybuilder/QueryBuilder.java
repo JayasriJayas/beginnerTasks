@@ -20,8 +20,8 @@ public class QueryBuilder {
 	 private List<String> whereConditions;
 	 private List<String> groupByColumns;
 	 private List<String> havingConditions;
-	 private List<String> parameters;
-	 private List<String[]> valueRows;
+	 private List<Object> parameters;
+	 private List<Object[]> valueRows;
 	 private List<String> whereOperators;
 	 private List<String> havingOperators;
 	 private List<String> joins; 
@@ -141,7 +141,7 @@ public class QueryBuilder {
 	        return this;
 	    }
 
-	    public QueryBuilder values(String... values) {
+	    public QueryBuilder values(Object... values) {
 	    	this.valueRows = initIfNull(this.valueRows);
 	        valueRows.add(values);
 	        this.parameters = initIfNull(this.parameters);
@@ -373,8 +373,8 @@ public class QueryBuilder {
     public boolean isDistinct() { return distinct; }
     public String getOrderDirection() { return orderDirection; }
     public boolean getUseAllColumns() { return useAllColumns; }
-    public List<String[]> getValueRows() { return valueRows; }
-    public List<String> getParameters() { return parameters; }
+    public List<Object[]> getValueRows() { return valueRows; }
+    public List<Object> getParameters() { return parameters; }
     public List<String> getWhereOperators() { return  whereOperators; }
     public List<String> getHavingOperators(){ return  havingOperators; }
     public List<String> getJoins() { return  joins; }

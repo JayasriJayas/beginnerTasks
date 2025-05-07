@@ -63,3 +63,4 @@
 2025-04-22T11:14:04.038 - SELECT name FROM Student WHERE NOT EXISTS (SELECT 1 FROM employees e INNER JOIN departments d ON e.dept_id = d.id WHERE d.dept_name = Student.department)
 2025-04-22T11:17:55.282 - SELECT * FROM Student WHERE marks > (SELECT AVG(marks) FROM Student)
 2025-04-29T10:21:57.515 - SELECT * FROM Student WHERE marks > (SELECT AVG(marks) FROM Student)
+2025-05-06T12:32:38.857 - INSERT INTO Student (STUDENT_ID, NAME, AGE, grade) VALUES (?, ?, ?, ?), (?, ?, ?, ?)

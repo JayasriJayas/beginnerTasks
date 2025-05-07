@@ -70,7 +70,7 @@ public class MySQLDialect implements DatabaseDialect {
 	            if (qb.getValueRows() != null) {
 	                sql.append(" VALUES ");
 	                List<String> rowPlaceholders = new ArrayList<>();
-	                for (String[] row : qb.getValueRows()) {  
+	                for (Object[] row : qb.getValueRows()) {  
 	                        
 	                	String placeholders = Arrays.stream(row) 
 	                                                .map(v -> "?")
@@ -101,7 +101,7 @@ public class MySQLDialect implements DatabaseDialect {
                 break;
 
             case "CREATE":
-            	List<String> primaryKeys = qb.getParameters();
+            	List<Object> primaryKeys = qb.getParameters();
             	List<String> foreignKeys = qb.getForeignKeys();
                 if (qb.getIsCreateTable()) {
                     sql.append("CREATE TABLE");
@@ -116,9 +116,12 @@ public class MySQLDialect implements DatabaseDialect {
 
                     if (primaryKeys != null) {
                         sql.append(", PRIMARY KEY (")
-                           .append(String.join(",", primaryKeys))
+                           .append(primaryKeys.stream()
+                                              .map(String::valueOf)
+                                              .collect(Collectors.joining(", ")))
                            .append(")");
                     }
+
 
                     if (foreignKeys != null) {
                         sql.append(", ");

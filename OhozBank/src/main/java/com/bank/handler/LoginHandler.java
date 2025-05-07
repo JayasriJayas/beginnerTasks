@@ -41,10 +41,26 @@ public class LoginHandler {
                 UserRole role = getRoleById(user.getRoleId()); // Convert int to enum
                 HttpSession session = req.getSession();
                 session.setAttribute("username", user.getUsername());
-                session.setAttribute("role", role.name()); // Store enum name for filter use
+
+                // ✅ Use correct attribute name as expected by ControllerServlet
+                session.setAttribute("userRole", role.name());
 
                 LOGGER.info("User " + username + " logged in as " + role);
-                res.sendRedirect("dashboard");
+
+                // ✅ Redirect based on role
+                switch (role) {
+                    case USER:
+                        res.sendRedirect("user/dashboard");
+                        break;
+                    case ADMIN:
+                        res.sendRedirect("admin/dashboard");
+                        break;
+                    case SUPER_ADMIN:
+                        res.sendRedirect("superadmin/dashboard");
+                        break;
+                    default:
+                        res.sendRedirect("login.jsp?error=Unauthorized role");
+                }
             } else {
                 out.println("Invalid username or password, or account not approved.");
             }
