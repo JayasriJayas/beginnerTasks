@@ -1,5 +1,7 @@
 package com.bank.servlet;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
@@ -22,18 +24,12 @@ public class ControllerServlet extends HttpServlet {
 
     @Override
     public void init() throws ServletException {
-        // Load routes when the servlet initializes
-        loadRoutes();
-    }
-
-    private void loadRoutes() {
         try {
+            String realPath = getServletContext().getRealPath("/WEB-INF/config/api-access.yaml");
+            File file = new File(realPath);
             ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
-            // Assuming routes.yaml is in the classpath
-            InputStream inputStream = getClass().getClassLoader().getResourceAsStream("api-access.yaml");
-            RouteList routeList = mapper.readValue(inputStream, RouteList.class);
+            RouteList routeList = mapper.readValue(file, RouteList.class);
 
-            // Populate routeMap with method and path as key
             for (Route route : routeList.getRoutes()) {
                 String key = route.getMethod().toUpperCase() + ":" + route.getPath();
                 routeMap.put(key, route);
@@ -43,6 +39,37 @@ public class ControllerServlet extends HttpServlet {
             throw new RuntimeException("Failed to load routes from YAML");
         }
     }
+
+//    @Override
+//    public void init() throws ServletException {
+//        // Load routes when the servlet initializes
+//        loadRoutes();
+//    }
+//
+//    private void loadRoutes() {
+//        try {
+//            ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
+//            // Assuming routes.yaml is in the classpath
+//            InputStream inputStream = getClass().getClassLoader().getResourceAsStream("/WEB-INF/config/api-access.yaml");
+//          
+//            if (inputStream == null) {
+//                throw new FileNotFoundException("YAML file not found in classpath: /WEB-INF/config/api-access.yaml");
+//            }
+//
+//            RouteList routeList = mapper.readValue(inputStream, RouteList.class);
+//
+//            // Populate routeMap with method and path as key
+//            for (Route route : routeList.getRoutes()) {
+//                String key = route.getMethod().toUpperCase() + ":" + route.getPath();
+//                routeMap.put(key, route);
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            throw new RuntimeException("Failed to load routes from YAML");
+//        }
+//    
+//    }
+
 
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
@@ -61,8 +88,9 @@ public class ControllerServlet extends HttpServlet {
         try {
             // Generate class and method names dynamically
             String className = "com.bank.handler." + capitalize(path.replaceAll("^/", "")) + "Handler";
+            System.out.println(className);
             String methodName = "handle" + capitalize(path.replaceAll("^/", ""));
-
+            System.out.println(methodName);
             // Load the handler class and invoke the appropriate method
             Class<?> clazz = Class.forName(className);
             Object instance = clazz.getDeclaredConstructor().newInstance();
