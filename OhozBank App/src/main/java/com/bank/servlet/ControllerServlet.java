@@ -73,12 +73,11 @@ public class ControllerServlet extends HttpServlet {
 
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-        // Extract the method and path from the incoming request
+      
         String path = req.getPathInfo();
         String method = req.getMethod().toUpperCase();
         String key = method + ":" + path;
 
-        // Check if the route exists
         Route route = routeMap.get(key);
         if (route == null) {
             res.sendError(HttpServletResponse.SC_NOT_FOUND, "No handler for " + path);
@@ -86,12 +85,12 @@ public class ControllerServlet extends HttpServlet {
         }
 
         try {
-            // Generate class and method names dynamically
+          
             String className = "com.bank.handler." + capitalize(path.replaceAll("^/", "")) + "Handler";
             System.out.println(className);
             String methodName = "handle" + capitalize(path.replaceAll("^/", ""));
             System.out.println(methodName);
-            // Load the handler class and invoke the appropriate method
+           
             Class<?> clazz = Class.forName(className);
             Object instance = clazz.getDeclaredConstructor().newInstance();
             Method m = clazz.getMethod(methodName, HttpServletRequest.class, HttpServletResponse.class);
@@ -103,12 +102,12 @@ public class ControllerServlet extends HttpServlet {
         }
     }
 
-    // Utility method to capitalize the first letter of a string
+  
     private String capitalize(String str) {
         return str.substring(0, 1).toUpperCase() + str.substring(1);
     }
 
-    // Helper classes to map YAML
+  
     public static class RouteList {
         private List<Route> routes;
         public List<Route> getRoutes() { return routes; }

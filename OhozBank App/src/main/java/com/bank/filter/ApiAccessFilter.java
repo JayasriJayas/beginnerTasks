@@ -21,7 +21,6 @@ import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 
 
-//have to check exception and try with resources
 public class ApiAccessFilter implements Filter {
 
     static class Route {
@@ -62,36 +61,27 @@ public class ApiAccessFilter implements Filter {
         String path = httpReq.getPathInfo();
         String method = httpReq.getMethod().toUpperCase();
         HttpSession session = httpReq.getSession(false);
-        
-        // Default role is PUBLIC for public routes
+
         String userRole = "PUBLIC"; 
         if (session != null && session.getAttribute("role") != null) {
             userRole = session.getAttribute("role").toString();
         }
 
-        // Log the path and role for debugging
-        System.out.println("Request Path: " + path);
-        System.out.println("Request Method: " + method);
-        System.out.println("User Role: " + userRole);
 
-        // Retrieve the allowed role for the given route and method
         Map<String, String> methodMap = accessMap.getOrDefault(path, new HashMap<>());
         String allowedRole = methodMap.get(method);
 
-        // If the allowed role is PUBLIC or if the user role matches the required role, allow the request
         if (allowedRole != null && allowedRole.equals("PUBLIC")) {
-            // Public routes are always allowed
-            chain.doFilter(req, res);
+                chain.doFilter(req, res);
             return;
         }
 
-        // If the allowed role is not PUBLIC, check for role match
         if (allowedRole == null || (!allowedRole.equalsIgnoreCase(userRole))) {
             httpRes.sendError(HttpServletResponse.SC_FORBIDDEN, "Access Denied");
             return;
         }
 
-        // Allow the request to proceed if checks pass
+    
         chain.doFilter(req, res);
     }
 

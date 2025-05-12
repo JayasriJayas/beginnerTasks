@@ -13,9 +13,6 @@ public class Branch {
         this.active = true;
     }
 
-
-
-
     public long getId() {
         return branchId;
     }

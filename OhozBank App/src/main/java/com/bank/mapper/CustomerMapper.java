@@ -1,23 +1,21 @@
 package com.bank.mapper;
 
+import com.bank.models.Customer;
 import com.bank.models.Request;
-import com.bank.models.User;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-public class UserMapper {
+public class CustomerMapper {
 
     private static final Gson gson = new GsonBuilder()
             .setDateFormat("yyyy-MM-dd")
             .create();
 
-    public static User fromRequest(Request req) {
-      
+    public static Customer fromRequest(Request req, long userId) {
+       
         String json = gson.toJson(req);
-        User user = gson.fromJson(json, User.class);
-
-        user.setRoleId(3); 
-        user.setPhone((int) req.getPhone());
-        return user;
+        Customer customer = gson.fromJson(json, Customer.class);
+        customer.setUserId(userId); 
+        return customer;
     }
 }

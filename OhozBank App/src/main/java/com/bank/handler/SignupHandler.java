@@ -1,6 +1,7 @@
-package com.bank.handler;
+	package com.bank.handler;
 
 import java.io.BufferedReader;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Date;
@@ -33,7 +34,7 @@ public class SignupHandler {
 
         try (BufferedReader reader = req.getReader(); PrintWriter out = res.getWriter()) {
 
-            Request userRequest = gson.fromJson(reader, Request.class);  // 'dob' must be java.util.Date
+            Request userRequest = gson.fromJson(reader, Request.class);  
 
             // Validate request
             String validationError = RequestValidator.validateSignupFields(userRequest);

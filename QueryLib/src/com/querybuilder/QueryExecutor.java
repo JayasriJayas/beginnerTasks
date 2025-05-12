@@ -6,7 +6,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.sql.ResultSetMetaData;
@@ -22,110 +25,113 @@ public class QueryExecutor {
     public QueryExecutor(Connection connection) {
         this.conn = connection;
     }
-
-    public int execute(String query) throws QueryException {
+    public int executeUpdate(String query) throws QueryException {
         try (Statement stmt = conn.createStatement()) {
-
-            boolean isResultSet = stmt.execute(query);
-
-            if (isResultSet) {
-                printResultSet(stmt.getResultSet());
-            } else {
-                int rowsAffected = stmt.getUpdateCount();
-                LOGGER.info("Rows affected: " + rowsAffected);
-                return rowsAffected;
-            }
-
+            int rowsAffected = stmt.executeUpdate(query);
             SQLLogger.log(query);
+            return rowsAffected;
+        } catch (SQLException e) {
+            throw new QueryException("Execution failed: " + e.getMessage());
+        }
+    }
+    public List<Map<String, Object>> executeQuery(String query) throws QueryException {
+        try (Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(query)) {
+
+            List<Map<String, Object>> result = extractResultSet(rs);
+            SQLLogger.log(query);
+            return result;
 
         } catch (SQLException e) {
-            throw new QueryException("Execution failed");
+            throw new QueryException("Query execution failed: " + e.getMessage());
         }
-        return 0;
     }
-
-    public int execute(String query, List<Object> parameters) throws QueryException {
+    public int executeUpdate(String query, List<Object> parameters) throws QueryException {
         try (PreparedStatement pstmt = conn.prepareStatement(query)) {
-        	
-       
-
-            for (int i = 0; i < parameters.size(); i++) {
-                Object param = parameters.get(i);
-
-                if (param instanceof Integer) {
-                    pstmt.setInt(i + 1, (Integer) param);
-                } else if (param instanceof Double) {
-                    pstmt.setDouble(i + 1, (Double) param);
-                } else if (param instanceof Boolean) {
-                    pstmt.setBoolean(i + 1, (Boolean) param);
-                } else if (param instanceof java.sql.Date) {
-                    pstmt.setDate(i + 1, (java.sql.Date) param);
-                } else if (param instanceof java.util.Date) {
-                    pstmt.setTimestamp(i + 1, new java.sql.Timestamp(((java.util.Date) param).getTime()));
-                } else if (param == null) {
-                    pstmt.setNull(i + 1, java.sql.Types.NULL);
-                } else {
-                    pstmt.setString(i + 1, param.toString());
-                }
-            }
-
-          
-            boolean isResultSet = pstmt.execute();
-
-            if (isResultSet) {
-                printResultSet(pstmt.getResultSet());
-            } else {
-                int rowsAffected = pstmt.getUpdateCount();
-                LOGGER.info("Rows affected: " + rowsAffected);
-                return rowsAffected;
-            }
-
+            setParameters(pstmt, parameters);
+            int rowsAffected = pstmt.executeUpdate();
             SQLLogger.log(query);
-
-        }catch (SQLException e) {
-            
-            e.printStackTrace(); 
+            return rowsAffected;
+        } catch (SQLException e) {
             throw new QueryException("Execution with parameters failed: " + e.getMessage());
         }
-        return 0;
-
     }
-    // need to check
+
+    public List<Map<String, Object>> executeQuery(String query, List<Object> parameters) throws QueryException {
+        try (PreparedStatement pstmt = conn.prepareStatement(query)) {
+            setParameters(pstmt, parameters);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                List<Map<String, Object>> result = extractResultSet(rs);
+                SQLLogger.log(query);
+                return result;
+            }
+        } catch (SQLException e) {
+            throw new QueryException("Query with parameters failed: " + e.getMessage());
+        }
+    }
+
     public void batchExecute(List<String> queries) throws QueryException {
         try (Statement stmt = conn.createStatement()) {
-
             for (String query : queries) {
                 stmt.addBatch(query);
             }
-
-            int[] results = stmt.executeBatch();
-            LOGGER.info("Batch executed. " + results.length + " statements run.");
-
+            stmt.executeBatch();
             for (String query : queries) {
                 SQLLogger.log(query);
             }
-
         } catch (SQLException e) {
-            throw new QueryException("Batch execution failed");
+            throw new QueryException("Batch execution failed: " + e.getMessage());
         }
     }
 
-    private void printResultSet(ResultSet rs) throws SQLException {
+    private void setParameters(PreparedStatement pstmt, List<Object> parameters) throws SQLException {
+        for (int i = 0; i < parameters.size(); i++) {
+            Object param = parameters.get(i);
+            if (param instanceof Integer) {
+                pstmt.setInt(i + 1, (Integer) param);
+            } else if (param instanceof Double) {
+                pstmt.setDouble(i + 1, (Double) param);
+            } else if (param instanceof Boolean) {
+                pstmt.setBoolean(i + 1, (Boolean) param);
+            } else if (param instanceof java.sql.Date) {
+                pstmt.setDate(i + 1, (java.sql.Date) param);
+            } else if (param instanceof java.util.Date) {
+                pstmt.setTimestamp(i + 1, new java.sql.Timestamp(((java.util.Date) param).getTime()));
+            } else if (param == null) {
+                pstmt.setNull(i + 1, java.sql.Types.NULL);
+            } else {
+                pstmt.setString(i + 1, param.toString());
+            }
+        }
+    }
+    private List<Map<String, Object>> extractResultSet(ResultSet rs) throws SQLException {
+        List<Map<String, Object>> rows = new ArrayList<>();
         ResultSetMetaData meta = rs.getMetaData();
         int columnCount = meta.getColumnCount();
 
-        StringBuilder header = new StringBuilder();
-        for (int i = 1; i <= columnCount; i++) {
-            header.append(meta.getColumnLabel(i)).append("\t");
-        }
-        LOGGER.info(header.toString());
-
         while (rs.next()) {
-            StringBuilder row = new StringBuilder();
+            Map<String, Object> row = new HashMap<>();
             for (int i = 1; i <= columnCount; i++) {
-                row.append(rs.getString(i)).append("\t");
+                row.put(meta.getColumnLabel(i), rs.getObject(i));
             }
-            LOGGER.info(row.toString());
+            rows.add(row);
         }
+        return rows;
     }
+//    private static void printResults(List<Map<String, Object>> resultSet) {
+//        if (resultSet == null || resultSet.isEmpty()) {
+//            System.out.println("No results found.");
+//            return;
+//        }
+//
+//        System.out.println("---- ResultSet ----");
+//        for (Map<String, Object> row : resultSet) {
+//            for (Map.Entry<String, Object> entry : row.entrySet()) {
+//                System.out.print(entry.getKey() + ": " + entry.getValue() + "\t");
+//            }
+//            System.out.println(); // new line after each row
+//        }
+//        System.out.println("-------------------\n");
+//    }
+
 }

@@ -2,18 +2,20 @@ package com.bank.models;
 
 import java.time.Instant;
 
+import com.bank.enums.UserStatus;
+
 public class User {
     private String username;
     private String password;
     private String email;
-    private String phone;
+    private int phone;
     private String gender;
     private Instant dob;
     private String address;
     private String maritalStatus;
-    private String aadharNo;
+    private long aadharNo;
     private String panNo;
-    private int branchId;
+    private long branchId;
     private String branchName;
     private String occupation;
     private double annualIncome;
@@ -21,11 +23,11 @@ public class User {
     private Instant createdDate;
     private Instant modifiedAt;
     private String modifiedBy;
-    private boolean active;
+    private UserStatus status;
 
     public User() {
         this.createdDate = Instant.now();  
-        this.active = true;
+        this.status = UserStatus.ACTIVE;
     }
 
 
@@ -53,11 +55,11 @@ public class User {
         this.email = email;
     }
 
-    public String getPhone() {
+    public long getPhone() {
         return phone;
     }
 
-    public void setPhone(String phone) {
+    public void setPhone(int phone) {
         this.phone = phone;
     }
 
@@ -93,11 +95,11 @@ public class User {
         this.maritalStatus = maritalStatus;
     }
 
-    public String getAadharNo() {
+    public long getAadharNo() {
         return aadharNo;
     }
 
-    public void setAadharNo(String aadharNo) {
+    public void setAadharNo(long aadharNo) {
         this.aadharNo = aadharNo;
     }
 
@@ -109,14 +111,13 @@ public class User {
         this.panNo = panNo;
     }
 
-    public int getBranchId() {
+    public long getBranchId() {
         return branchId;
     }
 
-    public void setBranchId(int branchId) {
+    public void setBranchId(long branchId) {
         this.branchId = branchId;
     }
-
     public String getBranchName() {
         return branchName;
     }
@@ -173,11 +174,12 @@ public class User {
         this.modifiedBy = modifiedBy;
     }
 
-    public boolean isActive() {
-        return active;
+    public UserStatus getStatus() {
+        return status;
     }
 
-    public void setActive(boolean active) {
-        this.active = active;
+    public void setStatus(UserStatus status) {
+        this.status = status;
     }
+
 }

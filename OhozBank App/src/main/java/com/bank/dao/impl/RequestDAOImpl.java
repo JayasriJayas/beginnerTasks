@@ -2,6 +2,7 @@ package com.bank.dao.impl;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -38,6 +39,39 @@ public class RequestDAOImpl implements RequestDAO {
 	        
 	        return rowsAffected;
 	    }
+	 @Override
+	 public Request getRequestById(long id) throws Exception {
+	     QueryBuilder qb = new QueryBuilder(new MySQLDialect());
+	     qb.select("*").from("requests").where("id = ?");
+	     String query = qb.build();
+	     List<Object> params = qb.getParameters();
+	     params.add(id); 
+	     QueryExecutor qe = new QueryExecutor(DBConnectionPool.getInstance().getConnection());
+	     qe.execute(query, params);
+
+	     try (
+	         Connection conn = DBConnectionPool.getInstance().getConnection();
+	         PreparedStatement stmt = conn.prepareStatement(query)
+	     ) {
+	         for (int i = 0; i < params.size(); i++) {
+	             stmt.setObject(i + 1, params.get(i));
+	         }
+
+	         try (ResultSet rs = stmt.executeQuery()) {
+	        	    if (rs.next()) {
+	        	        return RequestMapper.fromResultSet(rs);
+	        	    }
+	        	}
+
+	         }
+	     } catch (Exception e) {
+	         e.printStackTrace();
+	     }
+
+	     return null;
+	 }
+
+
 	 
 }
 

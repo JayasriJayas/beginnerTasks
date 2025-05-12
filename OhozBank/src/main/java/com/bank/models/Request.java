@@ -23,13 +23,11 @@ public class Request {
     private Integer processedBy; 
     private LocalDate processedDate;
 
-   
-
-
+    
 	 public Request() {
 	        this.requestDate = LocalDate.now();
 	        this.status = "PENDING";
-	    }
+	}
 
     public int getId() {
 		return id;
