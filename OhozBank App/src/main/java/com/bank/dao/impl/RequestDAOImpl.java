@@ -5,9 +5,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 
 import com.bank.connection.DBConnectionPool;
 import com.bank.dao.RequestDAO;
+import com.bank.mapper.RequestMapper;
 import com.bank.models.Request;
 import com.dialect.MySQLDialect;
 import com.querybuilder.DBConnector;
@@ -34,44 +36,24 @@ public class RequestDAOImpl implements RequestDAO {
 	        String query = qb.build(); 
 	        List<Object> params = qb.getParameters();
 	        QueryExecutor qe = new QueryExecutor(DBConnectionPool.getInstance().getConnection());
-	        qe.execute(query, params);
-	        int rowsAffected = qe.execute(query, params);
+	        qe.executeQuery(query, params);
+	        int rowsAffected = qe.executeQuery(query, params).size();
 	        
 	        return rowsAffected;
 	    }
 	 @Override
-	 public Request getRequestById(long id) throws Exception {
+	 public Request getRequestById(long id) throws QueryException, SQLException {
 	     QueryBuilder qb = new QueryBuilder(new MySQLDialect());
 	     qb.select("*").from("requests").where("id = ?");
 	     String query = qb.build();
 	     List<Object> params = qb.getParameters();
 	     params.add(id); 
 	     QueryExecutor qe = new QueryExecutor(DBConnectionPool.getInstance().getConnection());
-	     qe.execute(query, params);
+	     List<Map<String,Object>> rs = qe.executeQuery(query, params);
+	        
+	     return RequestMapper.fromResultSet(rs);
 
-	     try (
-	         Connection conn = DBConnectionPool.getInstance().getConnection();
-	         PreparedStatement stmt = conn.prepareStatement(query)
-	     ) {
-	         for (int i = 0; i < params.size(); i++) {
-	             stmt.setObject(i + 1, params.get(i));
-	         }
-
-	         try (ResultSet rs = stmt.executeQuery()) {
-	        	    if (rs.next()) {
-	        	        return RequestMapper.fromResultSet(rs);
-	        	    }
-	        	}
-
-	         }
-	     } catch (Exception e) {
-	         e.printStackTrace();
-	     }
-
-	     return null;
 	 }
-
-
 	 
 }
 

@@ -5,6 +5,7 @@ import java.time.Instant;
 import com.bank.enums.UserStatus;
 
 public class User {
+	private long userId;
     private String username;
     private String password;
     private String email;
@@ -29,7 +30,12 @@ public class User {
         this.createdDate = Instant.now();  
         this.status = UserStatus.ACTIVE;
     }
-
+    public long getUserId() {
+    	return userId;
+    }
+    public void setUserId(long userId) {
+    	this.userId = userId;
+    }
 
     public String getUsername() {
         return username;

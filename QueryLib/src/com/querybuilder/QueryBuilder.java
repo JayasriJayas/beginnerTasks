@@ -40,6 +40,7 @@ public class QueryBuilder {
 	 private String orderDirection;
 	 private DatabaseDialect dialect;
 	
+	
 
 	 public QueryBuilder(DatabaseDialect dialect) {
 	    this.dialect = dialect;
@@ -154,9 +155,13 @@ public class QueryBuilder {
 	        this.table = table;
 	        return this;
 	    }
-	    public QueryBuilder set(String... clauses) {
-	    	this.setClauses = initIfNull(this.setClauses);
-	        setClauses.addAll(Arrays.asList(clauses));
+	    public QueryBuilder set(String column, Object value) {
+	        this.setClauses = initIfNull(this.setClauses);
+	        this.parameters = initIfNull(this.parameters);
+	        
+	        setClauses.add(column + " = ?");
+	        parameters.add(value);
+	        
 	        return this;
 	    }
 	    public QueryBuilder deleteFrom(String table) {
@@ -190,25 +195,37 @@ public class QueryBuilder {
 	        return this;
 	    }
 
-	    public QueryBuilder where(String condition) {
-	    	this.whereConditions = initIfNull(this.whereConditions);
-	        whereConditions.add(condition);
+	    public QueryBuilder where(String condition, Object... values) {
+	        this.whereConditions = initIfNull(this.whereConditions);
+	        this.parameters = initIfNull(this.parameters);
+
+	        this.whereConditions.add(condition);
+	        this.parameters.addAll(Arrays.asList(values));
+
 	        return this;
 	    }
+	    public QueryBuilder andWhere(String condition, Object... values) {
+	        this.whereOperators = initIfNull(this.whereOperators);
+	        this.whereOperators.add("AND");
 
-	    public QueryBuilder andWhere(String condition) {
-	    	this.whereOperators = initIfNull(this.whereOperators);
-	        whereOperators.add("AND");
 	        this.whereConditions = initIfNull(this.whereConditions);
-	        whereConditions.add(condition);
+	        this.whereConditions.add(condition);
+
+	        this.parameters = initIfNull(this.parameters);
+	        this.parameters.addAll(Arrays.asList(values));
+
 	        return this;
 	    }
+	    public QueryBuilder orWhere(String condition, Object... values) {
+	        this.whereOperators = initIfNull(this.whereOperators);
+	        this.whereOperators.add("OR");
 
-	    public QueryBuilder orWhere(String condition) {
-	    	this.whereOperators = initIfNull(this.whereOperators);
-	        whereOperators.add("OR");
 	        this.whereConditions = initIfNull(this.whereConditions);
-	        whereConditions.add(condition);
+	        this.whereConditions.add(condition);
+
+	        this.parameters = initIfNull(this.parameters);
+	        this.parameters.addAll(Arrays.asList(values));
+
 	        return this;
 	    }
 
@@ -328,11 +345,6 @@ public class QueryBuilder {
 	        whereConditions.add("NOT EXISTS (" + subQuery.build() + ")");
 	        return this;
 	    }
-
-
-
-
-
 	    public String buildConditionClause(List<String> conditions, List<String> operators) {
 	        if (conditions == null) return "";
 	    

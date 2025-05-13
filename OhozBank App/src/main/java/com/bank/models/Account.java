@@ -14,8 +14,7 @@ public class Account {
     private Instant modifiedAt;
     private String modifiedBy;
 
-    // Getters and Setters
-
+    
     public long getAccountId() {
         return accountId;
     }

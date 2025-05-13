@@ -1,24 +1,43 @@
+package com.bank.dao.impl;
 import java.sql.Connection;
+
+import java.sql.SQLException;
 import java.time.Instant;
+import java.util.List;
+import java.util.Map;
 
 import com.bank.connection.DBConnectionPool;
+import com.bank.dao.RequestDAO;
+import com.bank.dao.UserDAO;
 import com.bank.enums.RequestStatus;
+import com.bank.enums.UserRole;
 import com.bank.enums.UserStatus;
 import com.bank.mapper.CustomerMapper;
+import com.bank.mapper.RequestMapper;
 import com.bank.mapper.UserMapper;
 import com.bank.models.Account;
 import com.bank.models.Customer;
+import com.bank.models.Request;
+import com.bank.models.User;
+import com.bank.util.IdGeneratorUtil;
+import com.dialect.MySQLDialect;
+import com.querybuilder.QueryBuilder;
+import com.querybuilder.QueryExecutor;
 import com.bank.models.User;
 
+import exception.QueryException;
+public class UserDAOImpl implements UserDAO{
 @Override
-public boolean approveRequestAndCreateUser(long requestId, long adminId) throws Exception {
+public boolean approveRequestAndCreateUser(long requestId, long adminId) throws SQLException,QueryException{
     try (Connection conn = DBConnectionPool.getInstance().getConnection()) {
         conn.setAutoCommit(false);
 
         Request req = getRequestById(requestId);
         
         User user = UserMapper.fromRequest(req);
-        long userId = insertUser(conn, user);
+        long userId = IdGeneratorUtil.generateUserId();
+        user.setUserId(userId);
+        insertUser(conn, user);
 
         Customer customer = CustomerMapper.fromRequest(req, userId);
         insertCustomer(conn, customer);
@@ -36,41 +55,42 @@ public boolean approveRequestAndCreateUser(long requestId, long adminId) throws 
 
         conn.commit();
         return true;
-    } catch (Exception e) {
+    } catch (SQLException e) {
         e.printStackTrace();
-        throw e;
+        throw new SQLException(e.getMessage());
+        
     }
     
 }
-public long insertUser(Connection conn, User user) throws Exception {
+public long insertUser(Connection conn, User user) throws SQLException,QueryException {
     QueryBuilder qb = new QueryBuilder(new MySQLDialect());
     qb.insertInto("user", "username", "password", "email", "phone", "gender", "role", "status", "createdAt", "modifiedBy")
       .values(user.getUsername(), user.getPassword(), user.getEmail(), user.getPhone(),
-              user.getGender(), user.getRole().name(), user.getStatus().name(),
-              user.getCreatedAt(), user.getModifiedBy());
+              user.getGender(), user.getRoleId(), user.getStatus().name(),
+              user.getCreatedDate(), user.getModifiedBy());
 
     QueryExecutor executor = new QueryExecutor(conn);
-    return executor.insertAndGetId(qb.build(), qb.getParameters());
+    return executor.executeUpdate(qb.build(), qb.getParameters());
 }
-public boolean insertCustomer(Connection conn, Customer customer) throws Exception {
+public boolean insertCustomer(Connection conn, Customer customer) throws SQLException,QueryException {
     QueryBuilder qb = new QueryBuilder(new MySQLDialect());
     qb.insertInto("customer", "userId", "aadharNo", "panNo", "address", "dob", "maritalStatus", "occupation", "annualIncome")
       .values(customer.getUserId(), customer.getAadharNo(), customer.getPanNo(), customer.getAddress(),
               customer.getDob(), customer.getMaritalStatus(), customer.getOccupation(), customer.getAnnualIncome());
-
+ 
     QueryExecutor executor = new QueryExecutor(conn);
-    return executor.execute(qb.build(), qb.getParameters()) > 0;
+    return executor.executeUpdate(qb.build(), qb.getParameters()) > 0;
 }
-public boolean insertAccount(Connection conn, Account account) throws Exception {
+public boolean insertAccount(Connection conn, Account account) throws SQLException,QueryException {
     QueryBuilder qb = new QueryBuilder(new MySQLDialect());
     qb.insertInto("account", "userId", "branchId", "balance", "status", "createdAt", "modifiedBy")
       .values(account.getUserId(), account.getBranchId(), account.getBalance(), account.getStatus(),
               account.getCreatedAt(), account.getModifiedBy());
 
     QueryExecutor executor = new QueryExecutor(conn);
-    return executor.execute(qb.build(), qb.getParameters()) > 0;
+    return executor.executeUpdate(qb.build(), qb.getParameters()) > 0;
 }
-public boolean updateRequestStatus(Connection conn, long requestId, long adminId, String status) throws Exception {
+public boolean updateRequestStatus(Connection conn, long requestId, long adminId, String status) throws SQLException,QueryException {
     QueryBuilder qb = new QueryBuilder(new MySQLDialect());
     qb.update("request")
       .set("status", status)
@@ -79,7 +99,50 @@ public boolean updateRequestStatus(Connection conn, long requestId, long adminId
       .where("id = " + requestId);
 
     QueryExecutor executor = new QueryExecutor(conn);
-    return executor.execute(qb.build(), qb.getParameters()) > 0;
+    return executor.executeUpdate(qb.build(), qb.getParameters()) > 0;
 }
 
+public Request getRequestById(long id) throws QueryException, SQLException {
+    QueryBuilder qb = new QueryBuilder(new MySQLDialect());
+    qb.select("*").from("requests").where("id = ?");
+    String query = qb.build();
+    List<Object> params = qb.getParameters();
+    params.add(id); 
+    QueryExecutor qe = new QueryExecutor(DBConnectionPool.getInstance().getConnection());
+    List<Map<String,Object>> rs = qe.executeQuery(query, params);
+       
+    return RequestMapper.fromResultSet(rs);
+
+}
+@Override
+public User findByUsername(String username) throws SQLException,QueryException{
+    QueryBuilder qb = new QueryBuilder(new MySQLDialect());
+    qb.select("*")
+      .from("user")
+      .where("username = ?");
+
+    List<Object> params = qb.getParameters();
+    params.add(username);
+
+    String query = qb.build();
+    System.out.println(query);
+    QueryExecutor qe = new QueryExecutor(DBConnectionPool.getInstance().getConnection());
+    List<Map<String,Object>> rs = qe.executeQuery(query, params);
+    if (rs == null || rs.isEmpty()) {
+    	System.out.println(rs);
+    	return null;
+    }
+
+    Map<String, Object> row = rs.get(0); 
+    
+    User user = new User();
+    user.setUserId((Long) row.get("userId"));
+    user.setUsername((String)row.get("username"));
+    user.setPassword((String)row.get("password"));
+    System.out.println(row.get("roleId"));
+    user.setRoleId((Integer)row.get("roleId"));
+    return user;
+            
+}
+}
 

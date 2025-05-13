@@ -17,8 +17,10 @@ public class Runner {
 	public static void main(String[] args) throws QueryException {
 
         QueryBuilder qb = new QueryBuilder(new MySQLDialect());
-        qb.select().from("Student")
-        .where("grade = ?");
+        qb.update("Student")
+        .set("age", 23)
+        .where("age = ?", 22)
+        .andWhere("department = ?", "EEE");
         
        
 
@@ -28,10 +30,9 @@ public class Runner {
 
         QueryExecutor qe = new QueryExecutor(DBConnector.getConnection());
         
-        
-        List<Object> selectParams = Arrays.asList("A");
+        List<Object> params = qb.getParameters();       
         System.out.println("Running SELECT with parameters...");
-        List<Map<String, Object>> gradeAPlusStudents = qe.executeQuery(query, selectParams);
+        qe.executeUpdate(query,params);
         
        
 
