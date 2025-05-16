@@ -38,20 +38,22 @@ public boolean approveRequestAndCreateUser(long requestId, long adminId) throws 
         long userId = IdGeneratorUtil.generateUserId();
         user.setUserId(userId);
         insertUser(conn, user);
+      
 
         Customer customer = CustomerMapper.fromRequest(req, userId);
+
         insertCustomer(conn, customer);
         Account account = new Account();
         account.setUserId(userId);
         account.setBranchId(req.getBranchId());
         account.setBalance(0L);
         account.setStatus(UserStatus.ACTIVE);
-        account.setCreatedAt(Instant.now());
+        account.setCreatedAt(System.currentTimeMillis());
         account.setModifiedBy("admin-" + adminId);
-
+       
         insertAccount(conn, account);
-
-        updateRequestStatus(conn, requestId, adminId, "APPROVED");
+        System.out.println("successful");
+        updateRequestStatus(conn, requestId, adminId, RequestStatus.APPROVED);
 
         conn.commit();
         return true;
@@ -64,10 +66,10 @@ public boolean approveRequestAndCreateUser(long requestId, long adminId) throws 
 }
 public long insertUser(Connection conn, User user) throws SQLException,QueryException {
     QueryBuilder qb = new QueryBuilder(new MySQLDialect());
-    qb.insertInto("user", "username", "password", "email", "phone", "gender", "role", "status", "createdAt", "modifiedBy")
-      .values(user.getUsername(), user.getPassword(), user.getEmail(), user.getPhone(),
-              user.getGender(), user.getRoleId(), user.getStatus().name(),
-              user.getCreatedDate(), user.getModifiedBy());
+    qb.insertInto("user","userId", "username", "password", "email", "phone", "gender", "roleId", "status","createdAt", "modifiedBy")
+      .values(user.getUserId(),user.getUsername(), user.getPassword(), user.getEmail(), user.getPhone(),
+              user.getGender(), user.getRoleId(), user.getStatus().name(),user.getCreatedDate(),
+              user.getModifiedBy());
 
     QueryExecutor executor = new QueryExecutor(conn);
     return executor.executeUpdate(qb.build(), qb.getParameters());
@@ -83,20 +85,20 @@ public boolean insertCustomer(Connection conn, Customer customer) throws SQLExce
 }
 public boolean insertAccount(Connection conn, Account account) throws SQLException,QueryException {
     QueryBuilder qb = new QueryBuilder(new MySQLDialect());
-    qb.insertInto("account", "userId", "branchId", "balance", "status", "createdAt", "modifiedBy")
+    qb.insertInto("account", "userId", "branchId", "balance", "status","createdAt", "modifiedBy")
       .values(account.getUserId(), account.getBranchId(), account.getBalance(), account.getStatus(),
-              account.getCreatedAt(), account.getModifiedBy());
+               account.getCreatedAt(),account.getModifiedBy());
 
     QueryExecutor executor = new QueryExecutor(conn);
     return executor.executeUpdate(qb.build(), qb.getParameters()) > 0;
 }
-public boolean updateRequestStatus(Connection conn, long requestId, long adminId, String status) throws SQLException,QueryException {
+public boolean updateRequestStatus(Connection conn, long requestId, long adminId, RequestStatus approved) throws SQLException,QueryException {
     QueryBuilder qb = new QueryBuilder(new MySQLDialect());
-    qb.update("request")
-      .set("status", status)
+    qb.update("requests")
+      .set("status", approved)
       .set("processedBy", adminId)
       .set("processedTimestamp", System.currentTimeMillis())
-      .where("id = " + requestId);
+      .where("id = ?" , requestId);
 
     QueryExecutor executor = new QueryExecutor(conn);
     return executor.executeUpdate(qb.build(), qb.getParameters()) > 0;
@@ -119,20 +121,21 @@ public User findByUsername(String username) throws SQLException,QueryException{
     QueryBuilder qb = new QueryBuilder(new MySQLDialect());
     qb.select("*")
       .from("user")
-      .where("username = ?");
+      .where("username = ?",username);
+//      .andWhere("password = ?",password);
 
     List<Object> params = qb.getParameters();
-    params.add(username);
+ 
 
     String query = qb.build();
     System.out.println(query);
     QueryExecutor qe = new QueryExecutor(DBConnectionPool.getInstance().getConnection());
     List<Map<String,Object>> rs = qe.executeQuery(query, params);
     if (rs == null || rs.isEmpty()) {
-    	System.out.println(rs);
+    	
     	return null;
     }
-
+    
     Map<String, Object> row = rs.get(0); 
     
     User user = new User();

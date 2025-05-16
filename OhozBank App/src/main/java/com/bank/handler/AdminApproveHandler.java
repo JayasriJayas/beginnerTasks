@@ -15,21 +15,24 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import java.io.BufferedReader;
 import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ApprovalHandler {
+public class AdminApproveHandler {
 
     private final UserService userService = new UserServiceImpl();
     private final AdminDAO adminDAO = new AdminDAOImpl();
     private final RequestDAO requestDAO = new RequestDAOImpl();
     private final Gson gson = new Gson();
 
-    public void handleApprove(HttpServletRequest req, HttpServletResponse res) {
+    public void handleAdminApprove(HttpServletRequest req, HttpServletResponse res) {
         res.setContentType("application/json");
 
         try (PrintWriter out = res.getWriter()) {
+
+          
             HttpSession session = req.getSession(false);
             if (session == null || session.getAttribute("role") == null || session.getAttribute("adminId") == null) {
                 res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -37,19 +40,29 @@ public class ApprovalHandler {
                 return;
             }
 
-            long requestId = Long.parseLong(req.getParameter("requestId"));
+           BufferedReader reader = req.getReader();
+            Map<String, Object> requestBody = gson.fromJson(reader, Map.class);
+           
+
+            Object requestIdObj = requestBody.get("requestId");
+            if (requestIdObj == null) {
+                res.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                out.write("{\"error\":\"Missing requestId in JSON body.\"}");
+                return;
+            }
+            long requestId = Long.parseLong(requestIdObj.toString());
             long adminId = (long) session.getAttribute("adminId");
             String role = session.getAttribute("role").toString();
 
-           
             Request request = requestDAO.getRequestById(requestId);
+          
             if (request == null || !request.getStatus().equals(RequestStatus.PENDING)) {
                 res.setStatus(HttpServletResponse.SC_NOT_FOUND);
-                out.write("{\"error\":\"Request not found.\"}");
+                out.write("{\"error\":\"Request not found or not pending.\"}");
                 return;
             }
 
-  
+            // Branch validation
             if (UserRole.ADMIN.name().equals(role)) {
                 long adminBranchId = adminDAO.getBranchIdByAdminId(adminId);
                 if (adminBranchId != request.getBranchId()) {
@@ -58,9 +71,8 @@ public class ApprovalHandler {
                     return;
                 }
             }
-
+           
             boolean success = userService.approveUserRequest(requestId, adminId);
-
             Map<String, String> result = new HashMap<>();
             if (success) {
                 res.setStatus(HttpServletResponse.SC_OK);

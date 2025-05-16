@@ -42,20 +42,24 @@ public class UserServiceImpl implements UserService {
 
         @Override
         public User login(String username, String password) throws Exception {
-        	System.out.println(username);
-        	System.out.println(password);
+            System.out.println(username);
+            System.out.println(password);
+            boolean match = false;
             User user = userDAO.findByUsername(username);
-
-            if (user == null) return null;
-
-//            boolean passwordMatch = user.getPassword();
+           
             
-            return user;
+            if (user == null) {
+ 
+                return null;
+            }
+//            return user;
+            boolean passwordMatch = PasswordUtil.checkPassword(password, user.getPassword());
+            System.out.print(passwordMatch);
+            return passwordMatch ? user : null;
+            
+            
+           
         }
-    
-
-
 }
-//PasswordUtil.checkPassword(password, user.getPassword());
-//passwordMatch ? user : null;
-	
+
+

@@ -15,11 +15,11 @@
 	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/snakeyaml-1.33.jar"/>
 	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/tomcat-jdbc-9.0.87.jar"/>
 	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/tomcat-juli.jar"/>
-	<classpathentry kind="lib" path="/home/jaya-pt7819/git/repository/QueryLib.jar"/>
-	<classpathentry kind="lib" path="/home/jaya-pt7819/Downloads/gson-2.10.1.jar"/>
-	<classpathentry kind="lib" path="/home/jaya-pt7819/Downloads/jackson-annotations-2.15.2.jar"/>
-	<classpathentry kind="lib" path="/home/jaya-pt7819/Downloads/jackson-core-2.15.2.jar"/>
-	<classpathentry kind="lib" path="/home/jaya-pt7819/Downloads/jackson-databind-2.15.2.jar"/>
-	<classpathentry kind="lib" path="/home/jaya-pt7819/Downloads/jackson-dataformat-yaml-2.15.2.jar"/>
+	<classpathentry kind="lib" path="/home/tempuser/git/beginnerTasks/QueryLib.jar"/>
+	<classpathentry kind="lib" path="/home/tempuser/Downloads/gson-2.10.1.jar"/>
+	<classpathentry kind="lib" path="/home/tempuser/Downloads/jackson-annotations-2.15.2.jar"/>
+	<classpathentry kind="lib" path="/home/tempuser/Downloads/jackson-core-2.15.2.jar"/>
+	<classpathentry kind="lib" path="/home/tempuser/Downloads/jackson-databind-2.15.2.jar"/>
+	<classpathentry kind="lib" path="/home/tempuser/Downloads/jackson-dataformat-yaml-2.15.2.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

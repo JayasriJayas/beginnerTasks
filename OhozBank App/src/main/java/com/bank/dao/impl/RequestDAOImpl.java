@@ -25,19 +25,18 @@ public class RequestDAOImpl implements RequestDAO {
 	        qb.insertInto("requests",
 	                "username", "password", "email", "phone", "gender", "dob", "address",
 	                "maritalStatus", "aadharNo", "panNo", "branchId", "branchName", "occupation",
-	                "annualIncome", "status")
+	                "annualIncome", "status","requestDate")
 	          .values(
 	              req.getUsername(), req.getPassword(), req.getEmail(), String.valueOf(req.getPhone()), req.getGender(),
 	              req.getDob().toString(), req.getAddress(), req.getMaritalStatus(), String.valueOf(req.getAadharNo()),
 	              String.valueOf(req.getPanNo()), String.valueOf(req.getBranchId()), req.getBranchName(),
 	              req.getOccupation(), String.valueOf(req.getAnnualIncome()),
-	              String.valueOf(req.getStatus())
+	              String.valueOf(req.getStatus()),req.getRequestTimestamp()
 	          );
 	        String query = qb.build(); 
 	        List<Object> params = qb.getParameters();
 	        QueryExecutor qe = new QueryExecutor(DBConnectionPool.getInstance().getConnection());
-	        qe.executeQuery(query, params);
-	        int rowsAffected = qe.executeQuery(query, params).size();
+	        int rowsAffected = qe.executeUpdate(query, params);
 	        
 	        return rowsAffected;
 	    }

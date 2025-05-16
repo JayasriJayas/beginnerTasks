@@ -34,3 +34,19 @@ routes:
   - path: /superadmin/dashboard
     method: GET
     role: SUPER_ADMIN
+
+  - path: /admin/deposit
+    method: POST
+    role: USER
+
+  - path: /admin/withdraw
+    method: POST
+    role: USER
+
+  - path: /user/transfer
+    method: POST
+    role: USER
+
+  - path: /user/statement
+    method: GET
+    role: USER

@@ -1,5 +1,6 @@
 package com.bank.mapper;
 
+import com.bank.enums.UserStatus;
 import com.bank.models.Request;
 import com.bank.models.User;
 import com.google.gson.Gson;
@@ -7,17 +8,23 @@ import com.google.gson.GsonBuilder;
 
 public class UserMapper {
 
-    private static final Gson gson = new GsonBuilder()
-            .setDateFormat("yyyy-MM-dd")
-            .create();
+        public static User fromRequest(Request req) {
+            if (req == null) return null;
 
-    public static User fromRequest(Request req) {
-      
-        String json = gson.toJson(req);
-        User user = gson.fromJson(json, User.class);
+            User user = new User();
 
-        user.setRoleId(3); 
-        user.setPhone((int) req.getPhone());
-        return user;
-    }
+            user.setUserId(req.getId()); 
+            user.setUsername(req.getUsername());
+            user.setPassword(req.getPassword());
+            user.setEmail(req.getEmail());
+            user.setPhone((long) req.getPhone());
+            user.setGender(req.getGender());
+            user.setRoleId(3);              
+            user.setStatus(UserStatus.ACTIVE);   
+            user.setCreatedDate(System.currentTimeMillis());
+            user.setModifiedBy(req.getUsername());
+
+            return user;
+        }
 }
+

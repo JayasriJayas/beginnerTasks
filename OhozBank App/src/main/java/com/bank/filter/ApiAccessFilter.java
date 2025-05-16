@@ -57,7 +57,7 @@ public class ApiAccessFilter implements Filter {
 
         HttpServletRequest httpReq = (HttpServletRequest) req;
         HttpServletResponse httpRes = (HttpServletResponse) res;
-
+        System.out.println(req.getParameter("requestId"));
         String path = httpReq.getPathInfo();
         String method = httpReq.getMethod().toUpperCase();
         HttpSession session = httpReq.getSession(false);
@@ -80,6 +80,14 @@ public class ApiAccessFilter implements Filter {
             httpRes.sendError(HttpServletResponse.SC_FORBIDDEN, "Access Denied");
             return;
         }
+        boolean authorized = allowedRole.equalsIgnoreCase(userRole) ||
+                (allowedRole.equals("USER") && userRole.equals("ADMIN")); // Admin inherits User access
+
+			if (!authorized) {
+			httpRes.sendError(HttpServletResponse.SC_FORBIDDEN, "Access Denied");
+			return;
+			}
+
 
     
         chain.doFilter(req, res);

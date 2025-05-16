@@ -9,7 +9,7 @@ public class User {
     private String username;
     private String password;
     private String email;
-    private int phone;
+    private long phone;
     private String gender;
     private Instant dob;
     private String address;
@@ -21,13 +21,13 @@ public class User {
     private String occupation;
     private double annualIncome;
     private int roleId;
-    private Instant createdDate;
-    private Instant modifiedAt;
+    private long createdDate;
+    private long modifiedAt;
     private String modifiedBy;
     private UserStatus status;
 
     public User() {
-        this.createdDate = Instant.now();  
+        this.createdDate = System.currentTimeMillis();  
         this.status = UserStatus.ACTIVE;
     }
     public long getUserId() {
@@ -65,7 +65,7 @@ public class User {
         return phone;
     }
 
-    public void setPhone(int phone) {
+    public void setPhone(long phone) {
         this.phone = phone;
     }
 
@@ -156,19 +156,19 @@ public class User {
         this.roleId = roleId;
     }
 
-    public Instant getCreatedDate() {
+    public long getCreatedDate() {
         return createdDate;
     }
 
-    public void setCreatedDate(Instant createdDate) {
+    public void setCreatedDate(long createdDate) {
         this.createdDate = createdDate;
     }
 
-    public Instant getModifiedAt() {
+    public long getModifiedAt() {
         return modifiedAt;
     }
 
-    public void setModifiedAt(Instant modifiedAt) {
+    public void setModifiedAt(long modifiedAt) {
         this.modifiedAt = modifiedAt;
     }
 

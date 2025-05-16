@@ -5,7 +5,7 @@ public class Branch {
     private String branchName;
     private String ifscCode;
     private String location;
-    private int contact;
+    private long contact;
     private long adminId;
     private long createdAt;
     private long modifiedAt;
@@ -44,11 +44,11 @@ public class Branch {
         this.location = location;
     }
 
-    public int getContact() {
+    public long getContact() {
         return contact;
     }
 
-    public void setContact(int contact) {
+    public void setContact(long contact) {
         this.contact = contact;
     }
 

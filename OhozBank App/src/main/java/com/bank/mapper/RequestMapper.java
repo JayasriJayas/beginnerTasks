@@ -17,22 +17,23 @@ public class RequestMapper {
 	    Map<String, Object> row = rows.get(0); 
 
 	    Request request = new Request();
-	    request.setId((Long) row.get("id"));
+	    request.setId(((Number) row.get("id")).longValue());
 	    request.setUsername((String) row.get("username"));
 	    request.setPassword((String) row.get("password"));
 	    request.setEmail((String) row.get("email"));
-	    request.setPhone((Integer) row.get("phone"));
+	    request.setPhone(((Number) row.get("phone")).longValue());
 	    request.setGender((String) row.get("gender"));
 	    request.setDob((Date) row.get("dob"));
 	    request.setAddress((String) row.get("address"));
 	    request.setMaritalStatus((String) row.get("maritalStatus"));
-	    request.setAadharNo((Long) row.get("aadharNo"));
+	    request.setAadharNo(((Number) row.get("aadharNo")).longValue());
 	    request.setPanNo((String) row.get("panNo"));
 	    request.setOccupation((String) row.get("occupation"));
-	    request.setAnnualIncome((Double) row.get("annualIncome"));
-	    request.setBranchId((Long) row.get("branchId"));
+	    request.setAnnualIncome(((Number) row.get("annualIncome")).doubleValue());
+	    request.setBranchId(((Number) row.get("branchId")).longValue());
 	    request.setBranchName((String) row.get("branchName"));
 	    request.setStatus(RequestStatus.valueOf((String) row.get("status")));
+	    request.setRequestTimestamp(System.currentTimeMillis());
 
 	    return request;
 	}

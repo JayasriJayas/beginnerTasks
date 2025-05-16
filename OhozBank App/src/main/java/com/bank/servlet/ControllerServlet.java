@@ -40,35 +40,7 @@ public class ControllerServlet extends HttpServlet {
         }
     }
 
-//    @Override
-//    public void init() throws ServletException {
-//        // Load routes when the servlet initializes
-//        loadRoutes();
-//    }
-//
-//    private void loadRoutes() {
-//        try {
-//            ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
-//            // Assuming routes.yaml is in the classpath
-//            InputStream inputStream = getClass().getClassLoader().getResourceAsStream("/WEB-INF/config/api-access.yaml");
-//          
-//            if (inputStream == null) {
-//                throw new FileNotFoundException("YAML file not found in classpath: /WEB-INF/config/api-access.yaml");
-//            }
-//
-//            RouteList routeList = mapper.readValue(inputStream, RouteList.class);
-//
-//            // Populate routeMap with method and path as key
-//            for (Route route : routeList.getRoutes()) {
-//                String key = route.getMethod().toUpperCase() + ":" + route.getPath();
-//                routeMap.put(key, route);
-//            }
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            throw new RuntimeException("Failed to load routes from YAML");
-//        }
-//    
-//    }
+
 
 
     @Override
@@ -85,10 +57,12 @@ public class ControllerServlet extends HttpServlet {
         }
 
         try {
+            System.out.println(req.getParameter("requestId"));
+        	String formattedPath = capitalizeAllWords(path.replaceAll("^/", ""));
           
-            String className = "com.bank.handler." + capitalize(path.replaceAll("^/", "")) + "Handler";
+            String className = "com.bank.handler." + formattedPath  + "Handler";
             System.out.println(className);
-            String methodName = "handle" + capitalize(path.replaceAll("^/", ""));
+            String methodName = "handle" + formattedPath ;
             System.out.println(methodName);
            
             Class<?> clazz = Class.forName(className);
@@ -103,9 +77,7 @@ public class ControllerServlet extends HttpServlet {
     }
 
   
-    private String capitalize(String str) {
-        return str.substring(0, 1).toUpperCase() + str.substring(1);
-    }
+
 
   
     public static class RouteList {
@@ -125,27 +97,20 @@ public class ControllerServlet extends HttpServlet {
         public void setMethod(String method) { this.method = method; }
         public void setRole(String role) { this.role = role; }
     }
+    public static String capitalizeAllWords(String input) {
+        String[] parts = input.split("/");
+        StringBuilder sb = new StringBuilder();
+        for (String part : parts) {
+            if (!part.isEmpty()) {
+                sb.append(part.substring(0, 1).toUpperCase());
+                if (part.length() > 1) {
+                    sb.append(part.substring(1).toLowerCase());
+                }
+            }
+        }
+        return sb.toString();
+    }
+
 }
-//
-//public class ControllerServlet extends HttpServlet 
-//{
-//
-//	private static final long serialVersionUID = 1L;
-//
-//	@Override
-//	protected void service(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-//		String method = req.getMethod();
-//		String action = req.getPathInfo();
-//		
-//		System.out.println(method);
-//     
-//		switch (action) 
-//		{
-//		case "/signup":
-//			new SignupHandler().handleSignup(req, res);
-//			break;
-//		default:
-//			res.sendError(HttpServletResponse.SC_NOT_FOUND, "Invalid POST route: " + action);
-//		}
-//	}
-//}
+
+

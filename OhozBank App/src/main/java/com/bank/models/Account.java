@@ -10,8 +10,8 @@ public class Account {
     private long userId;
     private long balance;
     private UserStatus status; 
-    private Instant createdAt;
-    private Instant modifiedAt;
+    private long createdAt;
+    private long modifiedAt;
     private String modifiedBy;
 
     
@@ -55,19 +55,19 @@ public class Account {
         this.status = status;
     }
 
-    public Instant getCreatedAt() {
+    public long getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Instant createdAt) {
+    public void setCreatedAt(long createdAt) {
         this.createdAt = createdAt;
     }
 
-    public Instant  getModifiedAt() {
+    public long  getModifiedAt() {
         return modifiedAt;
     }
 
-    public void setModifiedAt(Instant modifiedAt) {
+    public void setModifiedAt(long modifiedAt) {
         this.modifiedAt = modifiedAt;
     }
 

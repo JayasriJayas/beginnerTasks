@@ -12,7 +12,7 @@ public class Request {
     private String password;
     private String email;
     private String address;
-    private int phone;
+    private long phone;
     private String gender;
     private long aadharNo;
     private String panNo;
@@ -21,21 +21,18 @@ public class Request {
     private double annualIncome;
     private long branchId;
     private String branchName;
-    private Instant requestTimestamp;
+    private long requestTimestamp;
     private RequestStatus status;
     private String rejectionReason;
-    private Integer processedBy;
-    private Instant processedTimestamp;
+    private long processedBy;
+    private long processedTimestamp;
     private Date dob;
 
-   
-    public enum Status {
-        PENDING, APPROVED, REJECTED
-    }
+
 
  
     public Request() {
-        this.requestTimestamp = Instant.now();
+        this.requestTimestamp = System.currentTimeMillis();
         this.status = RequestStatus.PENDING;
     }
 
@@ -83,7 +80,7 @@ public class Request {
         return phone;
     }
 
-    public void setPhone(int phone) {
+    public void setPhone(long phone) {
         this.phone = phone;
     }
 
@@ -152,11 +149,11 @@ public class Request {
         this.branchName = branchName;
     }
 
-    public Instant getRequestTimestamp() {
+    public long getRequestTimestamp() {
         return requestTimestamp;
     }
 
-    public void setRequestTimestamp(Instant requestTimestamp) {
+    public void setRequestTimestamp(long requestTimestamp) {
         this.requestTimestamp = requestTimestamp;
     }
 
@@ -176,19 +173,19 @@ public class Request {
         this.rejectionReason = rejectionReason;
     }
 
-    public Integer getProcessedBy() {
+    public long getProcessedBy() {
         return processedBy;
     }
 
-    public void setProcessedBy(Integer processedBy) {
+    public void setProcessedBy(long processedBy) {
         this.processedBy = processedBy;
     }
 
-    public Instant getProcessedTimestamp() {
+    public long getProcessedTimestamp() {
         return processedTimestamp;
     }
 
-    public void setProcessedTimestamp(Instant processedTimestamp) {
+    public void setProcessedTimestamp(long processedTimestamp) {
         this.processedTimestamp = processedTimestamp;
     }
 
