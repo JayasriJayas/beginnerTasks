@@ -1,5 +1,6 @@
 package com.bank.models;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 
 import com.bank.enums.UserStatus;
@@ -8,7 +9,7 @@ public class Account {
     private long accountId;
     private long branchId;
     private long userId;
-    private long balance;
+    private BigDecimal balance;
     private UserStatus status; 
     private long createdAt;
     private long modifiedAt;
@@ -39,11 +40,11 @@ public class Account {
         this.userId = userId;
     }
 
-    public long getBalance() {
+    public BigDecimal getBalance() {
         return balance;
     }
 
-    public void setBalance(long balance) {
+    public void setBalance(BigDecimal balance) {
         this.balance = balance;
     }
 

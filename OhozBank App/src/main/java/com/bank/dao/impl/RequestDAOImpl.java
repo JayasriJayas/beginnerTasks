@@ -43,10 +43,9 @@ public class RequestDAOImpl implements RequestDAO {
 	 @Override
 	 public Request getRequestById(long id) throws QueryException, SQLException {
 	     QueryBuilder qb = new QueryBuilder(new MySQLDialect());
-	     qb.select("*").from("requests").where("id = ?");
+	     qb.select("*").from("requests").where("id = ?",id);
 	     String query = qb.build();
 	     List<Object> params = qb.getParameters();
-	     params.add(id); 
 	     QueryExecutor qe = new QueryExecutor(DBConnectionPool.getInstance().getConnection());
 	     List<Map<String,Object>> rs = qe.executeQuery(query, params);
 	        

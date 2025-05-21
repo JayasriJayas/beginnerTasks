@@ -62,7 +62,6 @@ public class AdminApproveHandler {
                 return;
             }
 
-            // Branch validation
             if (UserRole.ADMIN.name().equals(role)) {
                 long adminBranchId = adminDAO.getBranchIdByAdminId(adminId);
                 if (adminBranchId != request.getBranchId()) {

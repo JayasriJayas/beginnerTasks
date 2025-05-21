@@ -1,4 +1,5 @@
 package com.bank.dao.impl;
+import java.math.BigDecimal;
 import java.sql.Connection;
 
 import java.sql.SQLException;
@@ -46,7 +47,7 @@ public boolean approveRequestAndCreateUser(long requestId, long adminId) throws 
         Account account = new Account();
         account.setUserId(userId);
         account.setBranchId(req.getBranchId());
-        account.setBalance(0L);
+        account.setBalance(BigDecimal.ZERO);
         account.setStatus(UserStatus.ACTIVE);
         account.setCreatedAt(System.currentTimeMillis());
         account.setModifiedBy("admin-" + adminId);

@@ -27,7 +27,6 @@ public class LoginHandler {
         res.setContentType("application/json");
 
         try (PrintWriter out = res.getWriter()) {
-            // Read JSON from request body and directly map it to LoginRequest class
             StringBuilder jsonBuilder = new StringBuilder();
             String line;
             try (BufferedReader reader = req.getReader()) {
@@ -36,14 +35,12 @@ public class LoginHandler {
                 }
             }
 
-            // Convert JSON string to Java object
+     
             Login loginData = gson.fromJson(jsonBuilder.toString(), Login.class);
 
             String username = loginData.getUsername();
             String password = loginData.getPassword();
 
-            System.out.println(username);
-            System.out.println(password);
 
             if (username == null || password == null || username.isEmpty() || password.isEmpty()) {
                 res.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -60,8 +57,11 @@ public class LoginHandler {
             
                 UserRole userRole = UserRole.fromId(user.getRoleId());
 
-                 
                 session.setAttribute("role", userRole.name());
+                session.setAttribute("userId", user.getUserId());
+                session.setAttribute("username", user.getUsername());
+                session.setAttribute("branchId", user.getBranchId());
+
 
                 
                 if (userRole == UserRole.ADMIN || userRole == UserRole.SUPER_ADMIN) {

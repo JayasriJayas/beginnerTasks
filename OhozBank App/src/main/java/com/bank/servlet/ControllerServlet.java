@@ -57,17 +57,16 @@ public class ControllerServlet extends HttpServlet {
         }
 
         try {
-            System.out.println(req.getParameter("requestId"));
         	String formattedPath = capitalizeAllWords(path.replaceAll("^/", ""));
           
             String className = "com.bank.handler." + formattedPath  + "Handler";
             System.out.println(className);
             String methodName = "handle" + formattedPath ;
             System.out.println(methodName);
-           
             Class<?> clazz = Class.forName(className);
             Object instance = clazz.getDeclaredConstructor().newInstance();
             Method m = clazz.getMethod(methodName, HttpServletRequest.class, HttpServletResponse.class);
+       
             m.invoke(instance, req, res);
 
         } catch (Exception e) {

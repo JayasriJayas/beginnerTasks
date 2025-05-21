@@ -41,7 +41,7 @@ public class UserServiceImpl implements UserService {
         }
 
         @Override
-        public User login(String username, String password) throws Exception {
+        public User login(String username, String password) throws SQLException,QueryException {
             System.out.println(username);
             System.out.println(password);
             boolean match = false;
@@ -53,8 +53,8 @@ public class UserServiceImpl implements UserService {
                 return null;
             }
 //            return user;
+           
             boolean passwordMatch = PasswordUtil.checkPassword(password, user.getPassword());
-            System.out.print(passwordMatch);
             return passwordMatch ? user : null;
             
             

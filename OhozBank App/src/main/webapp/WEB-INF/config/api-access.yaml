@@ -35,18 +35,18 @@ routes:
     method: GET
     role: SUPER_ADMIN
 
-  - path: /admin/deposit
+  - path: /account/deposit
+    method: POST
+    role: ADMIN
+
+  - path: /account/withdraw
+    method: POST
+    role: ADMIN
+
+  - path: /account/transfer
     method: POST
     role: USER
 
-  - path: /admin/withdraw
-    method: POST
-    role: USER
-
-  - path: /user/transfer
-    method: POST
-    role: USER
-
-  - path: /user/statement
+  - path: /account/statement
     method: GET
     role: USER

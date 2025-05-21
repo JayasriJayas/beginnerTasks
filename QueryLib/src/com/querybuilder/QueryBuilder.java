@@ -27,7 +27,6 @@ public class QueryBuilder {
 	 private List<String> joins; 
 	 private List<String> subSelectColumns;
 	 private List<String> subQueryFromClauses;
-	 private List<String> whereSubqueries;
 	 private String unionClause;
 	 private boolean isDropTable = false;
 	 private boolean useAllColumns = true;
