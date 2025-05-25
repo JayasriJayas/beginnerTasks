@@ -1,10 +1,12 @@
 package com.bank.handler;
 
 import com.bank.enums.RequestStatus;
+
 import com.bank.enums.UserRole;
 import com.bank.models.Request;
 import com.bank.service.UserService;
 import com.bank.service.impl.UserServiceImpl;
+import com.bank.util.ResponseUtil;
 import com.bank.dao.AdminDAO;
 import com.bank.dao.RequestDAO;
 import com.bank.dao.impl.AdminDAOImpl;
@@ -16,6 +18,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
@@ -27,70 +30,57 @@ public class AdminApproveHandler {
     private final RequestDAO requestDAO = new RequestDAOImpl();
     private final Gson gson = new Gson();
 
+   
     public void handleAdminApprove(HttpServletRequest req, HttpServletResponse res) {
-        res.setContentType("application/json");
-
-        try (PrintWriter out = res.getWriter()) {
-
-          
+        try {
             HttpSession session = req.getSession(false);
             if (session == null || session.getAttribute("role") == null || session.getAttribute("adminId") == null) {
-                res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                out.write("{\"error\":\"Unauthorized. Admin session missing.\"}");
+                ResponseUtil.sendError(res, HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized. Admin session missing.");
                 return;
             }
 
-           BufferedReader reader = req.getReader();
+            BufferedReader reader = req.getReader();
             Map<String, Object> requestBody = gson.fromJson(reader, Map.class);
-           
 
             Object requestIdObj = requestBody.get("requestId");
             if (requestIdObj == null) {
-                res.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                out.write("{\"error\":\"Missing requestId in JSON body.\"}");
+                ResponseUtil.sendError(res, HttpServletResponse.SC_BAD_REQUEST, "Missing requestId in JSON body.");
                 return;
             }
+
             long requestId = Long.parseLong(requestIdObj.toString());
             long adminId = (long) session.getAttribute("adminId");
             String role = session.getAttribute("role").toString();
 
-            Request request = requestDAO.getRequestById(requestId);
-          
+            Request request = userService.getRequestById(requestId);
             if (request == null || !request.getStatus().equals(RequestStatus.PENDING)) {
-                res.setStatus(HttpServletResponse.SC_NOT_FOUND);
-                out.write("{\"error\":\"Request not found or not pending.\"}");
+                ResponseUtil.sendError(res, HttpServletResponse.SC_NOT_FOUND, "Request not found or not pending.");
                 return;
             }
 
             if (UserRole.ADMIN.name().equals(role)) {
-                long adminBranchId = adminDAO.getBranchIdByAdminId(adminId);
-                if (adminBranchId != request.getBranchId()) {
-                    res.setStatus(HttpServletResponse.SC_FORBIDDEN);
-                    out.write("{\"error\":\"Admins can only approve requests from their own branch.\"}");
+                boolean sameBranch = userService.isAdminInSameBranch(adminId, request.getBranchId());
+                if (!sameBranch) {
+                    ResponseUtil.sendError(res, HttpServletResponse.SC_FORBIDDEN, "Admins can only approve requests from their own branch.");
                     return;
                 }
             }
-           
-            boolean success = userService.approveUserRequest(requestId, adminId);
-            Map<String, String> result = new HashMap<>();
-            if (success) {
-                res.setStatus(HttpServletResponse.SC_OK);
-                result.put("message", "User approved and account created.");
-            } else {
-                res.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                result.put("error", "Approval failed.");
-            }
 
-            out.write(gson.toJson(result));
+            boolean success = userService.approveUserRequest(requestId, adminId);
+            if (success) {
+                ResponseUtil.sendSuccess(res, HttpServletResponse.SC_OK, "User approved and account created.");
+            } else {
+                ResponseUtil.sendError(res, HttpServletResponse.SC_BAD_REQUEST, "Approval failed.");
+            }
 
         } catch (Exception e) {
             e.printStackTrace();
             try {
-                res.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                res.getWriter().write("{\"error\":\"Internal server error.\"}");
-            } catch (Exception ex) {
-                ex.printStackTrace();
+                ResponseUtil.sendError(res, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal server error.");
+            } catch (IOException ex) {
+                ex.printStackTrace(); // fallback logging
             }
         }
     }
 }
+

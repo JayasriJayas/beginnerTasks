@@ -2,29 +2,23 @@ package com.bank.models;
 
 import java.time.Instant;
 
+import com.bank.enums.Gender;
 import com.bank.enums.UserStatus;
 
 public class User {
 	private long userId;
     private String username;
     private String password;
-    private String email;
+    private String name;
+	private String email;
     private long phone;
-    private String gender;
-    private Instant dob;
-    private String address;
-    private String maritalStatus;
-    private long aadharNo;
-    private String panNo;
-    private long branchId;
-    private String branchName;
-    private String occupation;
-    private double annualIncome;
+    private Gender gender;
     private int roleId;
     private long createdDate;
     private long modifiedAt;
     private String modifiedBy;
     private UserStatus status;
+    private long branchId;
 
     public User() {
         this.createdDate = System.currentTimeMillis();  
@@ -52,6 +46,13 @@ public class User {
     public void setPassword(String password) {
         this.password = password;
     }
+    
+    public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
 
     public String getEmail() {
         return email;
@@ -69,85 +70,14 @@ public class User {
         this.phone = phone;
     }
 
-    public String getGender() {
+    public Gender getGender() {
         return gender;
     }
 
-    public void setGender(String gender) {
+    public void setGender(Gender gender) {
         this.gender = gender;
     }
-
-    public Instant getDob() {
-        return dob;
-    }
-
-    public void setDob(Instant dob) {
-        this.dob = dob;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-    public String getMaritalStatus() {
-        return maritalStatus;
-    }
-
-    public void setMaritalStatus(String maritalStatus) {
-        this.maritalStatus = maritalStatus;
-    }
-
-    public long getAadharNo() {
-        return aadharNo;
-    }
-
-    public void setAadharNo(long aadharNo) {
-        this.aadharNo = aadharNo;
-    }
-
-    public String getPanNo() {
-        return panNo;
-    }
-
-    public void setPanNo(String panNo) {
-        this.panNo = panNo;
-    }
-
-    public long getBranchId() {
-        return branchId;
-    }
-
-    public void setBranchId(long branchId) {
-        this.branchId = branchId;
-    }
-    public String getBranchName() {
-        return branchName;
-    }
-
-    public void setBranchName(String branchName) {
-        this.branchName = branchName;
-    }
-
-    public String getOccupation() {
-        return occupation;
-    }
-
-    public void setOccupation(String occupation) {
-        this.occupation = occupation;
-    }
-
-    public double getAnnualIncome() {
-        return annualIncome;
-    }
-
-    public void setAnnualIncome(double annualIncome) {
-        this.annualIncome = annualIncome;
-    }
-
+    
     public int getRoleId() {
         return roleId;
     }
@@ -186,6 +116,12 @@ public class User {
 
     public void setStatus(UserStatus status) {
         this.status = status;
+    }
+    public long getBranchId() {
+    	return this.branchId;
+    }
+    public void setBranchId(long branchId) {
+    	this.branchId = branchId;
     }
 
 }

@@ -4,23 +4,24 @@ import java.sql.Date;
 import java.time.Instant;
 import java.time.LocalDate;
 
+import com.bank.enums.Gender;
 import com.bank.enums.RequestStatus;
 
 public class Request {
     private long id;
     private String username;
     private String password;
+	private String name;
     private String email;
     private String address;
     private long phone;
-    private String gender;
+    private Gender gender;
     private long aadharNo;
     private String panNo;
     private String maritalStatus;
     private String occupation;
     private double annualIncome;
     private long branchId;
-    private String branchName;
     private long requestTimestamp;
     private RequestStatus status;
     private String rejectionReason;
@@ -85,11 +86,11 @@ public class Request {
     }
 
 
-    public String getGender() {
+    public Gender getGender() {
         return gender;
     }
 
-    public void setGender(String gender) {
+    public void setGender(Gender gender) {
         this.gender = gender;
     }
 
@@ -141,14 +142,6 @@ public class Request {
         this.branchId = branchId;
     }
 
-    public String getBranchName() {
-        return branchName;
-    }
-
-    public void setBranchName(String branchName) {
-        this.branchName = branchName;
-    }
-
     public long getRequestTimestamp() {
         return requestTimestamp;
     }
@@ -196,4 +189,12 @@ public class Request {
     public void setDob(Date dob) {
         this.dob = dob;
     }
+    public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
 }

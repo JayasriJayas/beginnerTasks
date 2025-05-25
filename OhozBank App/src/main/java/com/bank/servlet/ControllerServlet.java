@@ -8,12 +8,15 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.bank.util.ResponseUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 
@@ -21,6 +24,7 @@ public class ControllerServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
     private final Map<String, Route> routeMap = new HashMap<>();
+    private static final Logger logger = Logger.getLogger(ControllerServlet.class.getName());
 
     @Override
     public void init() throws ServletException {
@@ -35,8 +39,8 @@ public class ControllerServlet extends HttpServlet {
                 routeMap.put(key, route);
             }
         } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException("Failed to load routes from YAML");
+            logger.log(Level.SEVERE, "Failed to load route configuration from YAML", e);
+            throw new ServletException("Failed to load routes from YAML",e);
         }
     }
 
@@ -70,8 +74,9 @@ public class ControllerServlet extends HttpServlet {
             m.invoke(instance, req, res);
 
         } catch (Exception e) {
-            e.printStackTrace();
-            res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Handler error: " + e.getMessage());
+            logger.log(Level.SEVERE, "Error invoking handler for path: " + path, e);
+            ResponseUtil.sendError(res, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                    "Handler error occurred. Please check server logs.");
         }
     }
 

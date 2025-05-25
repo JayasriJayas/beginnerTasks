@@ -28,7 +28,6 @@ public class AccountDAOImpl implements AccountDAO {
 	     QueryExecutor qe = new QueryExecutor(DBConnectionPool.getInstance().getConnection());
 	     List<Map<String,Object>> rs = qe.executeQuery(query, params);
 	     return AccountMapper.fromResultSet(rs);
-   
     }
 
     @Override

@@ -23,13 +23,13 @@ public class RequestDAOImpl implements RequestDAO {
 	    public int saveRequest(Request req) throws QueryException, SQLException {
 	        QueryBuilder qb = new QueryBuilder(new MySQLDialect());
 	        qb.insertInto("requests",
-	                "username", "password", "email", "phone", "gender", "dob", "address",
-	                "maritalStatus", "aadharNo", "panNo", "branchId", "branchName", "occupation",
+	                "username", "password","name", "email", "phone", "gender", "dob", "address",
+	                "maritalStatus", "aadharNo", "panNo", "branchId", "occupation",
 	                "annualIncome", "status","requestDate")
 	          .values(
-	              req.getUsername(), req.getPassword(), req.getEmail(), String.valueOf(req.getPhone()), req.getGender(),
+	              req.getUsername(), req.getPassword(),req.getName(), req.getEmail(), String.valueOf(req.getPhone()), req.getGender(),
 	              req.getDob().toString(), req.getAddress(), req.getMaritalStatus(), String.valueOf(req.getAadharNo()),
-	              String.valueOf(req.getPanNo()), String.valueOf(req.getBranchId()), req.getBranchName(),
+	              String.valueOf(req.getPanNo()), String.valueOf(req.getBranchId()),
 	              req.getOccupation(), String.valueOf(req.getAnnualIncome()),
 	              String.valueOf(req.getStatus()),req.getRequestTimestamp()
 	          );

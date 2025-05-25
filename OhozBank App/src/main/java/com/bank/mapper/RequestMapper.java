@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.sql.Date;
 
+import com.bank.enums.Gender;
 import com.bank.enums.RequestStatus;
 import com.bank.models.Request;
 
@@ -22,7 +23,7 @@ public class RequestMapper {
 	    request.setPassword((String) row.get("password"));
 	    request.setEmail((String) row.get("email"));
 	    request.setPhone(((Number) row.get("phone")).longValue());
-	    request.setGender((String) row.get("gender"));
+	    request.setGender(Gender.valueOf((String) row.get("gender")));
 	    request.setDob((Date) row.get("dob"));
 	    request.setAddress((String) row.get("address"));
 	    request.setMaritalStatus((String) row.get("maritalStatus"));
@@ -31,7 +32,6 @@ public class RequestMapper {
 	    request.setOccupation((String) row.get("occupation"));
 	    request.setAnnualIncome(((Number) row.get("annualIncome")).doubleValue());
 	    request.setBranchId(((Number) row.get("branchId")).longValue());
-	    request.setBranchName((String) row.get("branchName"));
 	    request.setStatus(RequestStatus.valueOf((String) row.get("status")));
 	    request.setRequestTimestamp(System.currentTimeMillis());
 

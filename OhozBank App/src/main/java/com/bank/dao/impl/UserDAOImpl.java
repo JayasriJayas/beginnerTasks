@@ -53,7 +53,6 @@ public boolean approveRequestAndCreateUser(long requestId, long adminId) throws 
         account.setModifiedBy("admin-" + adminId);
        
         insertAccount(conn, account);
-        System.out.println("successful");
         updateRequestStatus(conn, requestId, adminId, RequestStatus.APPROVED);
 
         conn.commit();
@@ -110,7 +109,6 @@ public Request getRequestById(long id) throws QueryException, SQLException {
     qb.select("*").from("requests").where("id = ?");
     String query = qb.build();
     List<Object> params = qb.getParameters();
-    params.add(id); 
     QueryExecutor qe = new QueryExecutor(DBConnectionPool.getInstance().getConnection());
     List<Map<String,Object>> rs = qe.executeQuery(query, params);
        
@@ -129,7 +127,6 @@ public User findByUsername(String username) throws SQLException,QueryException{
  
 
     String query = qb.build();
-    System.out.println(query);
     QueryExecutor qe = new QueryExecutor(DBConnectionPool.getInstance().getConnection());
     List<Map<String,Object>> rs = qe.executeQuery(query, params);
     if (rs == null || rs.isEmpty()) {
@@ -147,6 +144,17 @@ public User findByUsername(String username) throws SQLException,QueryException{
     user.setRoleId((Integer)row.get("roleId"));
     return user;
             
+}
+@Override
+public boolean existsByUsername(String username)throws SQLException,QueryException {
+	  QueryBuilder qb = new QueryBuilder(new MySQLDialect());
+	  qb.select("1").from("user").where("username = ?", username);
+	  List<Object> params = qb.getParameters();
+	  
+
+	  String query = qb.build();
+	  QueryExecutor qe = new QueryExecutor(DBConnectionPool.getInstance().getConnection());
+	  return qe.executeUpdate(query, params)>0;
 }
 }
 

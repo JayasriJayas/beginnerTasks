@@ -20,6 +20,8 @@ import javax.servlet.http.HttpSession;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 
+import com.bank.util.ResponseUtil;
+
 
 public class ApiAccessFilter implements Filter {
 
@@ -77,23 +79,22 @@ public class ApiAccessFilter implements Filter {
         }
       
         if (allowedRole == null || (!allowedRole.equalsIgnoreCase(userRole))) {
-            httpRes.sendError(HttpServletResponse.SC_FORBIDDEN, "Access Denied");
-            return;
+        	ResponseUtil.sendError(httpRes,HttpServletResponse.SC_FORBIDDEN, "Access Denied");
+        	return;
         }
-     
-//        boolean authorized = allowedRole.equalsIgnoreCase(userRole) ||
-//                (allowedRole.equals("USER") && userRole.equals("ADMIN")); // Admin inherits User access
-//
-//			if (!authorized) {
-//			httpRes.sendError(HttpServletResponse.SC_FORBIDDEN, "Access Denied");
-//			return;
-//			}
-
-
-    
+        
         chain.doFilter(req, res);
     }
 
     @Override
     public void destroy() {}
 }
+
+//boolean authorized = allowedRole.equalsIgnoreCase(userRole) ||
+//      (allowedRole.equals("USER") && userRole.equals("ADMIN")); // Admin inherits User access
+//
+//	if (!authorized) {
+//	httpRes.sendError(HttpServletResponse.SC_FORBIDDEN, "Access Denied");
+//	return;
+//	}
+

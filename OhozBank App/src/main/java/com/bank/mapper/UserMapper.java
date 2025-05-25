@@ -1,5 +1,6 @@
 package com.bank.mapper;
 
+import com.bank.enums.Gender;
 import com.bank.enums.UserStatus;
 import com.bank.models.Request;
 import com.bank.models.User;

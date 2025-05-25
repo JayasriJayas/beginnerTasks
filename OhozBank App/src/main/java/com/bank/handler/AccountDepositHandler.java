@@ -2,10 +2,10 @@ package com.bank.handler;
 
 import com.bank.service.TransactionService;
 import com.bank.service.impl.TransactionServiceImpl;
+import com.bank.util.ResponseUtil;
 import com.google.gson.Gson;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.math.BigDecimal;
 import java.util.Map;
 
@@ -18,30 +18,30 @@ public class AccountDepositHandler {
     private final Gson gson = new Gson();
 
     public void handleAccountDeposit(HttpServletRequest req, HttpServletResponse res) throws IOException {
-        res.setContentType("application/json");
-        PrintWriter out = res.getWriter();
-     
         HttpSession session = req.getSession(false);
         if (session == null || !"ADMIN".equals(session.getAttribute("role"))) {
-            res.setStatus(HttpServletResponse.SC_FORBIDDEN);
-            out.write("{\"error\":\"Only admins can deposit.\"}");
+            ResponseUtil.sendError(res, HttpServletResponse.SC_FORBIDDEN, "Only admins can deposit.");
             return;
         }
-   
-
-        Map<String, Object> payload = gson.fromJson(req.getReader(), Map.class);
-
-        long accountId = ((Double) payload.get("accountId")).longValue();
-        BigDecimal amount = new BigDecimal(payload.get("amount").toString()); 
-        String admin = session.getAttribute("username").toString();
-        
 
         try {
+            Map<String, Object> payload = gson.fromJson(req.getReader(), Map.class);
+            
+            if (payload == null || !payload.containsKey("accountId") || !payload.containsKey("amount")) {
+                ResponseUtil.sendError(res, HttpServletResponse.SC_BAD_REQUEST, "Missing required fields.");
+                return;
+            }
+
+            long accountId = ((Double) payload.get("accountId")).longValue();
+            BigDecimal amount = new BigDecimal(payload.get("amount").toString());
+            String admin = session.getAttribute("username").toString();
+
             transactionService.deposit(accountId, amount, admin);
-            out.write("{\"message\":\"Deposit successful.\"}");
+            ResponseUtil.sendSuccess(res, HttpServletResponse.SC_OK, "Deposit successful.");
+
         } catch (Exception e) {
-            res.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            out.write("{\"error\":\"" + e.getMessage() + "\"}");
+            e.printStackTrace();
+            ResponseUtil.sendError(res, HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
         }
     }
 }
