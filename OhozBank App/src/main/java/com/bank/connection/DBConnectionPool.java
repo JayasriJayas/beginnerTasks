@@ -11,7 +11,7 @@
 	
 	    private DBConnectionPool() {
 	        PoolProperties p = new PoolProperties();
-	        p.setUrl("jdbc:mysql://localhost:3306/incubationDB");
+	        p.setUrl("jdbc:mysql://localhost:3306/ohozBank");
 	        p.setDriverClassName("com.mysql.cj.jdbc.Driver");
 	        p.setUsername("root");
 	        p.setPassword("root");

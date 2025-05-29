@@ -2,6 +2,7 @@ package com.bank.handler;
 
 import com.bank.enums.RequestStatus;
 
+
 import com.bank.enums.UserRole;
 import com.bank.models.Request;
 import com.bank.service.UserService;
@@ -19,13 +20,14 @@ import javax.servlet.http.HttpSession;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.HashMap;
 import java.util.Map;
+import com.bank.service.RequestService;
+import com.bank.service.impl.RequestServiceImpl;
+
 
 public class AdminApproveHandler {
 
-    private final UserService userService = new UserServiceImpl();
+    private final RequestService requestService = new RequestServiceImpl();
     private final AdminDAO adminDAO = new AdminDAOImpl();
     private final RequestDAO requestDAO = new RequestDAOImpl();
     private final Gson gson = new Gson();
@@ -52,21 +54,21 @@ public class AdminApproveHandler {
             long adminId = (long) session.getAttribute("adminId");
             String role = session.getAttribute("role").toString();
 
-            Request request = userService.getRequestById(requestId);
+            Request request = requestService.getRequestById(requestId);
             if (request == null || !request.getStatus().equals(RequestStatus.PENDING)) {
                 ResponseUtil.sendError(res, HttpServletResponse.SC_NOT_FOUND, "Request not found or not pending.");
                 return;
             }
 
             if (UserRole.ADMIN.name().equals(role)) {
-                boolean sameBranch = userService.isAdminInSameBranch(adminId, request.getBranchId());
+                boolean sameBranch = requestService.isAdminInSameBranch(adminId, request.getBranchId());
                 if (!sameBranch) {
                     ResponseUtil.sendError(res, HttpServletResponse.SC_FORBIDDEN, "Admins can only approve requests from their own branch.");
                     return;
                 }
             }
 
-            boolean success = userService.approveUserRequest(requestId, adminId);
+            boolean success = requestService.approveUserRequest(requestId, adminId);
             if (success) {
                 ResponseUtil.sendSuccess(res, HttpServletResponse.SC_OK, "User approved and account created.");
             } else {
@@ -78,7 +80,7 @@ public class AdminApproveHandler {
             try {
                 ResponseUtil.sendError(res, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal server error.");
             } catch (IOException ex) {
-                ex.printStackTrace(); // fallback logging
+                ex.printStackTrace(); 
             }
         }
     }

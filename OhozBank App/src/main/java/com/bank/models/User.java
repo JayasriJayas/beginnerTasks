@@ -16,7 +16,7 @@ public class User {
     private int roleId;
     private long createdDate;
     private long modifiedAt;
-    private String modifiedBy;
+    private long modifiedBy;
     private UserStatus status;
     private long branchId;
 
@@ -102,11 +102,11 @@ public class User {
         this.modifiedAt = modifiedAt;
     }
 
-    public String getModifiedBy() {
+    public long getModifiedBy() {
         return modifiedBy;
     }
 
-    public void setModifiedBy(String modifiedBy) {
+    public void setModifiedBy(long modifiedBy) {
         this.modifiedBy = modifiedBy;
     }
 

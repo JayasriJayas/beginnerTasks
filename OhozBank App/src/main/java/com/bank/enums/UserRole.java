@@ -1,7 +1,7 @@
 package com.bank.enums;
 
 public enum UserRole {
-    SUPER_ADMIN(1),
+    SUPERADMIN(1),
     ADMIN(2),
     USER(3),
     PUBLIC(4);

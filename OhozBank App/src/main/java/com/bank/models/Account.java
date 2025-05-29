@@ -13,7 +13,7 @@ public class Account {
     private UserStatus status; 
     private long createdAt;
     private long modifiedAt;
-    private String modifiedBy;
+    private long modifiedBy;
 
     
     public long getAccountId() {
@@ -72,11 +72,11 @@ public class Account {
         this.modifiedAt = modifiedAt;
     }
 
-    public String getModifiedBy() {
+    public long getModifiedBy() {
         return modifiedBy;
     }
 
-    public void setModifiedBy(String modifiedBy) {
-        this.modifiedBy = modifiedBy;
+    public void setModifiedBy(long adminId) {
+        this.modifiedBy = adminId;
     }
 }

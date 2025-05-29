@@ -34,7 +34,6 @@ public class RequestMapper {
 	    request.setBranchId(((Number) row.get("branchId")).longValue());
 	    request.setStatus(RequestStatus.valueOf((String) row.get("status")));
 	    request.setRequestTimestamp(System.currentTimeMillis());
-
 	    return request;
 	}
 

@@ -22,7 +22,7 @@ public class RequestDAOImpl implements RequestDAO {
 	 @Override
 	    public int saveRequest(Request req) throws QueryException, SQLException {
 	        QueryBuilder qb = new QueryBuilder(new MySQLDialect());
-	        qb.insertInto("requests",
+	        qb.insertInto("request",
 	                "username", "password","name", "email", "phone", "gender", "dob", "address",
 	                "maritalStatus", "aadharNo", "panNo", "branchId", "occupation",
 	                "annualIncome", "status","requestDate")
@@ -33,22 +33,17 @@ public class RequestDAOImpl implements RequestDAO {
 	              req.getOccupation(), String.valueOf(req.getAnnualIncome()),
 	              String.valueOf(req.getStatus()),req.getRequestTimestamp()
 	          );
-	        String query = qb.build(); 
-	        List<Object> params = qb.getParameters();
+
 	        QueryExecutor qe = new QueryExecutor(DBConnectionPool.getInstance().getConnection());
-	        int rowsAffected = qe.executeUpdate(query, params);
+	        return  qe.executeUpdate( qb.build(), qb.getParameters());
 	        
-	        return rowsAffected;
 	    }
 	 @Override
 	 public Request getRequestById(long id) throws QueryException, SQLException {
 	     QueryBuilder qb = new QueryBuilder(new MySQLDialect());
-	     qb.select("*").from("requests").where("id = ?",id);
-	     String query = qb.build();
-	     List<Object> params = qb.getParameters();
+	     qb.select("*").from("request").where("id = ?",id);
 	     QueryExecutor qe = new QueryExecutor(DBConnectionPool.getInstance().getConnection());
-	     List<Map<String,Object>> rs = qe.executeQuery(query, params);
-	        
+	     List<Map<String,Object>> rs = qe.executeQuery( qb.build(),qb.getParameters());
 	     return RequestMapper.fromResultSet(rs);
 
 	 }

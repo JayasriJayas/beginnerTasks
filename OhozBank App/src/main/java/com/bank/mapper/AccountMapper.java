@@ -22,7 +22,7 @@ public class AccountMapper {
 		 account.setStatus(UserStatus.valueOf((String) row.get("status")));
 		 account.setCreatedAt(((Number) row.get("createdAt")).longValue());
 		 account.setModifiedAt(((Number) row.get("modifiedAt")).longValue());
-		 account.setModifiedBy((String) row.get("modifiedBy"));
+		 account.setModifiedBy(((Number) row.get("modifiedBy")).longValue());
 
 		 return account;
 		 

@@ -17,13 +17,15 @@ public class UserMapper {
             user.setUserId(req.getId()); 
             user.setUsername(req.getUsername());
             user.setPassword(req.getPassword());
+            System.out.println(req.getName());
+            user.setName(req.getName());
             user.setEmail(req.getEmail());
             user.setPhone((long) req.getPhone());
             user.setGender(req.getGender());
             user.setRoleId(3);              
             user.setStatus(UserStatus.ACTIVE);   
             user.setCreatedDate(System.currentTimeMillis());
-            user.setModifiedBy(req.getUsername());
+            user.setModifiedBy(req.getId());
 
             return user;
         }

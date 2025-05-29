@@ -22,11 +22,9 @@ public class TransactionDAOImpl implements TransactionDAO {
     	QueryBuilder qb = new QueryBuilder(new MySQLDialect());
     	qb.insertInto("transaction","accountId","userId","transactionAccountId","amount","closingBalance","type","timestamp","status","description")
     	  .values(trans.getAccountId(),trans.getUserId(),trans.getTransactionAccountId(),trans.getAmount(),trans.getClosingBalance(),trans.getType(),trans.getTimestamp(),trans.getStatus(),trans.getDescription());
-       	String query = qb.build();
-    	List<Object> params = qb.getParameters();
 	    QueryExecutor qe = new QueryExecutor(DBConnectionPool.getInstance().getConnection());
 		     
-        return qe.executeUpdate(query, params)> 0;
+        return qe.executeUpdate(qb.build(), qb.getParameters())> 0;
 	       
         }
   }

@@ -50,3 +50,11 @@ routes:
   - path: /account/statement
     method: GET
     role: USER
+ 
+  - path: /superadmin/add/employee
+    method: POST
+    role: SUPERADMIN
+
+  - path: /superadmin/add/branch
+    method: POST
+    role: SUPERADMIN

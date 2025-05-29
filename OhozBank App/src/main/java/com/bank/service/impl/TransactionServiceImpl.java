@@ -133,7 +133,6 @@ public class TransactionServiceImpl implements TransactionService {
         return transactionDAO.saveTransaction(trans);
     }
 
-    // Reusable helper method to construct transaction objects
     private Transaction createTransaction(long accountId, long userId, Long transactionAccountId,
                                           BigDecimal amount, BigDecimal closingBalance,
                                           TransactionType type, String description) {

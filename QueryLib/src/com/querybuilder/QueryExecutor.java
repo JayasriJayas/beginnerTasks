@@ -118,6 +118,26 @@ public class QueryExecutor {
         }
         return rows;
     }
+    public List<Object> executeUpdateWithGeneratedKeys(String query,List<Object> parameters) throws QueryException, SQLException{
+    	List<Object> generatedKeys = new ArrayList<>();
+    	try (PreparedStatement pstmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)){
+    		setParameters(pstmt,parameters);
+    		pstmt.executeUpdate();
+            SQLLogger.log(query);
+            try (ResultSet rs = pstmt.getGeneratedKeys()) {
+                while (rs.next()) {
+                	 generatedKeys.add(rs.getObject(1));
+                }
+
+    	}catch (SQLException e) {
+            throw new QueryException("Execution with generated keys failed: " + e.getMessage());
+        }
+        return generatedKeys;
+
+    }
+    }
+}
+    
 //    private static void printResults(List<Map<String, Object>> resultSet) {
 //        if (resultSet == null || resultSet.isEmpty()) {
 //            System.out.println("No results found.");
@@ -134,4 +154,3 @@ public class QueryExecutor {
 //        System.out.println("-------------------\n");
 //    }
 
-}

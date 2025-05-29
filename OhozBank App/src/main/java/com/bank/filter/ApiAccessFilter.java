@@ -37,7 +37,7 @@ public class ApiAccessFilter implements Filter {
 
     private Map<String, Map<String, String>> accessMap = new HashMap<>();
 
-    @Override
+   @Override
     public void init(FilterConfig filterConfig) throws ServletException {
         String configPath = filterConfig.getServletContext().getRealPath("/WEB-INF/config/api-access.yaml");
         try (InputStream input = new FileInputStream(configPath)) {
@@ -56,7 +56,7 @@ public class ApiAccessFilter implements Filter {
     @Override
     public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain)
             throws IOException, ServletException {
-
+      
         HttpServletRequest httpReq = (HttpServletRequest) req;
         HttpServletResponse httpRes = (HttpServletResponse) res;
         
@@ -77,11 +77,14 @@ public class ApiAccessFilter implements Filter {
                 chain.doFilter(req, res);
             return;
         }
-      
+        System.out.println(allowedRole);
+        System.out.println(userRole);
+        System.out.println("hii");
         if (allowedRole == null || (!allowedRole.equalsIgnoreCase(userRole))) {
         	ResponseUtil.sendError(httpRes,HttpServletResponse.SC_FORBIDDEN, "Access Denied");
         	return;
         }
+
         
         chain.doFilter(req, res);
     }
@@ -90,11 +93,5 @@ public class ApiAccessFilter implements Filter {
     public void destroy() {}
 }
 
-//boolean authorized = allowedRole.equalsIgnoreCase(userRole) ||
-//      (allowedRole.equals("USER") && userRole.equals("ADMIN")); // Admin inherits User access
-//
-//	if (!authorized) {
-//	httpRes.sendError(HttpServletResponse.SC_FORBIDDEN, "Access Denied");
-//	return;
-//	}
+
 

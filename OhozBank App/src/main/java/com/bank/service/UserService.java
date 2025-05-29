@@ -9,11 +9,7 @@ import com.bank.models.User;
 import exception.QueryException;
 
 public interface UserService {
-	 boolean registerRequest(Request request);
-	 boolean approveUserRequest(long requestId, long adminId);
-	 boolean isAdmin(User user) ;
-	 public UserRole getUserRole(User user) ;
-	 boolean isAdminInSameBranch(long adminId, long requestBranchId);
-	 Request getRequestById(long requestId);
-	 User login(String username, String password) throws SQLException,QueryException;
+    boolean isAdmin(User user);
+    UserRole getUserRole(User user);
 }
+

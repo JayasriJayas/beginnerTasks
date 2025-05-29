@@ -1,5 +1,6 @@
 package com.bank.handler;
 
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.logging.Level;
@@ -19,8 +20,8 @@ import com.bank.models.Request;
 //import javax.servlet.http.HttpServletResponse;
 //
 //import com.bank.models.Request;
-import com.bank.service.UserService;
-import com.bank.service.impl.UserServiceImpl;
+import com.bank.service.RequestService;
+import com.bank.service.impl.RequestServiceImpl;
 import com.bank.util.RequestValidator;
 import com.bank.util.ResponseUtil;
 import com.google.gson.Gson;
@@ -89,7 +90,7 @@ import com.google.gson.GsonBuilder;
 //}
 public class SignupHandler{
 	private final Logger logger = Logger.getLogger(SignupHandler.class.getName());
-	private final UserService userService = new UserServiceImpl();
+	private final RequestService requestService = new RequestServiceImpl();
 	private static final Gson gson = new GsonBuilder()
 			.setDateFormat("yyyy-MM-dd").create();
 	
@@ -105,7 +106,7 @@ public class SignupHandler{
 				return;
 			}
 			
-			boolean registered = userService.registerRequest(userRequest);
+			boolean registered = requestService.registerRequest(userRequest);
 			
 			if(registered) {
 				ResponseUtil.sendSuccess(res,HttpServletResponse.SC_OK,

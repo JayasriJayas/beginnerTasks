@@ -9,7 +9,7 @@ public class Branch {
     private long adminId;
     private long createdAt;
     private long modifiedAt;
-    private String modifiedBy;
+    private long modifiedBy;
 
     
     public long getBranchId() {
@@ -76,11 +76,11 @@ public class Branch {
         this.modifiedAt = modifiedAt;
     }
 
-    public String getModifiedBy() {
+    public long getModifiedBy() {
         return modifiedBy;
     }
 
-    public void setModifiedBy(String modifiedBy) {
+    public void setModifiedBy(long modifiedBy) {
         this.modifiedBy = modifiedBy;
     }
 }

@@ -1,5 +1,6 @@
 package com.bank.dao.impl;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.sql.Connection;
 
 import java.sql.SQLException;
@@ -32,29 +33,32 @@ public class UserDAOImpl implements UserDAO{
 public boolean approveRequestAndCreateUser(long requestId, long adminId) throws SQLException,QueryException{
     try (Connection conn = DBConnectionPool.getInstance().getConnection()) {
         conn.setAutoCommit(false);
-
-        Request req = getRequestById(requestId);
-        
-        User user = UserMapper.fromRequest(req);
-        long userId = IdGeneratorUtil.generateUserId();
-        user.setUserId(userId);
-        insertUser(conn, user);
       
+        Request req = getRequestById(requestId);
+     
+        User user = UserMapper.fromRequest(req);
+        System.out.println(user.getName());
+        long userId = insertUser(conn, user);
 
+ 
+         
+        System.out.println("hii");
         Customer customer = CustomerMapper.fromRequest(req, userId);
 
         insertCustomer(conn, customer);
+        System.out.println("hii");
         Account account = new Account();
         account.setUserId(userId);
         account.setBranchId(req.getBranchId());
         account.setBalance(BigDecimal.ZERO);
         account.setStatus(UserStatus.ACTIVE);
         account.setCreatedAt(System.currentTimeMillis());
-        account.setModifiedBy("admin-" + adminId);
+        account.setModifiedBy(adminId);
        
         insertAccount(conn, account);
+        System.out.println("hii");
         updateRequestStatus(conn, requestId, adminId, RequestStatus.APPROVED);
-
+        System.out.println("hii");
         conn.commit();
         return true;
     } catch (SQLException e) {
@@ -66,13 +70,15 @@ public boolean approveRequestAndCreateUser(long requestId, long adminId) throws 
 }
 public long insertUser(Connection conn, User user) throws SQLException,QueryException {
     QueryBuilder qb = new QueryBuilder(new MySQLDialect());
-    qb.insertInto("user","userId", "username", "password", "email", "phone", "gender", "roleId", "status","createdAt", "modifiedBy")
-      .values(user.getUserId(),user.getUsername(), user.getPassword(), user.getEmail(), user.getPhone(),
+    qb.insertInto("user", "username", "password","name", "email", "phone", "gender", "roleId", "status","createdAt", "modifiedBy")
+      .values(user.getUsername(), user.getPassword(),user.getName() ,user.getEmail(), user.getPhone(),
               user.getGender(), user.getRoleId(), user.getStatus().name(),user.getCreatedDate(),
               user.getModifiedBy());
 
     QueryExecutor executor = new QueryExecutor(conn);
-    return executor.executeUpdate(qb.build(), qb.getParameters());
+    List<Object> rs =  executor.executeUpdateWithGeneratedKeys(qb.build(), qb.getParameters());
+    BigInteger id = (BigInteger) rs.get(0);
+    return id.longValue();
 }
 public boolean insertCustomer(Connection conn, Customer customer) throws SQLException,QueryException {
     QueryBuilder qb = new QueryBuilder(new MySQLDialect());
@@ -94,7 +100,7 @@ public boolean insertAccount(Connection conn, Account account) throws SQLExcepti
 }
 public boolean updateRequestStatus(Connection conn, long requestId, long adminId, RequestStatus approved) throws SQLException,QueryException {
     QueryBuilder qb = new QueryBuilder(new MySQLDialect());
-    qb.update("requests")
+    qb.update("request")
       .set("status", approved)
       .set("processedBy", adminId)
       .set("processedTimestamp", System.currentTimeMillis())
@@ -106,7 +112,7 @@ public boolean updateRequestStatus(Connection conn, long requestId, long adminId
 
 public Request getRequestById(long id) throws QueryException, SQLException {
     QueryBuilder qb = new QueryBuilder(new MySQLDialect());
-    qb.select("*").from("requests").where("id = ?");
+    qb.select("*").from("request").where("id = ?",id);
     String query = qb.build();
     List<Object> params = qb.getParameters();
     QueryExecutor qe = new QueryExecutor(DBConnectionPool.getInstance().getConnection());
@@ -121,7 +127,7 @@ public User findByUsername(String username) throws SQLException,QueryException{
     qb.select("*")
       .from("user")
       .where("username = ?",username);
-//      .andWhere("password = ?",password);
+
 
     List<Object> params = qb.getParameters();
  
@@ -149,12 +155,10 @@ public User findByUsername(String username) throws SQLException,QueryException{
 public boolean existsByUsername(String username)throws SQLException,QueryException {
 	  QueryBuilder qb = new QueryBuilder(new MySQLDialect());
 	  qb.select("1").from("user").where("username = ?", username);
-	  List<Object> params = qb.getParameters();
-	  
-
-	  String query = qb.build();
 	  QueryExecutor qe = new QueryExecutor(DBConnectionPool.getInstance().getConnection());
-	  return qe.executeUpdate(query, params)>0;
+	  List<Map<String, Object>> result = qe.executeQuery(qb.build(), qb.getParameters()); 
+
+	  return !result.isEmpty();
 }
 }
 

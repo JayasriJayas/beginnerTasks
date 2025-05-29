@@ -12,14 +12,11 @@ public class AppShutdownListener implements ServletContextListener {
 
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
-        System.out.println("Cleaning up DB resources...");
 
-     
         DBConnectionPool.getInstance().close();
 
         AbandonedConnectionCleanupThread.checkedShutdown();
 
-        System.out.println("DB resources cleaned up successfully.");
     }
 
 
