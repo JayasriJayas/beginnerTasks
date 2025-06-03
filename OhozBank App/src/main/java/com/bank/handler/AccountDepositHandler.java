@@ -34,7 +34,7 @@ public class AccountDepositHandler {
 
             long accountId = ((Double) payload.get("accountId")).longValue();
             BigDecimal amount = new BigDecimal(payload.get("amount").toString());
-            String admin = session.getAttribute("username").toString();
+            long admin = (long)session.getAttribute("userId");
 
             transactionService.deposit(accountId, amount, admin);
             ResponseUtil.sendSuccess(res, HttpServletResponse.SC_OK, "Deposit successful.");

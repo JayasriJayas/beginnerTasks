@@ -55,7 +55,7 @@ public class AccountDAOImpl implements AccountDAO {
         }
 
         Object value = rs.get(0).get("branchId");
-        return value instanceof Number ? ((Number) value).longValue() : Long.parseLong(value.toString());
+        return value instanceof Number ? ((Number) value).longValue() : Long.parseLong(value.toString());//need to check the return type
      	
     }
 }

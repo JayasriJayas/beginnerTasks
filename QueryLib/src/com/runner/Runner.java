@@ -18,30 +18,35 @@ public class Runner {
 	public static void main(String[] args) throws QueryException, SQLException {
 
         QueryBuilder qb = new QueryBuilder(new MySQLDialect());
-//        qb.update("Student")
-//        .set("age", 23)
-//        .where("age = ?", 22)
-//        .andWhere("department = ?", "EEE");
-//        
-//       
-//
-//        String query = qb.build(); 
-//
-//        System.out.println("Generated Query: " + query);
-//
-//        QueryExecutor qe = new QueryExecutor(DBConnector.getConnection());
-//        
-//        List<Object> params = qb.getParameters();       
-//        System.out.println("Running SELECT with parameters...");
-//        qe.executeUpdate(query,params);
-        qb.insertInto("Appoinment", "name","age").values("Vichu",21);
+        qb.select("*")
+        .from("Student")
+        .whereBetween("marks",80,90).andBetween("age",22,23);
+
+       
+
         String query = qb.build(); 
-        List<Object> params = qb.getParameters();
+
+        System.out.println("Generated Query: " + query);
+
         QueryExecutor qe = new QueryExecutor(DBConnector.getConnection());
-        List<Object> rs = qe.executeUpdateWithGeneratedKeys(query,params);
         
-        System.out.println(rs.get(0));
-	       
+        List<Object> params = qb.getParameters();       
+        System.out.println("Running SELECT with parameters...");
+        List<Map<String, Object>> results = qe.executeQuery(query, params);
+
+        // ✅ Print results clearly
+        if (results.isEmpty()) {
+            System.out.println("No records found.");
+        } else {
+            System.out.println("Results:");
+            for (Map<String, Object> row : results) {
+                System.out.println("---------------");
+                for (Map.Entry<String, Object> entry : row.entrySet()) {
+                    System.out.printf("%-15s: %s%n", entry.getKey(), entry.getValue());
+                }
+            }
+        }
+      
 
     }
 

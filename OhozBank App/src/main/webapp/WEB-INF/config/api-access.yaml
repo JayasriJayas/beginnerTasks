@@ -15,41 +15,45 @@ routes:
     method: GET
     role: USER
 
+  - path: /profile 
+    method: POST
+    role: USER,ADMIN,SUPERADMIN
+
   - path: /admin/dashboard
     method: GET
     role: ADMIN
 
   - path: /admin/approve
     method: POST
-    role: ADMIN
+    role: ADMIN,SUPERADMIN
 
   - path: /admin/reject
     method: POST
     role: ADMIN
 
   - path: /admin/requests
-    method: GET
+    method: POST
     role: ADMIN
 
   - path: /superadmin/dashboard
     method: GET
-    role: SUPER_ADMIN
+    role: SUPERADMIN
 
   - path: /account/deposit
     method: POST
-    role: ADMIN
+    role: ADMIN,SUPERADMIN
 
   - path: /account/withdraw
     method: POST
-    role: ADMIN
+    role: ADMIN,SUPERADMIN
 
   - path: /account/transfer
     method: POST
     role: USER
 
   - path: /account/statement
-    method: GET
-    role: USER
+    method: POST
+    role: USER,ADMIN,SUPERADMIN
  
   - path: /superadmin/add/employee
     method: POST
@@ -58,3 +62,4 @@ routes:
   - path: /superadmin/add/branch
     method: POST
     role: SUPERADMIN
+

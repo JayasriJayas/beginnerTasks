@@ -3,7 +3,6 @@ package com.bank.mapper;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
-
 import com.bank.enums.UserStatus;
 import com.bank.models.Account;
 
@@ -23,9 +22,8 @@ public class AccountMapper {
 		 account.setCreatedAt(((Number) row.get("createdAt")).longValue());
 		 account.setModifiedAt(((Number) row.get("modifiedAt")).longValue());
 		 account.setModifiedBy(((Number) row.get("modifiedBy")).longValue());
-
 		 return account;
 		 
 	}
-
+	
 }

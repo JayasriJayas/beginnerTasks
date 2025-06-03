@@ -2,17 +2,13 @@ package com.bank.dao.impl;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Connection;
-
 import java.sql.SQLException;
-import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 
 import com.bank.connection.DBConnectionPool;
-import com.bank.dao.RequestDAO;
 import com.bank.dao.UserDAO;
 import com.bank.enums.RequestStatus;
-import com.bank.enums.UserRole;
 import com.bank.enums.UserStatus;
 import com.bank.mapper.CustomerMapper;
 import com.bank.mapper.RequestMapper;
@@ -21,19 +17,16 @@ import com.bank.models.Account;
 import com.bank.models.Customer;
 import com.bank.models.Request;
 import com.bank.models.User;
-import com.bank.util.IdGeneratorUtil;
 import com.dialect.MySQLDialect;
 import com.querybuilder.QueryBuilder;
 import com.querybuilder.QueryExecutor;
-import com.bank.models.User;
-
 import exception.QueryException;
 public class UserDAOImpl implements UserDAO{
 @Override
 public boolean approveRequestAndCreateUser(long requestId, long adminId) throws SQLException,QueryException{
     try (Connection conn = DBConnectionPool.getInstance().getConnection()) {
         conn.setAutoCommit(false);
-      
+        
         Request req = getRequestById(requestId);
      
         User user = UserMapper.fromRequest(req);
@@ -41,24 +34,23 @@ public boolean approveRequestAndCreateUser(long requestId, long adminId) throws 
         long userId = insertUser(conn, user);
 
  
-         
-        System.out.println("hii");
         Customer customer = CustomerMapper.fromRequest(req, userId);
 
         insertCustomer(conn, customer);
-        System.out.println("hii");
+
         Account account = new Account();
         account.setUserId(userId);
         account.setBranchId(req.getBranchId());
         account.setBalance(BigDecimal.ZERO);
         account.setStatus(UserStatus.ACTIVE);
         account.setCreatedAt(System.currentTimeMillis());
+        account.setModifiedAt(System.currentTimeMillis());
         account.setModifiedBy(adminId);
        
         insertAccount(conn, account);
-        System.out.println("hii");
+  
         updateRequestStatus(conn, requestId, adminId, RequestStatus.APPROVED);
-        System.out.println("hii");
+   
         conn.commit();
         return true;
     } catch (SQLException e) {
@@ -91,9 +83,9 @@ public boolean insertCustomer(Connection conn, Customer customer) throws SQLExce
 }
 public boolean insertAccount(Connection conn, Account account) throws SQLException,QueryException {
     QueryBuilder qb = new QueryBuilder(new MySQLDialect());
-    qb.insertInto("account", "userId", "branchId", "balance", "status","createdAt", "modifiedBy")
+    qb.insertInto("account", "userId", "branchId", "balance", "status","createdAt","modifiedAt", "modifiedBy")
       .values(account.getUserId(), account.getBranchId(), account.getBalance(), account.getStatus(),
-               account.getCreatedAt(),account.getModifiedBy());
+               account.getCreatedAt(),account.getModifiedAt(),account.getModifiedBy());
 
     QueryExecutor executor = new QueryExecutor(conn);
     return executor.executeUpdate(qb.build(), qb.getParameters()) > 0;

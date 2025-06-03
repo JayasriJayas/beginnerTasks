@@ -27,7 +27,7 @@ public class AccountWithdrawHandler {
 
         long accountId = ((Number) payload.get("accountId")).longValue();
         BigDecimal amount = new BigDecimal(payload.get("amount").toString());
-        String admin = session.getAttribute("username").toString();
+        long admin = (long)session.getAttribute("userId");
 
         try {
             transactionService.withdraw(accountId, amount, admin);

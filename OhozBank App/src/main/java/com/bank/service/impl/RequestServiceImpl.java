@@ -1,6 +1,7 @@
 package com.bank.service.impl;
 
 import com.bank.models.Request;
+
 import com.bank.dao.BranchDAO;
 import com.bank.dao.impl.BranchDAOImpl;
 import com.bank.service.RequestService;
@@ -11,6 +12,8 @@ import exception.QueryException;
 import com.bank.dao.UserDAO;
 
 import java.sql.SQLException;
+import java.util.Collections;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -72,4 +75,23 @@ public class RequestServiceImpl implements RequestService {
             return null;
         }
     }
+    
+    @Override
+    public List<Request> getRequestList(String adminRole, long id) {
+        try {
+            if ("SUPERADMIN".equalsIgnoreCase(adminRole)) {
+                return requestDAO.getPendingRequests();
+            } else if ("ADMIN".equalsIgnoreCase(adminRole)) {
+                long branchId = branchDAO.getBranchIdByAdminId(id);
+                return requestDAO.getPendingRequestsByBranch(branchId);
+            } else {
+                logger.warning("Unauthorized role for viewing requests: " + adminRole);
+                return Collections.emptyList();
+            }
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error fetching request list", e);
+            return Collections.emptyList();
+        }
+    }
+
 }

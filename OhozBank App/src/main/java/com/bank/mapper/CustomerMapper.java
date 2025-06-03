@@ -17,5 +17,6 @@ public class CustomerMapper {
         Customer customer = gson.fromJson(json, Customer.class);
         customer.setUserId(userId); 
         return customer;
+        //need to change from gson
     }
 }

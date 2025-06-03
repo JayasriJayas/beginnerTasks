@@ -3,26 +3,18 @@ package com.bank.handler;
 import com.bank.enums.UserRole;
 
 import com.bank.models.Login;
-import com.bank.models.Request;
 import com.bank.models.User;
 import com.bank.service.AuthenticationService;
 import com.bank.service.impl.AuthenticationServiceImpl;
 import com.bank.service.UserService;
 import com.bank.service.impl.UserServiceImpl;
 import com.bank.util.ResponseUtil;
-import com.fasterxml.jackson.core.JsonParser;
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.HashMap;
-import java.util.Map;
 
 public class LoginHandler{
 	private final AuthenticationService authenticationService = new AuthenticationServiceImpl();
@@ -37,6 +29,7 @@ public class LoginHandler{
 		                ResponseUtil.sendError(res, HttpServletResponse.SC_BAD_REQUEST, "Username and password are required.");
 		                return;
 		            }
+		     
 			 User user = authenticationService.login(loginData.getUsername(), loginData.getPassword());
 	            if (user == null) {
 	                ResponseUtil.sendError(res, HttpServletResponse.SC_UNAUTHORIZED, "Invalid username or password.");
@@ -50,11 +43,9 @@ public class LoginHandler{
 	            session.setAttribute("userId", user.getUserId());
 	            session.setAttribute("username", user.getUsername());
 	            session.setAttribute("branchId", user.getBranchId());
-
 	            if (userService.isAdmin(user)) {
 	                session.setAttribute("adminId", user.getUserId());
-	            }
-
+	            }// need to check as user and admin id are same
 	            ResponseUtil.sendSuccess(res, HttpServletResponse.SC_OK, "Login successful as " + role.name());
 
 	        } catch (Exception e) {
@@ -68,6 +59,7 @@ public class LoginHandler{
 	    }
 
 	private Login parseRequest(HttpServletRequest req) throws IOException {
+	
 	    try (BufferedReader reader = req.getReader()) {
 	        return gson.fromJson(reader, Login.class);
 	    }

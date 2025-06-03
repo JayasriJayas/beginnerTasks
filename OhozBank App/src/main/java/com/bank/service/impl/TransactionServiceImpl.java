@@ -1,6 +1,7 @@
 package com.bank.service.impl;
 
 import com.bank.dao.AccountDAO;
+
 import com.bank.dao.TransactionDAO;
 import com.bank.dao.impl.AccountDAOImpl;
 import com.bank.dao.impl.TransactionDAOImpl;
@@ -13,6 +14,7 @@ import com.bank.models.Transaction;
 import com.bank.service.TransactionService;
 import exception.QueryException;
 
+import java.util.List;
 import java.math.BigDecimal;
 import java.sql.SQLException;
 
@@ -22,38 +24,35 @@ public class TransactionServiceImpl implements TransactionService {
     private final AccountDAO accountDAO = new AccountDAOImpl();
 
     @Override
-    public synchronized boolean deposit(long accountId, BigDecimal amount, String performedBy)
+    public synchronized boolean deposit(long accountId, BigDecimal amount, long performedBy)
             throws SQLException, QueryException, BankingException {
 
         if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
             throw new BankingException("Amount must be positive");
         }
-
         Account account = accountDAO.getAccountById(accountId);
         if (account == null) {
             throw new BankingException("Account not found");
         }
-
         BigDecimal newBalance = account.getBalance().add(amount);
         account.setBalance(newBalance);
         accountDAO.updateAccount(account);
 
-        Transaction trans = TransactionMapper.mapToTransaction(
+        Transaction trans = createTransaction(
                 accountId,
                 account.getUserId(),
                 null,
                 amount,
                 newBalance,
                 TransactionType.DEPOSIT,
-                "Deposit by " + performedBy,
+                "Deposited by"+performedBy,
                 TransactionStatus.SUCCESS
         );
-
         return transactionDAO.saveTransaction(trans);
     }
 
     @Override
-    public synchronized boolean withdraw(long accountId, BigDecimal amount, String performedBy)
+    public synchronized boolean withdraw(long accountId, BigDecimal amount, long performedBy)
             throws SQLException, QueryException, BankingException {
 
         if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
@@ -74,7 +73,7 @@ public class TransactionServiceImpl implements TransactionService {
         account.setBalance(newBalance);
         accountDAO.updateAccount(account);
 
-        Transaction trans = TransactionMapper.mapToTransaction(
+        Transaction trans = createTransaction(
                 accountId,
                 account.getUserId(),
                 null,
@@ -118,7 +117,7 @@ public class TransactionServiceImpl implements TransactionService {
         accountDAO.updateAccount(from);
         accountDAO.updateAccount(to);
 
-        Transaction trans = TransactionMapper.mapToTransaction(
+        Transaction trans = createTransaction(
                 accountId,
                 from.getUserId(),
                 to.getAccountId(),
@@ -132,10 +131,17 @@ public class TransactionServiceImpl implements TransactionService {
 
         return transactionDAO.saveTransaction(trans);
     }
+  
+
+    @Override
+    public List<Transaction> getStatementByDateRange(long accountId, long fromTimestamp, long toTimestamp) throws SQLException, QueryException {
+        return transactionDAO.getTransactionsByAccountIdAndDateRange(accountId, fromTimestamp, toTimestamp);
+    }
+
 
     private Transaction createTransaction(long accountId, long userId, Long transactionAccountId,
                                           BigDecimal amount, BigDecimal closingBalance,
-                                          TransactionType type, String description) {
+                                          TransactionType type, String description,TransactionStatus status) {
         Transaction t = new Transaction();
         t.setAccountId(accountId);
         t.setUserId(userId);

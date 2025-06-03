@@ -344,6 +344,41 @@ public class QueryBuilder {
 	        whereConditions.add("NOT EXISTS (" + subQuery.build() + ")");
 	        return this;
 	    }
+	    public QueryBuilder whereBetween(String column, Object from, Object to) {
+	        this.whereConditions = initIfNull(this.whereConditions);
+	        this.parameters = initIfNull(this.parameters);
+
+	        this.whereConditions.add(column + " BETWEEN ? AND ?");
+	        this.parameters.add(from);
+	        this.parameters.add(to);
+
+	        return this;
+	    }
+	    public QueryBuilder andBetween(String column, Object from, Object to) {
+	        this.whereOperators = initIfNull(this.whereOperators);
+	        this.whereConditions = initIfNull(this.whereConditions);
+	        this.parameters = initIfNull(this.parameters);
+
+	        this.whereOperators.add("AND");
+	        this.whereConditions.add(column + " BETWEEN ? AND ?");
+	        this.parameters.add(from);
+	        this.parameters.add(to);
+
+	        return this;
+	    }
+	    public QueryBuilder orBetween(String column, Object from, Object to) {
+	        this.whereOperators = initIfNull(this.whereOperators);
+	        this.whereConditions = initIfNull(this.whereConditions);
+	        this.parameters = initIfNull(this.parameters);
+
+	        this.whereOperators.add("OR");
+	        this.whereConditions.add(column + " BETWEEN ? AND ?");
+	        this.parameters.add(from);
+	        this.parameters.add(to);
+
+	        return this;
+	    }
+
 	    public String buildConditionClause(List<String> conditions, List<String> operators) {
 	        if (conditions == null) return "";
 	    

@@ -1,8 +1,8 @@
 package com.bank.handler;
 
 import com.bank.service.TransactionService;
+
 import com.bank.service.impl.TransactionServiceImpl;
-import com.bank.util.AuthorizationUtil;
 import com.bank.util.ResponseUtil;
 import com.google.gson.Gson;
 
@@ -36,11 +36,6 @@ public class AccountTransferHandler {
         long toAccountId = ((Number) payload.get("transactionAccountId")).longValue();
         BigDecimal amount = new BigDecimal(payload.get("amount").toString());
         String actor = session.getAttribute("username").toString();
-
-        if (!AuthorizationUtil.canAccessAccount(session, fromAccountId)) {
-            ResponseUtil.sendError(res, HttpServletResponse.SC_FORBIDDEN, "Access denied to source account.");
-            return;
-        }
 
         try {
             transactionService.transfer(fromAccountId, toAccountId, amount, actor);

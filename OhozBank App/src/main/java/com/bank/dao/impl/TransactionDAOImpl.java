@@ -3,6 +3,7 @@ package com.bank.dao.impl;
 import com.bank.connection.DBConnectionPool;
 import com.bank.dao.TransactionDAO;
 import com.bank.enums.TransactionType;
+import com.bank.mapper.TransactionMapper;
 import com.bank.models.Transaction;
 	
 import com.dialect.MySQLDialect;
@@ -13,7 +14,9 @@ import exception.QueryException;
 	
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 	
 public class TransactionDAOImpl implements TransactionDAO {
 
@@ -27,41 +30,27 @@ public class TransactionDAOImpl implements TransactionDAO {
         return qe.executeUpdate(qb.build(), qb.getParameters())> 0;
 	       
         }
-  }
+  
 
-//    @Override
-//    public List<Transaction> getTransactionsByAccountId(long accountId) {
-//        List<Transaction> list = new ArrayList<>();
-//        String sql = "SELECT * FROM transactions " +
-//                     "WHERE from_account_id = ? OR to_account_id = ? ORDER BY timestamp DESC";
-//
-//        try (Connection conn = QueryBuilder.getConnection();
-//             PreparedStatement ps = conn.prepareStatement(sql)) {
-//
-//            ps.setLong(1, accountId);
-//            ps.setLong(2, accountId);
-//            ResultSet rs = ps.executeQuery();
-//
-//            while (rs.next()) {
-//                Transaction txn = new Transaction();
-//                txn.setTransactionId(rs.getLong("transaction_id"));
-//                txn.setFromAccountId(rs.getLong("from_account_id"));
-//
-//                long toAccountId = rs.getLong("to_account_id");
-//                txn.setToAccountId(rs.wasNull() ? null : toAccountId);
-//
-//                txn.setAmount(rs.getDouble("amount"));
-//                txn.setType(TransactionType.valueOf(rs.getString("type")));
-//                txn.setTimestamp(rs.getLong("timestamp"));
-//                txn.setDescription(rs.getString("description"));
-//
-//                list.add(txn);
-//            }
-//
-//        } catch (Exception e) {
-//            e.printStackTrace(); // Optional: log
-//        }
-//
-//        return list;
-//    }
+    @Override
+    public List<Transaction> getTransactionsByAccountId(long accountId) throws SQLException, QueryException {
+       
+        QueryBuilder qb = new QueryBuilder(new MySQLDialect());
+        qb.select("*").from("transaction").where("accountId = ?", accountId).orWhere("transactionAccountId = ?").orderBy("timestamp").orderDirection("DESC");
+        QueryExecutor qe = new QueryExecutor(DBConnectionPool.getInstance().getConnection());
+        List<Map<String,Object>> rows = qe.executeQuery(qb.build(), qb.getParameters());
+        return TransactionMapper.fromResultSet(rows);
+           
+        
+    }
 
+
+    @Override
+    public List<Transaction> getTransactionsByAccountIdAndDateRange(long accountId, long fromMillis, long toMillis) throws SQLException, QueryException {
+    	QueryBuilder qb = new QueryBuilder(new MySQLDialect());
+        qb.select("*").from("transaction").where("accountId = ?", accountId).orWhere("transactionAccountId = ?",accountId).andBetween("timestamp",fromMillis,toMillis).orderBy("timestamp").orderDirection("DESC");
+        QueryExecutor qe = new QueryExecutor(DBConnectionPool.getInstance().getConnection());
+        List<Map<String,Object>> rows = qe.executeQuery(qb.build(), qb.getParameters());
+        return TransactionMapper.fromResultSet(rows);
+    }
+}

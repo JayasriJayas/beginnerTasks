@@ -66,7 +66,6 @@ public class AdminDAOImpl implements AdminDAO {
         BigInteger bigIntId = (BigInteger) rs.get(0);
         return bigIntId.longValue();
 
-    	
     }
     private boolean addAdmin(Connection conn,User user,long adminId) throws SQLException, QueryException {
     	QueryBuilder qb = new QueryBuilder(new MySQLDialect());

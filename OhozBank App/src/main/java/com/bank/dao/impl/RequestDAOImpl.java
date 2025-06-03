@@ -4,12 +4,14 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import com.bank.connection.DBConnectionPool;
 import com.bank.dao.RequestDAO;
 import com.bank.mapper.RequestMapper;
+import com.bank.mapper.TransactionMapper;
 import com.bank.models.Request;
 import com.dialect.MySQLDialect;
 import com.querybuilder.DBConnector;
@@ -47,6 +49,25 @@ public class RequestDAOImpl implements RequestDAO {
 	     return RequestMapper.fromResultSet(rs);
 
 	 }
+	 
+	 @Override
+	 public List<Request> getPendingRequests() throws SQLException, QueryException {
+		 QueryBuilder qb = new QueryBuilder(new MySQLDialect());
+		 qb.select("*").from("request").where("status = ?","PENDING");
+		 QueryExecutor qe = new QueryExecutor(DBConnectionPool.getInstance().getConnection());
+		 List<Map<String,Object>> rows = qe.executeQuery(qb.build(), qb.getParameters());
+		 return RequestMapper.toMapResult(rows);
+	 }
+	 
+	 @Override
+	 public List<Request>  getPendingRequestsByBranch(long branchId)  throws SQLException, QueryException {
+		 QueryBuilder qb = new QueryBuilder(new MySQLDialect());
+		 qb.select("*").from("request").where("branchId = ?",branchId ).andWhere("status = ?","PENDING");
+		 QueryExecutor qe = new QueryExecutor(DBConnectionPool.getInstance().getConnection());
+		 List<Map<String,Object>> rows = qe.executeQuery(qb.build(), qb.getParameters());
+		 return RequestMapper.toMapResult(rows);
+	 }
+
 	 
 }
 

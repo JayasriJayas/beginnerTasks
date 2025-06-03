@@ -72,18 +72,17 @@ public class ApiAccessFilter implements Filter {
 
         Map<String, String> methodMap = accessMap.getOrDefault(path, new HashMap<>());
         String allowedRole = methodMap.get(method);
-
         if (allowedRole != null && allowedRole.equals("PUBLIC")) {
                 chain.doFilter(req, res);
             return;
         }
         System.out.println(allowedRole);
         System.out.println(userRole);
-        System.out.println("hii");
-        if (allowedRole == null || (!allowedRole.equalsIgnoreCase(userRole))) {
-        	ResponseUtil.sendError(httpRes,HttpServletResponse.SC_FORBIDDEN, "Access Denied");
-        	return;
+        if (allowedRole == null || !isRoleAllowed(userRole, allowedRole)) {
+            ResponseUtil.sendError(httpRes, HttpServletResponse.SC_FORBIDDEN, "Access Denied");
+            return;
         }
+
 
         
         chain.doFilter(req, res);
@@ -91,6 +90,16 @@ public class ApiAccessFilter implements Filter {
 
     @Override
     public void destroy() {}
+    private boolean isRoleAllowed(String userRole, String allowedRole) {
+        String[] roles = allowedRole.split(",");
+        for (String role : roles) {
+            if (role.trim().equalsIgnoreCase(userRole)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 }
 
 

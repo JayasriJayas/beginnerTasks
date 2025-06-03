@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class ResponseUtil {
@@ -29,4 +30,12 @@ public class ResponseUtil {
 		res.getWriter().flush();		
 		
 	}
+	 public static void sendJson(HttpServletResponse res, int statusCode, JSONArray jsonArray) throws IOException {
+	        res.setStatus(statusCode);
+	        res.setContentType("application/json");
+	        res.setCharacterEncoding("UTF-8");
+	        res.getWriter().write(jsonArray.toString());
+	        res.getWriter().flush();
+	    }
+
 }
