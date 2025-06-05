@@ -54,6 +54,10 @@ routes:
   - path: /account/statement
     method: POST
     role: USER,ADMIN,SUPERADMIN
+
+  - path: /account/balance
+    method: POST
+    role: USER
  
   - path: /superadmin/add/employee
     method: POST
@@ -63,3 +67,7 @@ routes:
     method: POST
     role: SUPERADMIN
 
+  - path: /edit/profile
+    method: PUT
+    role: USER,ADMIN,SUPERADMIN
+	

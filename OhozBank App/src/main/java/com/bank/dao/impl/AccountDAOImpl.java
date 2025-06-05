@@ -58,4 +58,5 @@ public class AccountDAOImpl implements AccountDAO {
         return value instanceof Number ? ((Number) value).longValue() : Long.parseLong(value.toString());//need to check the return type
      	
     }
+ 
 }

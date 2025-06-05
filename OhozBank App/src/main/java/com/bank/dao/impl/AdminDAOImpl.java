@@ -2,6 +2,9 @@ package com.bank.dao.impl;
 
 import com.bank.connection.DBConnectionPool;
 import com.bank.dao.AdminDAO;
+import com.bank.mapper.AdminMapper;
+import com.bank.mapper.TransactionMapper;
+import com.bank.models.Admin;
 import com.bank.models.User;
 import com.dialect.MySQLDialect;
 import com.querybuilder.QueryBuilder;
@@ -89,6 +92,17 @@ public class AdminDAOImpl implements AdminDAO {
     	
     	
     }
+    
+    @Override
+    public Admin getAdminByUserId(long userId) throws SQLException, QueryException {
+    	QueryBuilder qb = new QueryBuilder(new MySQLDialect());
+    	qb.select("*").from("admin").where("adminId =?", userId);
+    	QueryExecutor qe = new QueryExecutor(DBConnectionPool.getInstance().getConnection());
+    	List<Map<String,Object>> rows = qe.executeQuery(qb.build(),qb.getParameters());
+    	return AdminMapper.fromResultSet(rows); 
+        }
+    
+
 
    
 }

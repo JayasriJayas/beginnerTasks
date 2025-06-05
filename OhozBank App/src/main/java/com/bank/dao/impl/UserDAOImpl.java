@@ -5,7 +5,6 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
-
 import com.bank.connection.DBConnectionPool;
 import com.bank.dao.UserDAO;
 import com.bank.enums.RequestStatus;
@@ -21,6 +20,7 @@ import com.dialect.MySQLDialect;
 import com.querybuilder.QueryBuilder;
 import com.querybuilder.QueryExecutor;
 import exception.QueryException;
+
 public class UserDAOImpl implements UserDAO{
 @Override
 public boolean approveRequestAndCreateUser(long requestId, long adminId) throws SQLException,QueryException{
@@ -138,7 +138,6 @@ public User findByUsername(String username) throws SQLException,QueryException{
     user.setUserId((Long) row.get("userId"));
     user.setUsername((String)row.get("username"));
     user.setPassword((String)row.get("password"));
-    System.out.println(row.get("roleId"));
     user.setRoleId((Integer)row.get("roleId"));
     return user;
             
@@ -152,5 +151,18 @@ public boolean existsByUsername(String username)throws SQLException,QueryExcepti
 
 	  return !result.isEmpty();
 }
+
+
+    @Override
+    public User getUserById(long userId)throws SQLException,QueryException {
+    	  QueryBuilder qb = new QueryBuilder(new MySQLDialect());
+    	  qb.select("*").from("user").where("userId = ?",userId);
+    	  QueryExecutor qe = new QueryExecutor(DBConnectionPool.getInstance().getConnection());
+    	  List<Map<String, Object>> result = qe.executeQuery(qb.build(), qb.getParameters()); 
+        
+        return UserMapper.fromResultSet(result);
+    }
 }
+
+
 

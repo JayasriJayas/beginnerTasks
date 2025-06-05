@@ -45,7 +45,7 @@ public class LoginHandler{
 	            session.setAttribute("branchId", user.getBranchId());
 	            if (userService.isAdmin(user)) {
 	                session.setAttribute("adminId", user.getUserId());
-	            }// need to check as user and admin id are same
+	            }
 	            ResponseUtil.sendSuccess(res, HttpServletResponse.SC_OK, "Login successful as " + role.name());
 
 	        } catch (Exception e) {

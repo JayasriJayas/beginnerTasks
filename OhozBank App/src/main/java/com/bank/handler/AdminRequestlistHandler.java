@@ -1,7 +1,7 @@
 package com.bank.handler;
 
-
 import java.io.IOException;
+
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -16,6 +16,7 @@ import com.bank.service.RequestService;
 import com.bank.service.impl.RequestServiceImpl;
 import com.bank.util.ResponseUtil;
 import com.google.gson.Gson;
+
 
 public class AdminRequestlistHandler {
 	
@@ -32,10 +33,16 @@ public class AdminRequestlistHandler {
     }
     String admin = (String)session.getAttribute("role");
 	long id = (Long)session.getAttribute("adminId");
-    List<Request> requestList = requestService.getRequestList(admin,id);
-
-    JSONArray jsonArray = new JSONArray(new Gson().toJson(requestList));
-    ResponseUtil.sendJson(res, HttpServletResponse.SC_OK, jsonArray);
+	try {
+		 List<Request> requestList = requestService.getRequestList(admin,id);
+		 JSONArray jsonArray = new JSONArray(new Gson().toJson(requestList));
+		 ResponseUtil.sendJson(res, HttpServletResponse.SC_OK, jsonArray);
+		
+	}
+	catch (Exception e) {
+		ResponseUtil.sendError(res, HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
+	}
+   
     
 	
 	

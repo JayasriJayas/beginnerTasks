@@ -22,7 +22,7 @@ public class ResponseUtil {
 		sendJson(res,statusCode,json);	
 	}
 	
-	private static void sendJson(HttpServletResponse res,int statusCode, JSONObject json) throws IOException {
+	public static void sendJson(HttpServletResponse res,int statusCode, JSONObject json) throws IOException {
 		res.setStatus(statusCode);
 		res.setContentType("application/json");
 		res.setCharacterEncoding("UTF-8");
@@ -37,5 +37,6 @@ public class ResponseUtil {
 	        res.getWriter().write(jsonArray.toString());
 	        res.getWriter().flush();
 	    }
+
 
 }
