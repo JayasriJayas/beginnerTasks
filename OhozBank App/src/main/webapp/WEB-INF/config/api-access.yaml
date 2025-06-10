@@ -11,11 +11,7 @@ routes:
     method: GET
     role: PUBLIC
 
-  - path: /user/dashboard
-    method: GET
-    role: USER
-
-  - path: /profile 
+  - path: /profile
     method: POST
     role: USER,ADMIN,SUPERADMIN
 
@@ -34,10 +30,6 @@ routes:
   - path: /admin/requests
     method: POST
     role: ADMIN
-
-  - path: /superadmin/dashboard
-    method: GET
-    role: SUPERADMIN
 
   - path: /account/deposit
     method: POST
@@ -70,4 +62,11 @@ routes:
   - path: /edit/profile
     method: PUT
     role: USER,ADMIN,SUPERADMIN
-	
+
+  - path: /edit/branch
+    method: PUT
+    role: SUPERADMIN
+
+  - path: /edit/employee
+    method: PUT
+    role: SUPERADMIN

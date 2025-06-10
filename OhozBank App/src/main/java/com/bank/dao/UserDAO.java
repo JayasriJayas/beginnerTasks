@@ -11,6 +11,6 @@ public interface UserDAO {
 	boolean approveRequestAndCreateUser(long requestId, long adminId) throws SQLException,QueryException;
 	 User findByUsername(String username) throws SQLException,QueryException;
 	 User getUserById(long userId) throws SQLException,QueryException;
-	 boolean updateUserProfile(User user) throws SQLException;
+	 boolean updateUserProfile(User user) throws SQLException,QueryException;
 
 }

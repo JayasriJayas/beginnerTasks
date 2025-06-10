@@ -1,6 +1,5 @@
 package com.bank.handler;
 
-import com.bank.models.Customer;
 import com.bank.service.UserService;
 import com.bank.service.impl.UserServiceImpl;
 import com.bank.util.ResponseUtil;
@@ -9,6 +8,7 @@ import com.google.gson.Gson;
 import javax.servlet.http.*;
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -27,16 +27,11 @@ public class EditProfileHandler {
         long userId = (Long) session.getAttribute("userId");
 
         try (BufferedReader reader = req.getReader()) {
-            Map<String, String> payload = gson.fromJson(reader, Map.class);
+            Map<String, Object> payload = gson.fromJson(reader, Map.class);
 
-            Customer customer = new Customer();
-            customer.setUserId(userId);
-            customer.setAddress(payload.get("address"));
-            customer.setMaritalStatus(payload.get("maritalStatus"));
-            customer.setOccupation(payload.get("occupation"));
-            customer.setAnnualIncome(Double.parseDouble(payload.get("annualIncome")));
 
-            boolean updated = userService.updateCustomerProfile(customer);
+            boolean updated = userService.updateEditableProfileFields(userId, payload);
+
             if (updated) {
                 ResponseUtil.sendSuccess(res, HttpServletResponse.SC_OK, "Profile updated successfully.");
             } else {

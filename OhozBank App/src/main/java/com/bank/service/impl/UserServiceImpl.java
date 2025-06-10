@@ -2,7 +2,8 @@ package com.bank.service.impl;
 
 
 import java.sql.SQLException;
-import java.util.Date;
+
+import java.sql.Date; 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -12,6 +13,7 @@ import com.bank.dao.UserDAO;
 import com.bank.dao.impl.AdminDAOImpl;
 import com.bank.dao.impl.CustomerDAOImpl;
 import com.bank.dao.impl.UserDAOImpl;
+import com.bank.enums.Gender;
 import com.bank.enums.UserRole;
 import com.bank.models.Admin;
 import com.bank.models.Customer;
@@ -59,7 +61,7 @@ public class UserServiceImpl implements UserService {
         User user = userDAO.getUserById(userId);
         if (user == null) return false;
 
-        // 1. Validate & update editable user fields
+ 
         if (updates.containsKey("name")) user.setName((String) updates.get("name"));
         if (updates.containsKey("email")) user.setEmail((String) updates.get("email"));
         if (updates.containsKey("phone")) user.setPhone(((Number) updates.get("phone")).longValue());
@@ -67,23 +69,22 @@ public class UserServiceImpl implements UserService {
 
         user.setModifiedAt(System.currentTimeMillis());
         user.setModifiedBy(userId);
+        System.out.println("i am here");
 
         boolean userUpdated = userDAO.updateUserProfile(user);
 
-        // 2. Only update customer info if user is a CUSTOMER (i.e., has a record in customer table)
+       
         boolean customerUpdated = true;
         if (user.getRoleId() == UserRole.USER.getId()) {
             Customer customer = customerDAO.getCustomerByUserId(userId);
-            if (customer == null) return false; // sanity check
+            if (customer == null) return false; 
 
-            if (updates.containsKey("aadharNo")) customer.setAadharNo(Long.parseLong(updates.get("aadharNo").toString()));
-            if (updates.containsKey("panNo")) customer.setPanNo(updates.get("panNo").toString());
             if (updates.containsKey("address")) customer.setAddress(updates.get("address").toString());
             if (updates.containsKey("dob")) customer.setDob(Date.valueOf(updates.get("dob").toString()));
             if (updates.containsKey("maritalStatus")) customer.setMaritalStatus(updates.get("maritalStatus").toString());
             if (updates.containsKey("occupation")) customer.setOccupation(updates.get("occupation").toString());
             if (updates.containsKey("annualIncome")) customer.setAnnualIncome(Double.parseDouble(updates.get("annualIncome").toString()));
-
+            System.out.println("i am in service");
             customerUpdated = customerDAO.updateCustomerProfile(customer);
         }
 

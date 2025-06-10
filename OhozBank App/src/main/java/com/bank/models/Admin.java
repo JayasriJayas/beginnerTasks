@@ -2,6 +2,7 @@ package com.bank.models;
 
 public class Admin {
 	private long adminId;
+	private Long branchId;
 	public long getAdminId() {
 		return adminId;
 	}
@@ -14,6 +15,6 @@ public class Admin {
 	public void setBranchId(Long branchId) {
 		this.branchId = branchId;
 	}
-	private Long branchId;
+
 
 }

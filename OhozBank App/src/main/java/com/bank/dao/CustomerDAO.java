@@ -6,6 +6,6 @@ import com.bank.models.Customer;
 
 public interface CustomerDAO {
 	Customer getCustomerByUserId(long userId)throws SQLException,QueryException;
-	boolean updateEditableFields(Customer customer) throws SQLException;
+	 boolean updateCustomerProfile(Customer customer) throws SQLException,QueryException;
 
 }

@@ -14,7 +14,7 @@ public interface UserService  {
     boolean isAdmin(User user);
     UserRole getUserRole(User user);
     Map<String, Object> getProfile(String role, long userId)throws SQLException, QueryException ;
-    boolean updateCustomerProfile(Customer customer)throws SQLException, QueryException ;
+    boolean updateEditableProfileFields(long userId, Map<String, Object> updates) throws SQLException,QueryException;
 
 }
 
