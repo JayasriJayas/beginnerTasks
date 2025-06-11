@@ -23,14 +23,14 @@ public class LoginHandler{
 	
 	public void handleLogin(HttpServletRequest req, HttpServletResponse res) {
 		try {
+			
 			Login loginData = parseRequest(req);
 			 if (loginData == null || loginData.getUsername() == null || loginData.getPassword() == null ||
 		                loginData.getUsername().isEmpty() || loginData.getPassword().isEmpty()) {
 		                ResponseUtil.sendError(res, HttpServletResponse.SC_BAD_REQUEST, "Username and password are required.");
 		                return;
 		            }
-		     
-			 User user = authenticationService.login(loginData.getUsername(), loginData.getPassword());
+			  User user = authenticationService.login(loginData.getUsername(), loginData.getPassword());
 	            if (user == null) {
 	                ResponseUtil.sendError(res, HttpServletResponse.SC_UNAUTHORIZED, "Invalid username or password.");
 	                return;
@@ -43,6 +43,8 @@ public class LoginHandler{
 	            session.setAttribute("userId", user.getUserId());
 	            session.setAttribute("username", user.getUsername());
 	            session.setAttribute("branchId", user.getBranchId());
+	        
+	       
 	            if (userService.isAdmin(user)) {
 	                session.setAttribute("adminId", user.getUserId());
 	            }

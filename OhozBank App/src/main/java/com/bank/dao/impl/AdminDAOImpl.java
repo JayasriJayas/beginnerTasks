@@ -101,7 +101,23 @@ public class AdminDAOImpl implements AdminDAO {
     	List<Map<String,Object>> rows = qe.executeQuery(qb.build(),qb.getParameters());
     	return AdminMapper.fromResultSet(rows); 
         }
-    
+    @Override
+    public boolean updateAdmin(Admin admin) throws SQLException,QueryException {
+        QueryBuilder qb = new QueryBuilder(new MySQLDialect());
+        qb.update("admin");
+
+        if (admin.getBranchId() != null) {
+            qb.set("branchId", admin.getBranchId());
+        }
+
+        qb.where("adminId = ?", admin.getAdminId());
+
+        QueryExecutor qe = new QueryExecutor(DBConnectionPool.getInstance().getConnection());
+        int rowsAffected = qe.executeUpdate(qb.build(), qb.getParameters());
+
+        return rowsAffected > 0;
+    }
+
 
 
    

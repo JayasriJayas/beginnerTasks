@@ -55,6 +55,7 @@ public class UserDAOImpl implements UserDAO{
 	        return true;
 	    } catch (SQLException e) {
 	        e.printStackTrace();
+	        
 	        throw new SQLException(e.getMessage());
 	        
 	    }
@@ -139,6 +140,7 @@ public class UserDAOImpl implements UserDAO{
 	    user.setUsername((String)row.get("username"));
 	    user.setPassword((String)row.get("password"));
 	    user.setRoleId((Integer)row.get("roleId"));
+	    user.setBranchId((Long) row.get("branchId"));
 	    return user;
 	            
 	}

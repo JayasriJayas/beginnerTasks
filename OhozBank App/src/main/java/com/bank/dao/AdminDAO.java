@@ -11,4 +11,5 @@ public interface AdminDAO {
     boolean isAdminExists(String username) throws SQLException,QueryException;
     boolean saveAdmin(User user,long superAdminId) throws SQLException, QueryException;
     Admin getAdminByUserId(long userId)throws SQLException , QueryException;
+    boolean updateAdmin(Admin admin) throws SQLException,QueryException;
 }

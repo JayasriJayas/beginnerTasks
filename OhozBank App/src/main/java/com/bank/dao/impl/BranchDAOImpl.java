@@ -49,5 +49,25 @@ public class BranchDAOImpl implements BranchDAO {
 	        int rowsAffected = qe.executeUpdate(qb.build(), qb.getParameters());
 	        return rowsAffected >0;
 	   }
+	   @Override
+	   public boolean updateBranch(Branch branch) throws SQLException, QueryException {
+	       QueryBuilder qb = new QueryBuilder(new MySQLDialect());
+	       qb.update("branch");
+
+	       if (branch.getBranchName() != null) qb.set("branchName", branch.getBranchName());
+	       if (branch.getIfscCode() != null) qb.set("ifscCode", branch.getIfscCode());
+	       if (branch.getLocation() != null) qb.set("location", branch.getLocation());
+	       if (branch.getContact() != 0) qb.set("contact", branch.getContact());
+
+	       qb.set("modifiedAt", branch.getModifiedAt());
+	       qb.set("modifiedBy", branch.getModifiedBy());
+
+	       qb.where("branchId = ?", branch.getBranchId());
+
+	       QueryExecutor qe = new QueryExecutor(DBConnectionPool.getInstance().getConnection());
+	       int rowsAffected = qe.executeUpdate(qb.build(), qb.getParameters());
+	       return rowsAffected > 0;
+	   }
+
 
 }

@@ -50,7 +50,7 @@ routes:
   - path: /account/balance
     method: POST
     role: USER
- 
+
   - path: /superadmin/add/employee
     method: POST
     role: SUPERADMIN
@@ -67,6 +67,18 @@ routes:
     method: PUT
     role: SUPERADMIN
 
-  - path: /edit/employee
+  - path: /edit/admin
     method: PUT
     role: SUPERADMIN
+
+  - path: /account/request
+    method: POST
+    role: USER,ADMIN,SUPERADMIN
+ 
+  - path: /account/approve
+    method: POST
+    role: ADMIN,SUPERADMIN
+
+  - path: /edit/account
+    method: PUT
+    role: ADMIN,SUPERADMIN 

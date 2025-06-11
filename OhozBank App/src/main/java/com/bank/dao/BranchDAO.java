@@ -10,4 +10,6 @@ public interface BranchDAO {
 	   long getBranchIdByAdminId(long adminId)throws SQLException, QueryException;
 	   boolean isBranchExits(String ifscCode) throws SQLException, QueryException;
 	   boolean saveBranch(Branch branch,long superadminadminId) throws SQLException, QueryException;
+	   boolean updateBranch(Branch branch) throws SQLException, QueryException;
+
 }
