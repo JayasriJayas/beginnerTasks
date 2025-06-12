@@ -1,22 +1,22 @@
 package com.bank.models;
 
 public class Branch {
-    private long branchId;
+    private Long branchId;
     private String branchName;
     private String ifscCode;
     private String location;
-    private long contact;
-    private long adminId;
+    private Long contact;
+    private Long adminId;
     private long createdAt;
     private long modifiedAt;
     private long modifiedBy;
 
     
-    public long getBranchId() {
+    public Long getBranchId() {
         return branchId;
     }
 
-    public void setBranchId(long branchId) {
+    public void setBranchId(Long branchId) {
         this.branchId = branchId;
     }
 
@@ -44,19 +44,19 @@ public class Branch {
         this.location = location;
     }
 
-    public long getContact() {
+    public Long getContact() {
         return contact;
     }
 
-    public void setContact(long contact) {
+    public void setContact(Long contact) {
         this.contact = contact;
     }
 
-    public long getAdminId() {
+    public Long getAdminId() {
         return adminId;
     }
 
-    public void setAdminId(long adminId) {
+    public void setAdminId(Long adminId) {
         this.adminId = adminId;
     }
 

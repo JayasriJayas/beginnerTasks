@@ -2,14 +2,11 @@ package com.bank.service.impl;
 
 import java.math.BigDecimal;
 import java.sql.SQLException;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.bank.dao.AccountDAO;
-import com.bank.dao.UserDAO;
 import com.bank.dao.impl.AccountDAOImpl;
-import com.bank.dao.impl.UserDAOImpl;
 import com.bank.enums.RequestStatus;
 import com.bank.enums.UserStatus;
 import com.bank.models.Account;
@@ -18,12 +15,10 @@ import com.bank.service.AccountService;
 
 import exception.QueryException;
 
-import java.math.BigDecimal;
-
 public class AccountServiceImpl implements AccountService {
 
     private final AccountDAO accountDAO = new AccountDAOImpl();
-    private final UserDAO userDAO = new UserDAOImpl();
+    
     private final Logger logger = Logger.getLogger(AccountServiceImpl.class.getName());
 
     @Override
@@ -62,16 +57,16 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public boolean updateAccountStatus(Map<String, Object> payload, long modifiedBy) throws QueryException, SQLException {
+    public boolean updateAccountStatus(Account payload, long modifiedBy) throws QueryException, SQLException {
         try {
            
-            if (!payload.containsKey("accountId") || !payload.containsKey("status")) {
+            if (payload.getAccountId()!= null|| payload.getStatus()!= null) {
                 logger.warning("Missing accountId or status in payload for updateAccountStatus.");
                 return false;
             }
 
-            long accountId = ((Number) payload.get("accountId")).longValue();
-            UserStatus newStatus = UserStatus.valueOf((String)payload.get("status"));
+            long accountId = payload.getAccountId();
+            UserStatus newStatus = payload.getStatus();
             Account account = accountDAO.getAccountById(accountId);
             if (account == null) {
                 logger.warning("Account not found for update: " + accountId);
@@ -84,7 +79,7 @@ public class AccountServiceImpl implements AccountService {
 
             return accountDAO.updateAccount(account);
         }  catch (Exception e) {
-            logger.log(Level.SEVERE, "Error updating account status for account: " + payload.getOrDefault("accountId", "N/A"), e);
+            logger.log(Level.SEVERE, "Error updating account status for account: " + payload.getAccountId(), e);
             return false;
         }
     }

@@ -1,32 +1,23 @@
 package com.bank.dao.impl;
 
+import java.math.BigDecimal;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.List;
+import java.util.Map;
+
 import com.bank.connection.DBConnectionPool;
 import com.bank.dao.AccountDAO;
-import com.bank.enums.RequestStatus;
 import com.bank.enums.UserStatus;
 import com.bank.mapper.AccountMapper;
 import com.bank.mapper.AccountRequestMapper;
-import com.bank.mapper.CustomerMapper;
-import com.bank.mapper.UserMapper;
 import com.bank.models.Account;
 import com.bank.models.AccountRequest;
-import com.bank.models.Customer;
-import com.bank.models.Request;
-import com.bank.models.User;
 import com.dialect.MySQLDialect;
 import com.querybuilder.QueryBuilder;
 import com.querybuilder.QueryExecutor;
 
 import exception.QueryException;
-
-import java.math.BigDecimal;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 public class AccountDAOImpl implements AccountDAO {
 

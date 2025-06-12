@@ -1,3 +1,4 @@
+
 package com.bank.exception;
 
 public class BankingException extends Exception{

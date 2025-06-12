@@ -1,9 +1,14 @@
 package com.bank.dao.impl;
 
+import java.math.BigInteger;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.List;
+import java.util.Map;
+
 import com.bank.connection.DBConnectionPool;
 import com.bank.dao.AdminDAO;
 import com.bank.mapper.AdminMapper;
-import com.bank.mapper.TransactionMapper;
 import com.bank.models.Admin;
 import com.bank.models.User;
 import com.dialect.MySQLDialect;
@@ -11,14 +16,6 @@ import com.querybuilder.QueryBuilder;
 import com.querybuilder.QueryExecutor;
 
 import exception.QueryException;
-
-import java.math.BigInteger;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.List;
-import java.util.Map;
 
 public class AdminDAOImpl implements AdminDAO {
 	

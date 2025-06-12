@@ -9,26 +9,26 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import com.bank.service.AccountService;
 import com.bank.service.impl.AccountServiceImpl;
-
+import com.bank.util.RequestParser;
 import com.bank.util.ResponseUtil;
+import com.bank.util.SessionUtil;
 import com.google.gson.Gson;
+import com.bank.models.AccountRequest;
 
 public class AccountRequestHandler {
 
     private final AccountService accountService = new AccountServiceImpl();
 
-    public void handleAccountRequest(HttpServletRequest req, HttpServletResponse res) throws IOException {
+    public void request(HttpServletRequest req, HttpServletResponse res) throws IOException {
+    	try {
         HttpSession session = req.getSession(false);
-        if (session == null || session.getAttribute("userId") == null) {
-            ResponseUtil.sendError(res, HttpServletResponse.SC_UNAUTHORIZED, "Please log in.");
-            return;
-        }
+        if (!SessionUtil.isSessionAvailable(session, res)) return;
+
 
         long userId = (Long) session.getAttribute("userId");
 
-        try (BufferedReader reader = req.getReader()) {
-            Map<String, Object> payload = new Gson().fromJson(reader, Map.class);
-            long branchId = ((Number) payload.get("branchId")).longValue();
+      AccountRequest request = RequestParser.parseRequest(req, AccountRequest.class); 
+            long branchId = request.getBranchId();
             
 
             boolean success = accountService.createAccountRequest(userId, branchId);

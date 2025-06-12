@@ -6,7 +6,7 @@ import java.time.Instant;
 import com.bank.enums.UserStatus;
 
 public class Account {
-    private long accountId;
+    private  Long accountId;
     private long branchId;
     private long userId;
     private BigDecimal balance;
@@ -16,11 +16,11 @@ public class Account {
     private long modifiedBy;
 
     
-    public long getAccountId() {
+    public Long getAccountId() {
         return accountId;
     }
 
-    public void setAccountId(long accountId) {
+    public void setAccountId(Long accountId) {
         this.accountId = accountId;
     }
 

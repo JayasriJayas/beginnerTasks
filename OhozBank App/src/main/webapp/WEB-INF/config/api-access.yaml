@@ -1,67 +1,35 @@
 routes:
-  - path: /signup
+  - path: /signup/request
     method: POST
     role: PUBLIC
 
-  - path: /login
+  - path: /login/user
     method: POST
     role: PUBLIC
+
+  - path: /list/request
+    method: POST
+    role: ADMIN,SUPERADMIN
 
   - path: /logout
     method: GET
     role: PUBLIC
 
-  - path: /profile
+  - path: /profile/user
     method: POST
     role: USER,ADMIN,SUPERADMIN
 
-  - path: /admin/dashboard
-    method: GET
-    role: ADMIN
-
-  - path: /admin/approve
-    method: POST
-    role: ADMIN,SUPERADMIN
-
-  - path: /admin/reject
-    method: POST
-    role: ADMIN
-
-  - path: /admin/requests
-    method: POST
-    role: ADMIN
-
-  - path: /account/deposit
-    method: POST
-    role: ADMIN,SUPERADMIN
-
-  - path: /account/withdraw
-    method: POST
-    role: ADMIN,SUPERADMIN
-
-  - path: /account/transfer
-    method: POST
-    role: USER
-
-  - path: /account/statement
-    method: POST
-    role: USER,ADMIN,SUPERADMIN
-
-  - path: /account/balance
-    method: POST
-    role: USER
-
-  - path: /superadmin/add/employee
-    method: POST
-    role: SUPERADMIN
-
-  - path: /superadmin/add/branch
-    method: POST
-    role: SUPERADMIN
-
-  - path: /edit/profile
+  - path: /edit/user
     method: PUT
     role: USER,ADMIN,SUPERADMIN
+
+  - path: /add-admin/user
+    method: POST
+    role: SUPERADMIN
+
+  - path: /approve/request
+    method: POST
+    role: ADMIN,SUPERADMIN
 
   - path: /edit/branch
     method: PUT
@@ -71,14 +39,38 @@ routes:
     method: PUT
     role: SUPERADMIN
 
-  - path: /account/request
+  - path: /request/account-request
     method: POST
     role: USER,ADMIN,SUPERADMIN
  
-  - path: /account/approve
+  - path: /approve-account/admin
     method: POST
     role: ADMIN,SUPERADMIN
 
   - path: /edit/account
     method: PUT
-    role: ADMIN,SUPERADMIN 
+    role: ADMIN,SUPERADMIN
+  
+  - path: /add/branch
+    method: POST
+    role: SUPERADMIN
+
+  - path: /withdraw/transaction
+    method: POST
+    role: ADMIN,SUPERADMIN
+
+  - path: /deposit/transaction
+    method: POST
+    role: ADMIN,SUPERADMIN
+
+  - path: /balance/account
+    method: POST
+    role: USER
+
+  - path: /transfer/transaction
+    method: POST
+    role: USER,ADMIN,SUPERADMIN
+
+  - path: /statement/transaction
+    method: POST
+    role: USER,ADMIN,SUPERADMIN

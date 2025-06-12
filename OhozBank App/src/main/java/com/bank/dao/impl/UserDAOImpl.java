@@ -154,7 +154,6 @@ public class UserDAOImpl implements UserDAO{
 		  return !result.isEmpty();
 	}
 	
-	
 	@Override
 	    public User getUserById(long userId)throws SQLException,QueryException {
 		QueryBuilder qb = new QueryBuilder(new MySQLDialect());

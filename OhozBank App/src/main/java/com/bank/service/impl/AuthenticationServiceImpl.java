@@ -1,14 +1,12 @@
 package com.bank.service.impl;
 
-import com.bank.models.User;
-import com.bank.service.AuthenticationService;
-import com.bank.util.PasswordUtil;
-
 import java.sql.SQLException;
 
 import com.bank.dao.UserDAO;
 import com.bank.dao.impl.UserDAOImpl;
-import com.bank.enums.UserRole;
+import com.bank.models.User;
+import com.bank.service.AuthenticationService;
+import com.bank.util.PasswordUtil;
 
 import exception.QueryException;
 

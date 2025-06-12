@@ -42,20 +42,20 @@ public class AdminServiceImpl implements AdminService {
         }
     }
     @Override
-    public boolean updateBranchDetails(long userId,Map<String, Object> updates) throws SQLException, QueryException {
+    public boolean updateBranchDetails(long userId,Branch updates) throws SQLException, QueryException {
         Branch branch = new Branch();
 
-        if (updates.containsKey("branchId")) {
-            branch.setBranchId(((Number) updates.get("branchId")).longValue());
+        if (updates.getBranchId()!=null) {
+            branch.setBranchId(updates.getBranchId());
         } else {
             logger.warning("BranchId is required");
             return false; 
         }
-        if (updates.containsKey("branchName")) branch.setBranchName((String) updates.get("branchName"));
-        if (updates.containsKey("ifscCode")) branch.setIfscCode((String) updates.get("ifscCode"));
-        if (updates.containsKey("location")) branch.setLocation((String) updates.get("location"));
-        if (updates.containsKey("contact")) branch.setContact(((Number) updates.get("contact")).longValue());
-        if(updates.containsKey("adminId)")) branch.setAdminId(((Number) updates.get("adminId")).longValue());
+        if (updates.getBranchName()!=null) branch.setBranchName(updates.getBranchName());
+        if (updates.getIfscCode()!=null) branch.setIfscCode(updates.getIfscCode());
+        if (updates.getLocation()!=null) branch.setLocation(updates.getLocation());
+        if (updates.getContact()!=null) branch.setContact(updates.getContact());
+        if(updates.getAdminId()!=null) branch.setAdminId(updates.getAdminId());
  
         branch.setModifiedAt(System.currentTimeMillis());
         branch.setModifiedBy(userId); 

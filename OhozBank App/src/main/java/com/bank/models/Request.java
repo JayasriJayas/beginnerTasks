@@ -8,7 +8,7 @@ import com.bank.enums.Gender;
 import com.bank.enums.RequestStatus;
 
 public class Request {
-    private long id;
+    private Long id;
     private String username;
     private String password;
 	private String name;
@@ -37,11 +37,11 @@ public class Request {
         this.status = RequestStatus.PENDING;
     }
 
-    public long getId() {
+    public  Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
