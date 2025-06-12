@@ -1,6 +1,7 @@
 package com.bank.dao;
 
 import java.sql.SQLException;
+import java.util.List;
 
 import com.bank.models.Branch;
 
@@ -11,5 +12,8 @@ public interface BranchDAO {
 	   boolean isBranchExits(String ifscCode) throws SQLException, QueryException;
 	   boolean saveBranch(Branch branch,long superadminadminId) throws SQLException, QueryException;
 	   boolean updateBranch(Branch branch) throws SQLException, QueryException;
+	   Branch getBranchById(long branchId) throws SQLException, QueryException;
+	   List<Branch> getAllBranches() throws SQLException, QueryException;
+
 
 }

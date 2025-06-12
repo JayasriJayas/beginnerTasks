@@ -1,7 +1,6 @@
 package com.bank.models;
 
 import java.math.BigDecimal;
-import java.time.Instant;
 
 import com.bank.enums.UserStatus;
 

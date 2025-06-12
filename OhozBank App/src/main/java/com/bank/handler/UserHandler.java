@@ -1,10 +1,24 @@
 package com.bank.handler;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.util.Map;
+import java.util.logging.Logger;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import org.json.JSONObject;
+
 import com.bank.enums.UserRole;
-import com.bank.models.Request;
 import com.bank.models.User;
-import com.bank.service.*;
-import com.bank.service.impl.*;
+import com.bank.service.AdminService;
+import com.bank.service.AuthenticationService;
+import com.bank.service.UserService;
+import com.bank.service.impl.AdminServiceImpl;
+import com.bank.service.impl.AuthenticationServiceImpl;
+import com.bank.service.impl.UserServiceImpl;
 import com.bank.util.RequestParser;
 import com.bank.util.RequestValidator;
 import com.bank.util.ResponseUtil;
@@ -12,20 +26,9 @@ import com.bank.util.SessionUtil;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import javax.servlet.http.*;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Logger;
-
 public class UserHandler {
 
     private final Logger logger = Logger.getLogger(UserHandler.class.getName());
-    private final RequestService requestService = new RequestServiceImpl();
     private final UserService userService = new UserServiceImpl();
     private final AuthenticationService authenticationService = new AuthenticationServiceImpl();
     private final AdminService adminService = new AdminServiceImpl();
@@ -136,6 +139,16 @@ public class UserHandler {
             }
         } else {
             ResponseUtil.sendError(res, HttpServletResponse.SC_FORBIDDEN, "Only Super Admin can add Admin.");
+        }
+    }
+    public void logout(HttpServletRequest req, HttpServletResponse res) throws IOException {
+        HttpSession session = req.getSession(false);
+
+        if (session != null) {
+            session.invalidate();
+            ResponseUtil.sendSuccess(res, HttpServletResponse.SC_OK, "Logout successful.");
+        } else {
+            ResponseUtil.sendError(res, HttpServletResponse.SC_BAD_REQUEST, "No active session found.");
         }
     }
 

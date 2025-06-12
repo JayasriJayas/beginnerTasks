@@ -1,20 +1,13 @@
 package com.bank.mapper;
 
-import java.sql.ResultSet;
-
-import java.sql.SQLException;
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.math.BigDecimal;
-import java.sql.Date;
 
 import com.bank.enums.Gender;
 import com.bank.enums.RequestStatus;
-import com.bank.enums.TransactionStatus;
-import com.bank.enums.TransactionType;
 import com.bank.models.Request;
-import com.bank.models.Transaction;
 
 public class RequestMapper {
 	public static Request fromResultSet(List<Map<String, Object>> rows) {

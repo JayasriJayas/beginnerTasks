@@ -1,7 +1,19 @@
 package com.bank.handler;
 
-import com.bank.enums.UserRole;
-import com.bank.models.Branch;
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.time.Instant;
+import java.time.format.DateTimeParseException;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import org.json.JSONArray;
+
 import com.bank.models.StatementRequest;
 import com.bank.models.Transaction;
 import com.bank.service.TransactionService;
@@ -10,18 +22,6 @@ import com.bank.util.RequestParser;
 import com.bank.util.ResponseUtil;
 import com.bank.util.SessionUtil;
 import com.google.gson.Gson;
-import org.json.JSONArray;
-
-import javax.servlet.http.*;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.math.BigDecimal;
-import java.time.Instant;
-import java.time.format.DateTimeParseException;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class TransactionHandler {
     private final Logger logger = Logger.getLogger(TransactionHandler.class.getName());

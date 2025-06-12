@@ -7,6 +7,7 @@ import java.util.Map;
 
 import com.bank.connection.DBConnectionPool;
 import com.bank.dao.BranchDAO;
+import com.bank.mapper.BranchMapper;
 import com.bank.models.Branch;
 import com.dialect.MySQLDialect;
 import com.querybuilder.QueryBuilder;
@@ -68,6 +69,29 @@ public class BranchDAOImpl implements BranchDAO {
 	       int rowsAffected = qe.executeUpdate(qb.build(), qb.getParameters());
 	       return rowsAffected > 0;
 	   }
+	   @Override
+	   public Branch getBranchById(long branchId) throws SQLException, QueryException {
+	       QueryBuilder qb = new QueryBuilder(new MySQLDialect());
+	       qb.select("*").from("branch").where("branchId = ?", branchId);
+
+	       QueryExecutor qe = new QueryExecutor(DBConnectionPool.getInstance().getConnection());
+	       List<Map<String, Object>> rs = qe.executeQuery(qb.build(), qb.getParameters());
+
+	       return BranchMapper.fromResultSet(rs);
+	   }
+
+	   @Override
+	   public List<Branch> getAllBranches() throws SQLException, QueryException{
+	       QueryBuilder qb = new QueryBuilder(new MySQLDialect());
+	       qb.select("*").from("branch");
+
+	       QueryExecutor qe = new QueryExecutor(DBConnectionPool.getInstance().getConnection());
+	       List<Map<String, Object>> rs = qe.executeQuery(qb.build(), qb.getParameters());
+
+	       return BranchMapper.toMapResult(rs);
+	   }
+
+
 
 
 }

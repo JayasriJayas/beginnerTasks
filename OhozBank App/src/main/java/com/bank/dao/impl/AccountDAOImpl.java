@@ -3,6 +3,7 @@ package com.bank.dao.impl;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -61,14 +62,7 @@ public class AccountDAOImpl implements AccountDAO {
         return value instanceof Number ? ((Number) value).longValue() : Long.parseLong(value.toString());//need to check the return type
      	
     }
-    @Override
-    public boolean save(AccountRequest request) throws SQLException,QueryException {
-    	QueryBuilder qb = new QueryBuilder(new MySQLDialect());
-    	qb.insertInto("accountRequest","userId","branchId","status","createdAt").values(request.getUserId(),request.getBranchId(),request.getStatus(),System.currentTimeMillis());
-
-        QueryExecutor qe = new QueryExecutor(DBConnectionPool.getInstance().getConnection());
-        return  qe.executeUpdate( qb.build(), qb.getParameters())>0;
-    }
+    
     @Override
     public  boolean approveRequest(long requestId,long adminId) throws SQLException,QueryException{
     	try (Connection conn = DBConnectionPool.getInstance().getConnection()) {
@@ -135,6 +129,31 @@ public class AccountDAOImpl implements AccountDAO {
         QueryExecutor qe = new QueryExecutor(conn);
         return qe.executeUpdate(qb.build(), qb.getParameters()) > 0;
     }
+    @Override
+    public List<Account> getAccountsByBranchId(long branchId) throws SQLException, QueryException {
+        QueryBuilder qb = new QueryBuilder(new MySQLDialect());
+        qb.select("*").from("account").where("branchId = ?", branchId);
+
+        QueryExecutor qe = new QueryExecutor(DBConnectionPool.getInstance().getConnection());
+        List<Map<String, Object>> rs = qe.executeQuery(qb.build(), qb.getParameters());
+
+        return AccountMapper.mapToAccounts(rs);
+    }
+
+    @Override
+    public List<Account> getAllAccounts() throws SQLException, QueryException {
+        QueryBuilder qb = new QueryBuilder(new MySQLDialect());
+        qb.select("*").from("account");
+
+        QueryExecutor qe = new QueryExecutor(DBConnectionPool.getInstance().getConnection());
+        List<Map<String, Object>> rs = qe.executeQuery(qb.build(), qb.getParameters());
+
+       
+        return AccountMapper.mapToAccounts(rs);
+    }
+
+   
+    
 
  
 }

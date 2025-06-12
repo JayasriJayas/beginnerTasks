@@ -3,6 +3,7 @@ package com.bank.mapper;
 import com.bank.enums.RequestStatus;
 import com.bank.models.AccountRequest;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -36,4 +37,22 @@ public class AccountRequestMapper {
         }
         return accountRequest;
     }
+        public static List<AccountRequest> mapToRequests(List<Map<String, Object>> rows) {
+            List<AccountRequest> requests = new ArrayList<>();
+            if (rows == null) return requests;
+
+            for (Map<String, Object> row : rows) {
+                AccountRequest req = new AccountRequest();
+
+                req.setRequestId(((Number) row.get("requestId")).longValue());
+                req.setUserId(((Number) row.get("userId")).longValue());
+                req.setBranchId(((Number) row.get("branchId")).longValue());
+                req.setStatus(RequestStatus.valueOf((String) row.get("status")));
+                req.setCreatedAt(((Number) row.get("createdAt")).longValue());
+             
+                requests.add(req);
+            }
+
+            return requests;
+        }
 }

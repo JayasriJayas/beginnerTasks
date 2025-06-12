@@ -113,7 +113,33 @@ public class AdminDAOImpl implements AdminDAO {
         int rowsAffected = qe.executeUpdate(qb.build(), qb.getParameters());
 
         return rowsAffected > 0;
+    }@Override
+    public Map<String, Object> fetchAdmin(long adminId) throws SQLException, QueryException {
+        QueryBuilder qb = new QueryBuilder(new MySQLDialect());
+        qb.select("a.adminId", "a.branchId", "a.userId", 
+                  "u.name", "u.email", "u.phone", "u.status")
+          .from("admin a")
+          .innerJoin("user u", "a.userId = u.userId")
+          .where("a.adminId = ?", adminId);
+
+        QueryExecutor qe = new QueryExecutor(DBConnectionPool.getInstance().getConnection());
+        List<Map<String, Object>> rs = qe.executeQuery(qb.build(), qb.getParameters());
+
+        return rs.isEmpty() ? null : rs.get(0);
     }
+
+    @Override
+    public List<Map<String, Object>> fetchAllAdmins() throws SQLException, QueryException {
+        QueryBuilder qb = new QueryBuilder(new MySQLDialect());
+        qb.select("a.adminId", "a.branchId", "a.userId", 
+                  "u.name", "u.email", "u.phone", "u.status")
+          .from("admin a")
+          .innerJoin("user u", "a.userId = u.userId");
+
+        QueryExecutor qe = new QueryExecutor(DBConnectionPool.getInstance().getConnection());
+        return qe.executeQuery(qb.build(), qb.getParameters());
+    }
+
 
 
 

@@ -1,30 +1,32 @@
 package com.bank.handler;
 
-import com.bank.enums.UserRole;
+import java.io.IOException;
+import java.util.List;
+import java.util.logging.Logger;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import com.bank.models.Branch;
-import com.bank.models.Request;
 import com.bank.service.AdminService;
 import com.bank.service.BranchService;
 import com.bank.service.impl.AdminServiceImpl;
 import com.bank.service.impl.BranchServiceImpl;
 import com.bank.util.RequestParser;
-import com.bank.util.RequestValidator;
 import com.bank.util.ResponseUtil;
 import com.bank.util.SessionUtil;
 import com.google.gson.Gson;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.util.logging.Logger;
 
 public class BranchHandler {
     private final Logger logger = Logger.getLogger(BranchHandler.class.getName());
     private final AdminService adminService = new AdminServiceImpl();
     private final BranchService branchService = new BranchServiceImpl();
-    private final Gson gson = new Gson();
+    Gson gson = new Gson();
+
 
     public void edit(HttpServletRequest req, HttpServletResponse res) throws IOException {
         try {
@@ -53,11 +55,7 @@ public class BranchHandler {
             if (!SessionUtil.isSuperAdmin(session, res)) return;
 
             Branch branch = RequestParser.parseRequest(req,Branch.class);
-            String validateError = validate(branch);
-            if (validateError != null) {
-                ResponseUtil.sendError(res, HttpServletResponse.SC_BAD_REQUEST, validateError);
-                return;
-            }
+          
 
             long superadminId = (long) session.getAttribute("adminId");
             boolean success = branchService.addBranch(branch, superadminId);
@@ -72,10 +70,46 @@ public class BranchHandler {
             ResponseUtil.sendError(res, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Server error");
         }
     }
+    public void get(HttpServletRequest req, HttpServletResponse res) throws IOException {
+        try {
+            HttpSession session = req.getSession(false);
+            if (!SessionUtil.isAdminOrSuperAdmin(session, res)) return;
 
+            String idParam = req.getParameter("branchId");
+            if (idParam == null) {
+                ResponseUtil.sendError(res, HttpServletResponse.SC_BAD_REQUEST, "branchId parameter is required");
+                return;
+            }
 
-    private String validate(Branch branch) {
-        return RequestValidator.validateBranchFields(branch);
+            long branchId = Long.parseLong(idParam);
+            Branch branch = branchService.getBranchById(branchId);
+
+            if (branch != null) {
+                JSONObject json = new JSONObject(gson.toJson(branch));
+                ResponseUtil.sendJson(res, HttpServletResponse.SC_OK, json);
+            } else {
+                ResponseUtil.sendError(res, HttpServletResponse.SC_NOT_FOUND, "Branch not found");
+            }
+
+        } catch (Exception e) {
+            logger.severe("Error getting branch: " + e.getMessage());
+            ResponseUtil.sendError(res, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Server error");
+        }
+    }
+
+    public void list(HttpServletRequest req, HttpServletResponse res) throws IOException {
+        try {
+            HttpSession session = req.getSession(false);
+            if (!SessionUtil.isAdminOrSuperAdmin(session, res)) return;
+
+            List<Branch> branches = branchService.getAllBranches();
+            JSONArray jsonArray = new JSONArray(gson.toJson(branches));
+            ResponseUtil.sendJson(res, HttpServletResponse.SC_OK, jsonArray);
+
+        } catch (Exception e) {
+            logger.severe("Error listing branches: " + e.getMessage());
+            ResponseUtil.sendError(res, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Server error");
+        }
     }
 
     

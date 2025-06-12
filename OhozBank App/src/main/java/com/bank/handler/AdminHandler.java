@@ -11,15 +11,16 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.json.JSONArray;
+import org.json.JSONObject;
 
 import com.bank.enums.UserRole;
 import com.bank.models.Request;
 import com.bank.service.AccountService;
-import com.bank.service.RequestService;
 import com.bank.service.AdminService;
+import com.bank.service.RequestService;
 import com.bank.service.impl.AccountServiceImpl;
-import com.bank.service.impl.RequestServiceImpl;
 import com.bank.service.impl.AdminServiceImpl;
+import com.bank.service.impl.RequestServiceImpl;
 import com.bank.util.RequestParser;
 import com.bank.util.ResponseUtil;
 import com.bank.util.SessionUtil;
@@ -33,6 +34,7 @@ public class AdminHandler {
     private final RequestService requestService = new RequestServiceImpl();
     private final AdminService adminService = new AdminServiceImpl();
     private final Gson gson = new Gson();
+   
 
     public void approveAccount(HttpServletRequest req, HttpServletResponse res) throws IOException {
     	try {
@@ -89,4 +91,38 @@ public class AdminHandler {
 	        ResponseUtil.sendError(res, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Server error.");
 	    }
 	}
+
+    public void get(HttpServletRequest req, HttpServletResponse res) throws IOException {
+        try {
+            HttpSession session = req.getSession(false);
+            if (!SessionUtil.isSuperAdmin(session, res)) return;
+
+            long adminId = Long.parseLong(req.getParameter("adminId"));
+            Map<String, Object> adminDetails = adminService.getAdminById(adminId);
+
+            if (adminDetails != null) {
+                JSONObject jsonObject = new JSONObject(gson.toJson(adminDetails));
+                ResponseUtil.sendJson(res, HttpServletResponse.SC_OK, jsonObject);
+            } else {
+                ResponseUtil.sendError(res, HttpServletResponse.SC_NOT_FOUND, "Admin not found");
+            }
+        } catch (Exception e) {
+            logger.severe("Error fetching admin: " + e.getMessage());
+            ResponseUtil.sendError(res, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Server error");
+        }
+    }
+
+    public void list(HttpServletRequest req, HttpServletResponse res) throws IOException {
+        try {
+            HttpSession session = req.getSession(false);
+            if (!SessionUtil.isSuperAdmin(session, res)) return;
+
+            List<Map<String, Object>> admins = adminService.getAllAdmins();
+            JSONArray jsonArray = new JSONArray(gson.toJson(admins));
+            ResponseUtil.sendJson(res, HttpServletResponse.SC_OK, jsonArray);
+        } catch (Exception e) {
+            logger.severe("Error fetching all admins: " + e.getMessage());
+            ResponseUtil.sendError(res, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Server error");
+        }
+    }
 }

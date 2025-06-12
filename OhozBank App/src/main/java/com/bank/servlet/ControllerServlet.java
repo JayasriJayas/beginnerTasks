@@ -162,7 +162,7 @@ public class ControllerServlet extends HttpServlet {
 
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-        String path = req.getPathInfo(); // e.g., /requestlist/user
+        String path = req.getPathInfo(); 
         String method = req.getMethod().toUpperCase();
         String key = method + ":" + path;
 
@@ -173,15 +173,15 @@ public class ControllerServlet extends HttpServlet {
         }
 
         try {
-            String[] parts = path.split("/"); // [ "", "requestlist", "user" ]
+            String[] parts = path.split("/");
             if (parts.length < 3) {
                 res.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid path structure: " + path);
                 return;
             }
 
-            // reverse logic: method = requestList, handler = UserHandler
-            String methodName = toCamelCase(parts[1]); // "requestList"
-            String handlerClassName = capitalizeFirst(toCamelCase(parts[2])) + "Handler"; // "UserHandler"
+     
+            String methodName = toCamelCase(parts[1]); 
+            String handlerClassName = capitalizeFirst(toCamelCase(parts[2])) + "Handler"; 
 
             String className = "com.bank.handler." + handlerClassName;
             Class<?> clazz = Class.forName(className);
@@ -260,7 +260,7 @@ public class ControllerServlet extends HttpServlet {
                 sb.append(capitalizeFirst(part));
             }
         }
-        return sb.toString(); // e.g., "requestList" from "requestlist"
+        return sb.toString(); 
     }
 }
 

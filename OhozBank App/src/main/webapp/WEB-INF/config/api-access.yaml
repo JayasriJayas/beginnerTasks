@@ -42,6 +42,10 @@ routes:
   - path: /request/account-request
     method: POST
     role: USER,ADMIN,SUPERADMIN
+
+  - path: /list/account-request
+    method: POST
+    role: ADMIN,SUPERADMIN
  
   - path: /approve-account/admin
     method: POST
@@ -74,3 +78,23 @@ routes:
   - path: /statement/transaction
     method: POST
     role: USER,ADMIN,SUPERADMIN
+
+  - path: /get/branch
+    method: POST
+    role: SUPERADMIN
+
+  - path: /get-all/branch
+    method: POST
+    role: SUPERADMIN
+
+  - path: /get/admin
+    method: POST
+    role: SUPERADMIN
+
+  - path: /get/account
+    method: POST
+    role: USER,ADMIN,SUPERADMIN
+
+  - path: /get-all/account
+    method: POST
+    role: ADMIN,SUPERADMIN

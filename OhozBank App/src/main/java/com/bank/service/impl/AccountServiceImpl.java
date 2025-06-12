@@ -2,6 +2,7 @@ package com.bank.service.impl;
 
 import java.math.BigDecimal;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -19,6 +20,7 @@ public class AccountServiceImpl implements AccountService {
 
     private final AccountDAO accountDAO = new AccountDAOImpl();
     
+    
     private final Logger logger = Logger.getLogger(AccountServiceImpl.class.getName());
 
     @Override
@@ -26,16 +28,7 @@ public class AccountServiceImpl implements AccountService {
         Account account = accountDAO.getAccountById(accountId);
         return account != null ? account.getBalance() : null;
     }
-    @Override
-    public boolean createAccountRequest(long userId, long branchId) throws SQLException,QueryException {
-        AccountRequest request = new AccountRequest();
-        request.setUserId(userId);
-        request.setBranchId(branchId);
-        request.setStatus(RequestStatus.PENDING);
-        request.setCreatedAt(System.currentTimeMillis());
-
-        return accountDAO.save(request);
-    }
+    
     
     @Override
     public boolean approveAccountRequest(long requestId, long adminId)throws SQLException,QueryException {
@@ -72,7 +65,6 @@ public class AccountServiceImpl implements AccountService {
                 logger.warning("Account not found for update: " + accountId);
                 return false;
             }
-
             account.setStatus(newStatus);
             account.setModifiedBy(modifiedBy);
             account.setModifiedAt(System.currentTimeMillis());
@@ -83,7 +75,39 @@ public class AccountServiceImpl implements AccountService {
             return false;
         }
     }
+ 
+        @Override
+        public Account getAccountById(long accountId) throws SQLException {
+            try {
+                return accountDAO.getAccountById(accountId);
+            } catch (Exception e) {
+                logger.severe("Error fetching account by ID: " + e.getMessage());
+                return null;
+            }
+        }
+
+        @Override
+        public List<Account> getAccountsByBranchId(long branchId) throws SQLException {
+            try {
+                return accountDAO.getAccountsByBranchId(branchId);
+            } catch (Exception e) {
+                logger.severe("Error fetching accounts by branch: " + e.getMessage());
+                return null;
+            }
+        }
+
+        @Override
+        public List<Account> getAllAccounts() throws SQLException {
+            try {
+                return accountDAO.getAllAccounts();
+            } catch (Exception e) {
+                logger.severe("Error fetching all accounts: " + e.getMessage());
+                return null;
+            }
+        }
+      
+    }
 
 
-}
+
 

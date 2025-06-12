@@ -1,6 +1,7 @@
 package com.bank.service.impl;
 
 import java.sql.SQLException;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -30,5 +31,15 @@ public class BranchServiceImpl implements BranchService{
        }
 		 
 	 }
+
+    @Override
+    public Branch getBranchById(long branchId) throws SQLException, QueryException{
+        return branchDAO.getBranchById(branchId);
+    }
+
+    @Override
+    public List<Branch> getAllBranches()throws SQLException, QueryException{
+        return branchDAO.getAllBranches();
+    }
  
 }

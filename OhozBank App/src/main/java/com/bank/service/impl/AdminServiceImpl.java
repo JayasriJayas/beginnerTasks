@@ -1,7 +1,7 @@
 package com.bank.service.impl;
 
 import java.sql.SQLException;
-
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -126,9 +126,30 @@ public class AdminServiceImpl implements AdminService {
         return success;
     }
    
+        @Override
+        public Map<String, Object> getAdminById(long adminId) throws SQLException {
+            try {
+                return adminDAO.fetchAdmin(adminId);
+            } catch (Exception e) {
+                logger.severe("Error in getAdminById: " + e.getMessage());
+                return null;
+            }
+        }
+
+        @Override
+        public List<Map<String, Object>> getAllAdmins() throws SQLException {
+            try {
+                return adminDAO.fetchAllAdmins();
+            } catch (Exception e) {
+                logger.severe("Error in getAllAdminsWithUserDetails: " + e.getMessage());
+                return null;
+            }
+        }
+    }
+
 
 
 
 
  
-}
+

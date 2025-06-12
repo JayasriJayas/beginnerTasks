@@ -1,5 +1,13 @@
 package com.bank.handler;
 
+import java.io.IOException;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import org.json.JSONArray;
 import com.bank.enums.RequestStatus;
 import com.bank.enums.UserRole;
 import com.bank.models.Request;
@@ -11,18 +19,6 @@ import com.bank.util.ResponseUtil;
 import com.bank.util.SessionUtil;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import org.json.JSONArray;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class RequestHandler {
 
