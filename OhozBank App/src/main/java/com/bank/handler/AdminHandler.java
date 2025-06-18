@@ -14,6 +14,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.bank.enums.UserRole;
+import com.bank.models.Admin;
 import com.bank.models.Request;
 import com.bank.service.AccountService;
 import com.bank.service.AdminService;
@@ -44,7 +45,7 @@ public class AdminHandler {
         String role = session.getAttribute("role").toString();
         long branchId = (Long)session.getAttribute("branchId");
         long adminId =(Long) session.getAttribute("userId");
-
+        
         if (UserRole.ADMIN.name().equals(role)) {
             boolean sameBranch = requestService.isAdminInSameBranch(adminId, branchId);
             if (!sameBranch) {
@@ -52,9 +53,10 @@ public class AdminHandler {
                 return;
             }
         }
+       
         Request request = RequestParser.parseRequest(req, Request.class);
             long requestId = request.getId();
-
+          
             boolean success = accountService.approveAccountRequest(requestId, adminId);
 
             if (success) {
@@ -96,8 +98,10 @@ public class AdminHandler {
         try {
             HttpSession session = req.getSession(false);
             if (!SessionUtil.isSuperAdmin(session, res)) return;
-
-            long adminId = Long.parseLong(req.getParameter("adminId"));
+            
+            Admin admin = RequestParser.parseRequest(req, Admin.class);
+          
+            long adminId = admin.getAdminId();
             Map<String, Object> adminDetails = adminService.getAdminById(adminId);
 
             if (adminDetails != null) {
@@ -112,7 +116,7 @@ public class AdminHandler {
         }
     }
 
-    public void list(HttpServletRequest req, HttpServletResponse res) throws IOException {
+    public void getAll(HttpServletRequest req, HttpServletResponse res) throws IOException {
         try {
             HttpSession session = req.getSession(false);
             if (!SessionUtil.isSuperAdmin(session, res)) return;

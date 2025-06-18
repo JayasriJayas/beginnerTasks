@@ -26,6 +26,7 @@ public class AccountRequestHandler {
     private final Logger logger = Logger.getLogger(AccountRequestHandler.class.getName());
 
     public void request(HttpServletRequest req, HttpServletResponse res) throws IOException {
+
     	try {
         HttpSession session = req.getSession(false);
         if (!SessionUtil.isSessionAvailable(session, res)) return;
@@ -33,7 +34,7 @@ public class AccountRequestHandler {
 
         long userId = (Long) session.getAttribute("userId");
 
-      AccountRequest request = RequestParser.parseRequest(req, AccountRequest.class); 
+        AccountRequest request = RequestParser.parseRequest(req, AccountRequest.class); 
             long branchId = request.getBranchId();
             
 

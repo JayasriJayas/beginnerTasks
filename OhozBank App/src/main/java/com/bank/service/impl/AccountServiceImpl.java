@@ -8,10 +8,8 @@ import java.util.logging.Logger;
 
 import com.bank.dao.AccountDAO;
 import com.bank.dao.impl.AccountDAOImpl;
-import com.bank.enums.RequestStatus;
 import com.bank.enums.UserStatus;
 import com.bank.models.Account;
-import com.bank.models.AccountRequest;
 import com.bank.service.AccountService;
 
 import exception.QueryException;
@@ -33,6 +31,7 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public boolean approveAccountRequest(long requestId, long adminId)throws SQLException,QueryException {
         try {
+        	System.out.println("in serv");
             return accountDAO.approveRequest(requestId, adminId);
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error approving user request", e);
@@ -52,12 +51,6 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public boolean updateAccountStatus(Account payload, long modifiedBy) throws QueryException, SQLException {
         try {
-           
-            if (payload.getAccountId()!= null|| payload.getStatus()!= null) {
-                logger.warning("Missing accountId or status in payload for updateAccountStatus.");
-                return false;
-            }
-
             long accountId = payload.getAccountId();
             UserStatus newStatus = payload.getStatus();
             Account account = accountDAO.getAccountById(accountId);
@@ -68,7 +61,7 @@ public class AccountServiceImpl implements AccountService {
             account.setStatus(newStatus);
             account.setModifiedBy(modifiedBy);
             account.setModifiedAt(System.currentTimeMillis());
-
+       
             return accountDAO.updateAccount(account);
         }  catch (Exception e) {
             logger.log(Level.SEVERE, "Error updating account status for account: " + payload.getAccountId(), e);

@@ -56,24 +56,33 @@ public class ApiAccessFilter implements Filter {
     @Override
     public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain)
             throws IOException, ServletException {
+    	
       
         HttpServletRequest httpReq = (HttpServletRequest) req;
         HttpServletResponse httpRes = (HttpServletResponse) res;
-        
-        String path = httpReq.getPathInfo();
+        String fullPath = httpReq.getRequestURI();
+        String contextPath = httpReq.getContextPath(); 
+        String path = fullPath.substring(contextPath.length()); 
+//        String path = httpReq.getPathInfo();
         String method = httpReq.getMethod().toUpperCase();
         HttpSession session = httpReq.getSession(false);
-
+     
+        if (path.endsWith(".jsp") || path.endsWith(".css") || path.endsWith(".js")) {
+            chain.doFilter(req, res);
+            return;
+        }
+        
         String userRole = "PUBLIC"; 
         if (session != null && session.getAttribute("role") != null) {
             userRole = session.getAttribute("role").toString();
         }
 
 
-        Map<String, String> methodMap = accessMap.getOrDefault(path, new HashMap<>());
-        String allowedRole = methodMap.get(method);
-        if (allowedRole != null && allowedRole.equals("PUBLIC")) {
-                chain.doFilter(req, res);
+        Map<String, String> methodMap = accessMap.get(path);
+        String allowedRole = (methodMap != null) ? methodMap.get(method) : null;
+
+        if ("PUBLIC".equalsIgnoreCase(allowedRole)) {
+            chain.doFilter(req, res);
             return;
         }
         System.out.println(allowedRole);

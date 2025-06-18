@@ -1,0 +1,20 @@
+<Context>
+    <Resource name="jdbc/ohozBankDB"
+              auth="Container"
+              type="javax.sql.DataSource"
+              factory="org.apache.tomcat.jdbc.pool.DataSourceFactory"
+              driverClassName="com.mysql.cj.jdbc.Driver"
+              url="jdbc:mysql://localhost:3306/ohozBank"
+              username="root"
+              password="root"
+              maxActive="50"
+              initialSize="5"
+              maxIdle="10"
+              minIdle="5"
+              maxWait="10000"
+              validationQuery="SELECT 1"
+              testOnBorrow="true"
+              removeAbandoned="true"
+              removeAbandonedTimeout="60"
+              logAbandoned="true" />
+</Context>

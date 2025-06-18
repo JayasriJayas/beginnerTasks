@@ -1,5 +1,6 @@
 package com.bank.dao.impl;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
@@ -19,11 +20,13 @@ public class CustomerDAOImpl implements CustomerDAO{
 	public Customer getCustomerByUserId(long userId)throws SQLException,QueryException{
 		 QueryBuilder qb = new QueryBuilder(new MySQLDialect());
 		 qb.select("*").from("customer").where("userId = ?",userId);
-		 QueryExecutor qe = new QueryExecutor(DBConnectionPool.getInstance().getConnection());
+		 try (Connection conn = DBConnectionPool.getInstance().getConnection()) {
+		        QueryExecutor qe = new QueryExecutor(conn);
 		 List<Map<String,Object>> rows = qe.executeQuery(qb.build(), qb.getParameters());
 		 return CustomerMapper.fromResultSet(rows);
 	     
 	    }
+	}
 	@Override
 	public boolean updateCustomerProfile(Customer customer) throws SQLException, QueryException {
 		QueryBuilder qb = new QueryBuilder(new MySQLDialect());
@@ -45,9 +48,11 @@ public class CustomerDAOImpl implements CustomerDAO{
 	    	qb.set("annualIncome",customer.getAnnualIncome());
 	    }
 	    qb.where("userId =?", customer.getUserId());
-	    QueryExecutor qe = new QueryExecutor(DBConnectionPool.getInstance().getConnection());
+	    try (Connection conn = DBConnectionPool.getInstance().getConnection()) {
+	        QueryExecutor qe = new QueryExecutor(conn);
     	int rowsAffected = qe.executeUpdate( qb.build(),qb.getParameters());
 	    return rowsAffected >0;
+	    }
 
 	}
 

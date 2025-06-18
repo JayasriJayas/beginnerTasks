@@ -129,6 +129,7 @@ public class AdminServiceImpl implements AdminService {
         @Override
         public Map<String, Object> getAdminById(long adminId) throws SQLException {
             try {
+            	System.out.println("in service");
                 return adminDAO.fetchAdmin(adminId);
             } catch (Exception e) {
                 logger.severe("Error in getAdminById: " + e.getMessage());

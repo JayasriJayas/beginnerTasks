@@ -49,7 +49,6 @@ public class UserServiceImpl implements UserService {
             Customer customer = customerDAO.getCustomerByUserId(userId);
             profile.put("customer", customer);
         } else if ("ADMIN".equalsIgnoreCase(role)) {
-        	System.out.println("in service");
             Admin admin = adminDAO.getAdminByUserId(userId);
             profile.put("admin", admin);
         }
@@ -69,7 +68,7 @@ public class UserServiceImpl implements UserService {
 
         user.setModifiedAt(System.currentTimeMillis());
         user.setModifiedBy(userId);
-        System.out.println("i am here");
+      
 
         boolean userUpdated = userDAO.updateUserProfile(user);
 

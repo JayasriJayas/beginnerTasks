@@ -97,7 +97,7 @@ public class BranchHandler {
         }
     }
 
-    public void list(HttpServletRequest req, HttpServletResponse res) throws IOException {
+    public void getAll(HttpServletRequest req, HttpServletResponse res) throws IOException {
         try {
             HttpSession session = req.getSession(false);
             if (!SessionUtil.isAdminOrSuperAdmin(session, res)) return;

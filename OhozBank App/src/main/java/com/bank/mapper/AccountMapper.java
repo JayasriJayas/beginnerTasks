@@ -38,12 +38,10 @@ public class AccountMapper {
 
 	        Object balanceObj = row.get("balance");
 	        account.setBalance(balanceObj != null ? new BigDecimal(balanceObj.toString()) : BigDecimal.ZERO);
-
 	        account.setStatus(UserStatus.valueOf((String) row.get("status")));
 	        account.setCreatedAt(((Number) row.get("createdAt")).longValue());
 	        account.setModifiedAt(((Number) row.get("modifiedAt")).longValue());
 	        account.setModifiedBy(((Number) row.get("modifiedBy")).longValue());
-
 	        accounts.add(account);
 	    }
 

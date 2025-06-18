@@ -1,100 +1,109 @@
 routes:
-  - path: /signup/request
+  - path: /api/signup/request
     method: POST
     role: PUBLIC
 
-  - path: /login/user
+  - path: /api/login/user
     method: POST
     role: PUBLIC
 
-  - path: /list/request
+  - path: /api/list/request
     method: POST
     role: ADMIN,SUPERADMIN
 
-  - path: /logout
+  - path: /api/logout/user
     method: GET
     role: PUBLIC
 
-  - path: /profile/user
+  - path: /api/profile/user
     method: POST
     role: USER,ADMIN,SUPERADMIN
 
-  - path: /edit/user
+  - path: /api/edit/user
     method: PUT
     role: USER,ADMIN,SUPERADMIN
 
-  - path: /add-admin/user
+  - path: /api/add-admin/user
     method: POST
     role: SUPERADMIN
 
-  - path: /approve/request
+  - path: /api/approve/request
     method: POST
     role: ADMIN,SUPERADMIN
 
-  - path: /edit/branch
+  - path: /api/edit/branch
     method: PUT
     role: SUPERADMIN
 
-  - path: /edit/admin
+  - path: /api/edit/admin
     method: PUT
     role: SUPERADMIN
 
-  - path: /request/account-request
-    method: POST
-    role: USER,ADMIN,SUPERADMIN
-
-  - path: /list/account-request
-    method: POST
-    role: ADMIN,SUPERADMIN
- 
-  - path: /approve-account/admin
-    method: POST
-    role: ADMIN,SUPERADMIN
-
-  - path: /edit/account
-    method: PUT
-    role: ADMIN,SUPERADMIN
-  
-  - path: /add/branch
-    method: POST
-    role: SUPERADMIN
-
-  - path: /withdraw/transaction
-    method: POST
-    role: ADMIN,SUPERADMIN
-
-  - path: /deposit/transaction
-    method: POST
-    role: ADMIN,SUPERADMIN
-
-  - path: /balance/account
+  - path: /api/request/account-request
     method: POST
     role: USER
 
-  - path: /transfer/transaction
-    method: POST
-    role: USER,ADMIN,SUPERADMIN
-
-  - path: /statement/transaction
-    method: POST
-    role: USER,ADMIN,SUPERADMIN
-
-  - path: /get/branch
-    method: POST
-    role: SUPERADMIN
-
-  - path: /get-all/branch
-    method: POST
-    role: SUPERADMIN
-
-  - path: /get/admin
-    method: POST
-    role: SUPERADMIN
-
-  - path: /get/account
-    method: POST
-    role: USER,ADMIN,SUPERADMIN
-
-  - path: /get-all/account
+  - path: /api/list/account-request
     method: POST
     role: ADMIN,SUPERADMIN
+ 
+  - path: /api/approve-account/admin
+    method: POST
+    role: ADMIN,SUPERADMIN
+
+  - path: /api/edit/account
+    method: PUT
+    role: ADMIN,SUPERADMIN
+  
+  - path: /api/add/branch
+    method: POST
+    role: SUPERADMIN
+
+  - path: /api/withdraw/transaction
+    method: POST
+    role: ADMIN,SUPERADMIN
+
+  - path: /api/deposit/transaction
+    method: POST
+    role: ADMIN,SUPERADMIN
+
+  - path: /api/balance/account
+    method: POST
+    role: USER
+
+  - path: /api/transfer/transaction
+    method: POST
+    role: USER,ADMIN,SUPERADMIN
+
+  - path: /api/statement/transaction
+    method: POST
+    role: USER,ADMIN,SUPERADMIN
+
+  - path: /api/get/branch
+    method: POST
+    role: SUPERADMIN
+
+  - path: /api/get-all/branch
+    method: POST
+    role: SUPERADMIN
+
+  - path: /api/get/admin
+    method: POST
+    role: SUPERADMIN
+
+  - path: /api/get-all/admin
+    method: POST
+    role: SUPERADMIN
+
+  - path: /api/get/account
+    method: POST
+    role: USER,ADMIN,SUPERADMIN
+
+  - path: /api/get-all/account
+    method: POST
+    role: SUPERADMIN
+
+  - path: /api/list-branch/account
+    method: POST
+    role: ADMIN,SUPERADMIN
+ 

@@ -1,5 +1,6 @@
 package com.bank.dao.impl;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 
 import java.util.List;
@@ -21,7 +22,8 @@ public class BranchDAOImpl implements BranchDAO {
 	  public long getBranchIdByAdminId(long adminId) throws SQLException,QueryException {
 		   	QueryBuilder qb = new QueryBuilder(new MySQLDialect());
 		   	qb.select("branchId").from("admin").where("adminId = ?",adminId);	
-		    QueryExecutor qe = new QueryExecutor(DBConnectionPool.getInstance().getConnection());
+		   	try (Connection conn = DBConnectionPool.getInstance().getConnection()) {
+		        QueryExecutor qe = new QueryExecutor(conn);
 		    List<Map<String,Object>> rs = qe.executeQuery( qb.build(), qb.getParameters());
 		    if (rs.isEmpty()) {
 	          return -1;
@@ -29,14 +31,17 @@ public class BranchDAOImpl implements BranchDAO {
 		    Object value = rs.get(0).get("branchId");
 		    return value instanceof Number ? ((Number) value).longValue() : Long.parseLong(value.toString());
 	    }
+	  }
 	  
 	   @Override
 	   public boolean isBranchExits(String ifscCode) throws SQLException, QueryException {
 		   QueryBuilder qb = new QueryBuilder(new MySQLDialect());
 		   qb.select("1").from("branch").where("ifscCode = ?",ifscCode);
-	       QueryExecutor qe = new QueryExecutor(DBConnectionPool.getInstance().getConnection());
+		   try (Connection conn = DBConnectionPool.getInstance().getConnection()) {
+		        QueryExecutor qe = new QueryExecutor(conn);
 	       List<Map<String,Object>> rs = qe.executeQuery(qb.build(), qb.getParameters());
 	       return !rs.isEmpty();
+		   }
 		   
 	   }
 	   
@@ -46,9 +51,11 @@ public class BranchDAOImpl implements BranchDAO {
 	        qb.insertInto("branch",
 	                "branchName", "ifscCode","location", "contact", "createdAt","modifiedAt","modifiedBy")
 	           .values(branch.getBranchName(),branch.getIfscCode(),branch.getLocation(),branch.getContact(),System.currentTimeMillis(),System.currentTimeMillis(),superadminId);
-	        QueryExecutor qe = new QueryExecutor(DBConnectionPool.getInstance().getConnection());
+	        try (Connection conn = DBConnectionPool.getInstance().getConnection()) {
+	            QueryExecutor qe = new QueryExecutor(conn);
 	        int rowsAffected = qe.executeUpdate(qb.build(), qb.getParameters());
 	        return rowsAffected >0;
+	        }
 	   }
 	   @Override
 	   public boolean updateBranch(Branch branch) throws SQLException, QueryException {
@@ -65,19 +72,23 @@ public class BranchDAOImpl implements BranchDAO {
 
 	       qb.where("branchId = ?", branch.getBranchId());
 
-	       QueryExecutor qe = new QueryExecutor(DBConnectionPool.getInstance().getConnection());
+	       try (Connection conn = DBConnectionPool.getInstance().getConnection()) {
+	           QueryExecutor qe = new QueryExecutor(conn);
 	       int rowsAffected = qe.executeUpdate(qb.build(), qb.getParameters());
 	       return rowsAffected > 0;
+	       }
 	   }
 	   @Override
 	   public Branch getBranchById(long branchId) throws SQLException, QueryException {
 	       QueryBuilder qb = new QueryBuilder(new MySQLDialect());
 	       qb.select("*").from("branch").where("branchId = ?", branchId);
 
-	       QueryExecutor qe = new QueryExecutor(DBConnectionPool.getInstance().getConnection());
+	       try (Connection conn = DBConnectionPool.getInstance().getConnection()) {
+	           QueryExecutor qe = new QueryExecutor(conn);
 	       List<Map<String, Object>> rs = qe.executeQuery(qb.build(), qb.getParameters());
 
 	       return BranchMapper.fromResultSet(rs);
+	       }
 	   }
 
 	   @Override
@@ -85,10 +96,12 @@ public class BranchDAOImpl implements BranchDAO {
 	       QueryBuilder qb = new QueryBuilder(new MySQLDialect());
 	       qb.select("*").from("branch");
 
-	       QueryExecutor qe = new QueryExecutor(DBConnectionPool.getInstance().getConnection());
+	       try (Connection conn = DBConnectionPool.getInstance().getConnection()) {
+	           QueryExecutor qe = new QueryExecutor(conn);
 	       List<Map<String, Object>> rs = qe.executeQuery(qb.build(), qb.getParameters());
 
 	       return BranchMapper.toMapResult(rs);
+	       }
 	   }
 
 

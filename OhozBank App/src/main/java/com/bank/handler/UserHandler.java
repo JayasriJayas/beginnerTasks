@@ -38,14 +38,15 @@ public class UserHandler {
 
     public void login(HttpServletRequest req, HttpServletResponse res) throws IOException {
         try {
+        	
             User loginData = RequestParser.parseRequest(req, User.class);
             if (loginData == null || loginData.getUsername() == null || loginData.getPassword() == null ||
                     loginData.getUsername().isEmpty() || loginData.getPassword().isEmpty()) {
                 ResponseUtil.sendError(res, HttpServletResponse.SC_BAD_REQUEST, "Username and password are required.");
                 return;
             }
-
             User user = authenticationService.login(loginData.getUsername(), loginData.getPassword());
+           
             if (user == null) {
                 ResponseUtil.sendError(res, HttpServletResponse.SC_UNAUTHORIZED, "Invalid username or password.");
                 return;
@@ -53,11 +54,13 @@ public class UserHandler {
 
             HttpSession session = req.getSession(true);
             UserRole role = userService.getUserRole(user);
-
+            
             session.setAttribute("role", role.name());
             session.setAttribute("userId", user.getUserId());
             session.setAttribute("username", user.getUsername());
-            session.setAttribute("branchId", user.getBranchId());
+            if (!"SUPERADMIN".equalsIgnoreCase(role.name())) {
+                session.setAttribute("branchId", user.getBranchId());
+            }
 
             if (userService.isAdmin(user)) {
                 session.setAttribute("adminId", user.getUserId());

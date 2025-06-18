@@ -162,33 +162,50 @@ public class ControllerServlet extends HttpServlet {
 
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-        String path = req.getPathInfo(); 
-        String method = req.getMethod().toUpperCase();
-        String key = method + ":" + path;
+        String fullPath = req.getRequestURI();         
+        String contextPath = req.getContextPath();     
+        String path = fullPath.substring(contextPath.length()); 
+        String method = req.getMethod().toUpperCase(); 
+
+        if (!path.startsWith("/api/")) {
+            res.sendError(HttpServletResponse.SC_NOT_FOUND, "Invalid API path");
+            return;
+        }
+
+        System.out.println("Request URI: " + req.getRequestURI());
+
+
+        String apiPath = path.substring("/api".length()); 
+        String key = method + ":" + "/api" + apiPath;
 
         Route route = routeMap.get(key);
         if (route == null) {
             res.sendError(HttpServletResponse.SC_NOT_FOUND, "No handler for " + path);
             return;
         }
+        
+        System.out.println("Request URI: " + req.getRequestURI());
+
 
         try {
-            String[] parts = path.split("/");
+            String[] parts = apiPath.split("/");
             if (parts.length < 3) {
-                res.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid path structure: " + path);
+                res.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid path format: " + apiPath);
                 return;
             }
 
-     
-            String methodName = toCamelCase(parts[1]); 
-            String handlerClassName = capitalizeFirst(toCamelCase(parts[2])) + "Handler"; 
+            String methodName = parts[1]; // login
+            String handlerClass = capitalize(parts[2]) + "Handler"; 
 
-            String className = "com.bank.handler." + handlerClassName;
+            String className = "com.bank.handler." + handlerClass;
             Class<?> clazz = Class.forName(className);
             Object instance = clazz.getDeclaredConstructor().newInstance();
 
             Method handlerMethod = clazz.getMethod(methodName, HttpServletRequest.class, HttpServletResponse.class);
             handlerMethod.invoke(instance, req, res);
+            
+            System.out.println("Request URI: " + req.getRequestURI());
+
 
         } catch (ClassNotFoundException e) {
             logger.log(Level.SEVERE, "Handler class not found for path: " + path, e);
@@ -198,20 +215,14 @@ public class ControllerServlet extends HttpServlet {
             ResponseUtil.sendError(res, HttpServletResponse.SC_BAD_REQUEST, "Handler method not found");
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error invoking handler for path: " + path, e);
-            ResponseUtil.sendError(res, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Handler error occurred. Please check server logs.");
+            ResponseUtil.sendError(res, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Handler error occurred. Check server logs.");
         }
     }
 
     public static class RouteList {
         private List<Route> routes;
-
-        public List<Route> getRoutes() {
-            return routes;
-        }
-
-        public void setRoutes(List<Route> routes) {
-            this.routes = routes;
-        }
+        public List<Route> getRoutes() { return routes; }
+        public void setRoutes(List<Route> routes) { this.routes = routes; }
     }
 
     public static class Route {
@@ -219,48 +230,18 @@ public class ControllerServlet extends HttpServlet {
         private String method;
         private String role;
 
-        public String getPath() {
-            return path;
-        }
+        public String getPath() { return path; }
+        public String getMethod() { return method; }
+        public String getRole() { return role; }
 
-        public String getMethod() {
-            return method;
-        }
-
-        public String getRole() {
-            return role;
-        }
-
-        public void setPath(String path) {
-            this.path = path;
-        }
-
-        public void setMethod(String method) {
-            this.method = method;
-        }
-
-        public void setRole(String role) {
-            this.role = role;
-        }
+        public void setPath(String path) { this.path = path; }
+        public void setMethod(String method) { this.method = method; }
+        public void setRole(String role) { this.role = role; }
     }
 
-    private static String capitalizeFirst(String input) {
+    private static String capitalize(String input) {
         if (input == null || input.isEmpty()) return input;
-        return input.substring(0, 1).toUpperCase() + input.substring(1).toLowerCase();
-    }
-
-    private static String toCamelCase(String input) {
-        String[] parts = input.split("-");
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < parts.length; i++) {
-            String part = parts[i];
-            if (i == 0) {
-                sb.append(part.toLowerCase());
-            } else {
-                sb.append(capitalizeFirst(part));
-            }
-        }
-        return sb.toString(); 
+        return input.substring(0, 1).toUpperCase() + input.substring(1);
     }
 }
 

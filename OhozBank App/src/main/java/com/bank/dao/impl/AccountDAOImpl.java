@@ -26,9 +26,11 @@ public class AccountDAOImpl implements AccountDAO {
     public Account getAccountById(long accountId)throws QueryException, SQLException  {
     	QueryBuilder qb = new QueryBuilder(new MySQLDialect());
     	qb.select().from("account").where("accountId = ?", accountId);
-	     QueryExecutor qe = new QueryExecutor(DBConnectionPool.getInstance().getConnection());
+    	try (Connection conn = DBConnectionPool.getInstance().getConnection()) {
+            QueryExecutor qe = new QueryExecutor(conn);
 	     List<Map<String,Object>> rs = qe.executeQuery(qb.build(), qb.getParameters());
 	     return AccountMapper.fromResultSet(rs);
+    	}
     }
 
     @Override
@@ -44,23 +46,27 @@ public class AccountDAOImpl implements AccountDAO {
     	
     	 qb.set("modifiedAt",System.currentTimeMillis())
     	  .set("modifiedBy",account.getModifiedBy()).where("accountId = ?",account.getAccountId());
-	     QueryExecutor qe = new QueryExecutor(DBConnectionPool.getInstance().getConnection());
+    	 try (Connection conn = DBConnectionPool.getInstance().getConnection()) {
+    	        QueryExecutor qe = new QueryExecutor(conn);
         return qe.executeUpdate(qb.build(), qb.getParameters())> 0;
+    	 }
     }
 
     @Override
     public long getBranchIdByAccountId(long accountId)throws QueryException, SQLException  {
      	QueryBuilder qb = new QueryBuilder(new MySQLDialect());
      	qb.select("branchId").from("account").where("accountId = ?",accountId);
-	    QueryExecutor qe = new QueryExecutor(DBConnectionPool.getInstance().getConnection());
+     	try (Connection conn = DBConnectionPool.getInstance().getConnection()) {
+            QueryExecutor qe = new QueryExecutor(conn);
 	    List<Map<String,Object>> rs = qe.executeQuery(qb.build(), qb.getParameters());
 	    if (rs.isEmpty()) {
             return -1;
         }
+     	
 
         Object value = rs.get(0).get("branchId");
         return value instanceof Number ? ((Number) value).longValue() : Long.parseLong(value.toString());//need to check the return type
-     	
+     	}
     }
     
     @Override
@@ -68,7 +74,7 @@ public class AccountDAOImpl implements AccountDAO {
     	try (Connection conn = DBConnectionPool.getInstance().getConnection()) {
 	        conn.setAutoCommit(false);
 	        
-	       
+	       System.out.println("i am hers");
 	        AccountRequest req = getAccountRequest(requestId);
 	        if (req == null) {
 	            conn.rollback();
@@ -105,12 +111,14 @@ public class AccountDAOImpl implements AccountDAO {
     private AccountRequest getAccountRequest(long requestId) throws SQLException, QueryException {
         QueryBuilder qb = new QueryBuilder(new MySQLDialect());
         qb.select().from("accountRequest").where("requestId = ?", requestId);
-        QueryExecutor qe = new QueryExecutor(DBConnectionPool.getInstance().getConnection());
+        try (Connection conn = DBConnectionPool.getInstance().getConnection()) {
+            QueryExecutor qe = new QueryExecutor(conn);
         List<Map<String, Object>> rs = qe.executeQuery(qb.build(), qb.getParameters());
         if (rs.isEmpty()) {
             return null;
         }
         return AccountRequestMapper.fromResultSet(rs);
+        }
     }
     
     private boolean insertAccount(Connection conn, Account account) throws SQLException, QueryException {
@@ -134,22 +142,26 @@ public class AccountDAOImpl implements AccountDAO {
         QueryBuilder qb = new QueryBuilder(new MySQLDialect());
         qb.select("*").from("account").where("branchId = ?", branchId);
 
-        QueryExecutor qe = new QueryExecutor(DBConnectionPool.getInstance().getConnection());
+        try (Connection conn = DBConnectionPool.getInstance().getConnection()) {
+            QueryExecutor qe = new QueryExecutor(conn);
         List<Map<String, Object>> rs = qe.executeQuery(qb.build(), qb.getParameters());
 
         return AccountMapper.mapToAccounts(rs);
+    }
     }
 
     @Override
     public List<Account> getAllAccounts() throws SQLException, QueryException {
         QueryBuilder qb = new QueryBuilder(new MySQLDialect());
         qb.select("*").from("account");
-
-        QueryExecutor qe = new QueryExecutor(DBConnectionPool.getInstance().getConnection());
-        List<Map<String, Object>> rs = qe.executeQuery(qb.build(), qb.getParameters());
+        try (Connection conn = DBConnectionPool.getInstance().getConnection()) {
+            QueryExecutor qe = new QueryExecutor(conn);
+         
+        List<Map<String, Object>> rs = qe.executeQuery(qb.build());
 
        
         return AccountMapper.mapToAccounts(rs);
+    }
     }
 
    

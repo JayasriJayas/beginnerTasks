@@ -15,6 +15,7 @@ import org.json.JSONObject;
 
 import com.bank.enums.UserRole;
 import com.bank.models.Account;
+import com.bank.models.Branch;
 import com.bank.service.AccountService;
 import com.bank.service.impl.AccountServiceImpl;
 import com.bank.util.RequestParser;
@@ -45,10 +46,7 @@ public class AccountHandler {
         }
         
         Account account = RequestParser.parseRequest(req,Account.class);
-        if (account.getAccountId()!=null) {
-        	ResponseUtil.sendError(res, HttpServletResponse.SC_BAD_REQUEST, "Missing accountId in request payload.");
-        	return;
-        }
+
         long accountId = account.getAccountId();
         if (UserRole.ADMIN.name().equals(role)) {
         	long accountBranchId = accountService.getBranchIdByAccountId(accountId);
@@ -92,11 +90,12 @@ public class AccountHandler {
     public void get(HttpServletRequest req, HttpServletResponse res) throws IOException {
         try {
             HttpSession session = req.getSession(false);
-            if (!SessionUtil.isAdminOrSuperAdmin(session, res)) return;
-
-            long accountId = Long.parseLong(req.getParameter("accountId"));
+            if (!SessionUtil.isSessionAvailable(session, res)) return;
+          
+            Account accountObj = RequestParser.parseRequest(req,Account.class);
+            Long accountId = accountObj.getAccountId();
             Account account = accountService.getAccountById(accountId);
-
+            System.out.println("i am here");
             if (account != null) {
                 JSONObject jsonObject = new JSONObject(gson.toJson(account));
                 ResponseUtil.sendJson(res, HttpServletResponse.SC_OK, jsonObject);
@@ -114,7 +113,8 @@ public class AccountHandler {
             HttpSession session = req.getSession(false);
             if (!SessionUtil.isAdminOrSuperAdmin(session, res)) return;
 
-            long branchId = Long.parseLong(req.getParameter("branchId"));
+            Branch branch =  RequestParser.parseRequest(req,Branch.class);
+            Long  branchId = branch.getBranchId();
             List<Account> accounts = accountService.getAccountsByBranchId(branchId);
             JSONArray jsonArray = new JSONArray(gson.toJson(accounts));
             ResponseUtil.sendJson(res, HttpServletResponse.SC_OK, jsonArray);
@@ -124,11 +124,10 @@ public class AccountHandler {
         }
     }
 
-    public void listAll(HttpServletRequest req, HttpServletResponse res) throws IOException {
+    public void getAll(HttpServletRequest req, HttpServletResponse res) throws IOException {
         try {
             HttpSession session = req.getSession(false);
             if (!SessionUtil.isSuperAdmin(session, res)) return;
-
             List<Account> accounts = accountService.getAllAccounts();
             JSONArray jsonArray = new JSONArray(gson.toJson(accounts));
             ResponseUtil.sendJson(res, HttpServletResponse.SC_OK, jsonArray);

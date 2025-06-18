@@ -20,11 +20,12 @@ public class AccountRequestDAOImpl implements AccountRequestDAO {
     @Override
     public List<AccountRequest> fetchAllRequests() throws SQLException,QueryException {
         QueryBuilder qb = new QueryBuilder(new MySQLDialect());
-        qb.select("*").from("accountrequest");
+        qb.select("*").from("accountRequest");
 
         try (Connection conn = DBConnectionPool.getInstance().getConnection()) {
             QueryExecutor qe = new QueryExecutor(conn);
-            List<Map<String, Object>> rs = qe.executeQuery(qb.build(), qb.getParameters());
+            List<Map<String, Object>> rs = qe.executeQuery(qb.build());
+            
             return AccountRequestMapper.mapToRequests(rs);
         }
     }
@@ -33,13 +34,14 @@ public class AccountRequestDAOImpl implements AccountRequestDAO {
     public List<AccountRequest> fetchRequestsByAdminBranch(long adminId)throws SQLException,QueryException {
         QueryBuilder qb = new QueryBuilder(new MySQLDialect());
         qb.select("ar.*")
-          .from("accountrequest ar")
+          .from("accountRequest ar")
           .innerJoin("admin a", "a.branchId = ar.branchId")
           .where("a.adminId = ?", adminId);
 
         try (Connection conn = DBConnectionPool.getInstance().getConnection()) {
             QueryExecutor qe = new QueryExecutor(conn);
             List<Map<String, Object>> rs = qe.executeQuery(qb.build(), qb.getParameters());
+           
             return AccountRequestMapper.mapToRequests(rs);
         }
     }
@@ -48,8 +50,10 @@ public class AccountRequestDAOImpl implements AccountRequestDAO {
     	QueryBuilder qb = new QueryBuilder(new MySQLDialect());
     	qb.insertInto("accountRequest","userId","branchId","status","createdAt").values(request.getUserId(),request.getBranchId(),request.getStatus(),System.currentTimeMillis());
 
-        QueryExecutor qe = new QueryExecutor(DBConnectionPool.getInstance().getConnection());
+    	try (Connection conn = DBConnectionPool.getInstance().getConnection()) {
+            QueryExecutor qe = new QueryExecutor(conn);
         return  qe.executeUpdate( qb.build(), qb.getParameters())>0;
+    	}
     }
 
     

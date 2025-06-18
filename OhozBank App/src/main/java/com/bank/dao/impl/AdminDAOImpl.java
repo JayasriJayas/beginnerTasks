@@ -23,11 +23,13 @@ public class AdminDAOImpl implements AdminDAO {
     	QueryBuilder qb = new QueryBuilder(new MySQLDialect());
     	qb.select("1").from("user").where("username = ?", username).limit(1);
     	List<Object> params = qb.getParameters();
-    	QueryExecutor qe = new QueryExecutor(DBConnectionPool.getInstance().getConnection());
+    	try (Connection conn = DBConnectionPool.getInstance().getConnection()) {
+            QueryExecutor qe = new QueryExecutor(conn);
    	    String query = qb.build();
    	    List<Map<String,Object>> rs = qe.executeQuery(query, params);
 	    
 	    return !rs.isEmpty();
+    	}
     }
     public boolean saveAdmin(User user,long superAdminId) throws SQLException, QueryException {
         try (Connection conn = DBConnectionPool.getInstance().getConnection()) {
@@ -94,9 +96,11 @@ public class AdminDAOImpl implements AdminDAO {
     public Admin getAdminByUserId(long userId) throws SQLException, QueryException {
     	QueryBuilder qb = new QueryBuilder(new MySQLDialect());
     	qb.select("*").from("admin").where("adminId =?", userId);
-    	QueryExecutor qe = new QueryExecutor(DBConnectionPool.getInstance().getConnection());
+    	try (Connection conn = DBConnectionPool.getInstance().getConnection()) {
+            QueryExecutor qe = new QueryExecutor(conn);
     	List<Map<String,Object>> rows = qe.executeQuery(qb.build(),qb.getParameters());
     	return AdminMapper.fromResultSet(rows); 
+    	}
         }
     @Override
     public boolean updateAdmin(Admin admin) throws SQLException,QueryException {
@@ -109,35 +113,42 @@ public class AdminDAOImpl implements AdminDAO {
 
         qb.where("adminId = ?", admin.getAdminId());
 
-        QueryExecutor qe = new QueryExecutor(DBConnectionPool.getInstance().getConnection());
+        try (Connection conn = DBConnectionPool.getInstance().getConnection()) {
+            QueryExecutor qe = new QueryExecutor(conn);
         int rowsAffected = qe.executeUpdate(qb.build(), qb.getParameters());
 
         return rowsAffected > 0;
-    }@Override
+        }
+    }
+    @Override
     public Map<String, Object> fetchAdmin(long adminId) throws SQLException, QueryException {
         QueryBuilder qb = new QueryBuilder(new MySQLDialect());
-        qb.select("a.adminId", "a.branchId", "a.userId", 
-                  "u.name", "u.email", "u.phone", "u.status")
+        qb.select("a.adminId", "a.branchId","u.username", 
+                  "u.name", "u.email", "u.phone", "u.status","u.createdAt","u.modifiedAt","u.modifiedBy")
           .from("admin a")
-          .innerJoin("user u", "a.userId = u.userId")
+          .innerJoin("user u", "a.admin`1Id = u.userId")
           .where("a.adminId = ?", adminId);
 
-        QueryExecutor qe = new QueryExecutor(DBConnectionPool.getInstance().getConnection());
+        try (Connection conn = DBConnectionPool.getInstance().getConnection()) {
+            QueryExecutor qe = new QueryExecutor(conn);
         List<Map<String, Object>> rs = qe.executeQuery(qb.build(), qb.getParameters());
 
         return rs.isEmpty() ? null : rs.get(0);
+    }
     }
 
     @Override
     public List<Map<String, Object>> fetchAllAdmins() throws SQLException, QueryException {
         QueryBuilder qb = new QueryBuilder(new MySQLDialect());
-        qb.select("a.adminId", "a.branchId", "a.userId", 
-                  "u.name", "u.email", "u.phone", "u.status")
+        qb.select("a.adminId", "a.branchId", 
+                  "u.name", "u.email", "u.phone","u.gender", "u.status","u.createdAt","u.modifiedAt","u.modifiedBy")
           .from("admin a")
-          .innerJoin("user u", "a.userId = u.userId");
+          .innerJoin("user u", "a.adminId = u.userId");
 
-        QueryExecutor qe = new QueryExecutor(DBConnectionPool.getInstance().getConnection());
+        try (Connection conn = DBConnectionPool.getInstance().getConnection()) {
+            QueryExecutor qe = new QueryExecutor(conn);
         return qe.executeQuery(qb.build(), qb.getParameters());
+    }
     }
 
 

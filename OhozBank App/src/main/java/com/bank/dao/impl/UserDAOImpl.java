@@ -108,10 +108,12 @@ public class UserDAOImpl implements UserDAO{
 	    qb.select("*").from("request").where("id = ?",id);
 	    String query = qb.build();
 	    List<Object> params = qb.getParameters();
-	    QueryExecutor qe = new QueryExecutor(DBConnectionPool.getInstance().getConnection());
+	    try (Connection conn = DBConnectionPool.getInstance().getConnection()) {
+	        QueryExecutor qe = new QueryExecutor(conn);
 	    List<Map<String,Object>> rs = qe.executeQuery(query, params);
 	       
 	    return RequestMapper.fromResultSet(rs);
+	    }
 	
 	}
 	@Override
@@ -126,7 +128,8 @@ public class UserDAOImpl implements UserDAO{
 	 
 	
 	    String query = qb.build();
-	    QueryExecutor qe = new QueryExecutor(DBConnectionPool.getInstance().getConnection());
+	    try (Connection conn = DBConnectionPool.getInstance().getConnection()) {
+	        QueryExecutor qe = new QueryExecutor(conn);
 	    List<Map<String,Object>> rs = qe.executeQuery(query, params);
 	    if (rs == null || rs.isEmpty()) {
 	    	
@@ -137,32 +140,39 @@ public class UserDAOImpl implements UserDAO{
 	    
 	    User user = new User();
 	    user.setUserId((Long) row.get("userId"));
-	    user.setUsername((String)row.get("username"));
-	    user.setPassword((String)row.get("password"));
-	    user.setRoleId((Integer)row.get("roleId"));
-	    user.setBranchId((Long) row.get("branchId"));
+	    user.setUsername((String) row.get("username"));
+	    user.setPassword((String) row.get("password"));
+	    user.setRoleId((Integer) row.get("roleId"));
+	    if ((Integer) row.get("roleId") != 1) {
+	        user.setBranchId((Long) row.get("branchId"));
+	    }
+
 	    return user;
+	    }
 	            
 	}
 	@Override
 	public boolean existsByUsername(String username)throws SQLException,QueryException {
 		  QueryBuilder qb = new QueryBuilder(new MySQLDialect());
 		  qb.select("1").from("user").where("username = ?", username);
-		  QueryExecutor qe = new QueryExecutor(DBConnectionPool.getInstance().getConnection());
+		  try (Connection conn = DBConnectionPool.getInstance().getConnection()) {
+		        QueryExecutor qe = new QueryExecutor(conn);
 		  List<Map<String, Object>> result = qe.executeQuery(qb.build(), qb.getParameters()); 
 	
 		  return !result.isEmpty();
+		  }
 	}
 	
 	@Override
 	    public User getUserById(long userId)throws SQLException,QueryException {
 		QueryBuilder qb = new QueryBuilder(new MySQLDialect());
 	    qb.select("*").from("user").where("userId = ?",userId);
-	    QueryExecutor qe = new QueryExecutor(DBConnectionPool.getInstance().getConnection());
+	    try (Connection conn = DBConnectionPool.getInstance().getConnection()) {
+	        QueryExecutor qe = new QueryExecutor(conn);
 	    List<Map<String, Object>> result = qe.executeQuery(qb.build(), qb.getParameters());    
 	    return UserMapper.fromResultSet(result);
 	    }
-	
+	}
 	@Override
 	public boolean updateUserProfile(User user) throws SQLException,QueryException{
 		QueryBuilder qb = new QueryBuilder(new MySQLDialect());
@@ -185,10 +195,11 @@ public class UserDAOImpl implements UserDAO{
 	    qb.set("modifiedBy", user.getModifiedBy());
 		
 		qb.where("userId =?", user.getUserId());
-		QueryExecutor qe = new QueryExecutor(DBConnectionPool.getInstance().getConnection());
+		try (Connection conn = DBConnectionPool.getInstance().getConnection()) {
+	        QueryExecutor qe = new QueryExecutor(conn);
     	int rowsAffected = qe.executeUpdate( qb.build(),qb.getParameters());
 	    return rowsAffected >0;
-		
+		}
 	}
 }
 
