@@ -18,6 +18,10 @@ public class BranchMapper {
         branch.setIfscCode((String) row.get("ifscCode"));
         branch.setLocation((String) row.get("location"));
         branch.setContact(((Number) row.get("contact")).longValue());
+        branch.setCreatedAt(((Number) row.get("createdAt")).longValue());
+        branch.setModifiedAt(((Number) row.get("modifiedAt")).longValue());
+        branch.setModifiedBy(((Number) row.get("modifiedBy")).longValue());
+        
 
         return branch;
     }
@@ -31,6 +35,9 @@ public class BranchMapper {
             branch.setIfscCode((String) row.get("ifscCode"));
             branch.setLocation((String) row.get("location"));
             branch.setContact(((Number) row.get("contact")).longValue());
+            branch.setCreatedAt(((Number) row.get("createdAt")).longValue());
+            branch.setModifiedAt(((Number) row.get("modifiedAt")).longValue());
+            branch.setModifiedBy(((Number) row.get("modifiedBy")).longValue());
 
             list.add(branch);
         }

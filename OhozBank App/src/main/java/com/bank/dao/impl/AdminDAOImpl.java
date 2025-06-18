@@ -126,7 +126,7 @@ public class AdminDAOImpl implements AdminDAO {
         qb.select("a.adminId", "a.branchId","u.username", 
                   "u.name", "u.email", "u.phone", "u.status","u.createdAt","u.modifiedAt","u.modifiedBy")
           .from("admin a")
-          .innerJoin("user u", "a.admin`1Id = u.userId")
+          .innerJoin("user u", "a.adminId = u.userId")
           .where("a.adminId = ?", adminId);
 
         try (Connection conn = DBConnectionPool.getInstance().getConnection()) {
@@ -140,14 +140,17 @@ public class AdminDAOImpl implements AdminDAO {
     @Override
     public List<Map<String, Object>> fetchAllAdmins() throws SQLException, QueryException {
         QueryBuilder qb = new QueryBuilder(new MySQLDialect());
-        qb.select("a.adminId", "a.branchId", 
-                  "u.name", "u.email", "u.phone","u.gender", "u.status","u.createdAt","u.modifiedAt","u.modifiedBy")
-          .from("admin a")
-          .innerJoin("user u", "a.adminId = u.userId");
+        qb.select("a.adminId", "a.branchId","u.username", 
+                "u.name", "u.email", "u.phone", "u.status","u.createdAt","u.modifiedAt","u.modifiedBy")
+        .from("admin a")
+        .innerJoin("user u", "a.adminId = u.userId");
 
         try (Connection conn = DBConnectionPool.getInstance().getConnection()) {
             QueryExecutor qe = new QueryExecutor(conn);
-        return qe.executeQuery(qb.build(), qb.getParameters());
+            List<Map<String, Object>> rs = qe.executeQuery(qb.build());
+            System.out.println("in dao");
+            return AdminMapper. mapToAdminMaps(rs);
+        
     }
     }
 

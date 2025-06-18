@@ -75,17 +75,19 @@ public class BranchHandler {
             HttpSession session = req.getSession(false);
             if (!SessionUtil.isAdminOrSuperAdmin(session, res)) return;
 
-            String idParam = req.getParameter("branchId");
+            Branch branch = RequestParser.parseRequest(req,Branch.class);
+            
+            Long idParam = branch.getBranchId();
             if (idParam == null) {
                 ResponseUtil.sendError(res, HttpServletResponse.SC_BAD_REQUEST, "branchId parameter is required");
                 return;
             }
 
-            long branchId = Long.parseLong(idParam);
-            Branch branch = branchService.getBranchById(branchId);
+            long branchId = idParam;
+            Branch branchObj = branchService.getBranchById(branchId);
 
             if (branch != null) {
-                JSONObject json = new JSONObject(gson.toJson(branch));
+                JSONObject json = new JSONObject(gson.toJson(branchObj));
                 ResponseUtil.sendJson(res, HttpServletResponse.SC_OK, json);
             } else {
                 ResponseUtil.sendError(res, HttpServletResponse.SC_NOT_FOUND, "Branch not found");
@@ -100,7 +102,7 @@ public class BranchHandler {
     public void getAll(HttpServletRequest req, HttpServletResponse res) throws IOException {
         try {
             HttpSession session = req.getSession(false);
-            if (!SessionUtil.isAdminOrSuperAdmin(session, res)) return;
+            if (!SessionUtil.isSuperAdmin(session, res)) return;
 
             List<Branch> branches = branchService.getAllBranches();
             JSONArray jsonArray = new JSONArray(gson.toJson(branches));

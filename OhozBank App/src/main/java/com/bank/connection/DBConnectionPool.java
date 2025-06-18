@@ -61,7 +61,7 @@ public class DBConnectionPool {
           
             InitialContext initContext = new InitialContext();
             dataSource = (DataSource) initContext.lookup("java:comp/env/jdbc/ohozBankDB");
-            System.out.println("JNDI DataSource 'jdbc/ohozBankDB' successfully looked up."); 
+           
         } catch (NamingException e) {
            
             System.err.println("CRITICAL ERROR: Failed to look up JNDI data source 'jdbc/ohozBankDB'. " + e.getMessage());

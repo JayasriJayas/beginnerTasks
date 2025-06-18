@@ -59,13 +59,14 @@ public class BranchDAOImpl implements BranchDAO {
 	   }
 	   @Override
 	   public boolean updateBranch(Branch branch) throws SQLException, QueryException {
+		
 	       QueryBuilder qb = new QueryBuilder(new MySQLDialect());
 	       qb.update("branch");
 
 	       if (branch.getBranchName() != null) qb.set("branchName", branch.getBranchName());
 	       if (branch.getIfscCode() != null) qb.set("ifscCode", branch.getIfscCode());
 	       if (branch.getLocation() != null) qb.set("location", branch.getLocation());
-	       if (branch.getContact() != 0) qb.set("contact", branch.getContact());
+	       if (branch.getContact() != null) qb.set("contact", branch.getContact());
 
 	       qb.set("modifiedAt", branch.getModifiedAt());
 	       qb.set("modifiedBy", branch.getModifiedBy());
@@ -75,6 +76,7 @@ public class BranchDAOImpl implements BranchDAO {
 	       try (Connection conn = DBConnectionPool.getInstance().getConnection()) {
 	           QueryExecutor qe = new QueryExecutor(conn);
 	       int rowsAffected = qe.executeUpdate(qb.build(), qb.getParameters());
+
 	       return rowsAffected > 0;
 	       }
 	   }
@@ -86,7 +88,6 @@ public class BranchDAOImpl implements BranchDAO {
 	       try (Connection conn = DBConnectionPool.getInstance().getConnection()) {
 	           QueryExecutor qe = new QueryExecutor(conn);
 	       List<Map<String, Object>> rs = qe.executeQuery(qb.build(), qb.getParameters());
-
 	       return BranchMapper.fromResultSet(rs);
 	       }
 	   }
@@ -95,11 +96,9 @@ public class BranchDAOImpl implements BranchDAO {
 	   public List<Branch> getAllBranches() throws SQLException, QueryException{
 	       QueryBuilder qb = new QueryBuilder(new MySQLDialect());
 	       qb.select("*").from("branch");
-
 	       try (Connection conn = DBConnectionPool.getInstance().getConnection()) {
 	           QueryExecutor qe = new QueryExecutor(conn);
-	       List<Map<String, Object>> rs = qe.executeQuery(qb.build(), qb.getParameters());
-
+	       List<Map<String, Object>> rs = qe.executeQuery(qb.build());
 	       return BranchMapper.toMapResult(rs);
 	       }
 	   }

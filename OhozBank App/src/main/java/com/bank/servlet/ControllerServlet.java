@@ -171,10 +171,9 @@ public class ControllerServlet extends HttpServlet {
             res.sendError(HttpServletResponse.SC_NOT_FOUND, "Invalid API path");
             return;
         }
+        
 
-        System.out.println("Request URI: " + req.getRequestURI());
-
-
+       
         String apiPath = path.substring("/api".length()); 
         String key = method + ":" + "/api" + apiPath;
 
@@ -183,29 +182,25 @@ public class ControllerServlet extends HttpServlet {
             res.sendError(HttpServletResponse.SC_NOT_FOUND, "No handler for " + path);
             return;
         }
-        
-        System.out.println("Request URI: " + req.getRequestURI());
-
-
+       
         try {
             String[] parts = apiPath.split("/");
             if (parts.length < 3) {
                 res.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid path format: " + apiPath);
                 return;
             }
+            String rawMethod = parts[1];       
+            String rawClass = parts[2];         
 
-            String methodName = parts[1]; // login
-            String handlerClass = capitalize(parts[2]) + "Handler"; 
-
+            String methodName = toCamelCase(rawMethod, false);   
+            String handlerClass = toCamelCase(rawClass, true) + "Handler";  
+ 
             String className = "com.bank.handler." + handlerClass;
             Class<?> clazz = Class.forName(className);
             Object instance = clazz.getDeclaredConstructor().newInstance();
-
+            
             Method handlerMethod = clazz.getMethod(methodName, HttpServletRequest.class, HttpServletResponse.class);
             handlerMethod.invoke(instance, req, res);
-            
-            System.out.println("Request URI: " + req.getRequestURI());
-
 
         } catch (ClassNotFoundException e) {
             logger.log(Level.SEVERE, "Handler class not found for path: " + path, e);
@@ -243,6 +238,22 @@ public class ControllerServlet extends HttpServlet {
         if (input == null || input.isEmpty()) return input;
         return input.substring(0, 1).toUpperCase() + input.substring(1);
     }
+    private static String toCamelCase(String input, boolean capitalizeFirst) {
+        StringBuilder result = new StringBuilder();
+        boolean capitalize = capitalizeFirst;
+        for (char c : input.toCharArray()) {
+            if (c == '-' || c == '_') {
+                capitalize = true;
+            } else if (capitalize) {
+                result.append(Character.toUpperCase(c));
+                capitalize = false;
+            } else {
+                result.append(Character.toLowerCase(c));
+            }
+        }
+        return result.toString();
+    }
+
 }
 
 

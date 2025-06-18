@@ -73,16 +73,18 @@ public class RequestHandler {
     }
     public void approve(HttpServletRequest req, HttpServletResponse res) {
         try {
+        
             HttpSession session = req.getSession(false);
             if (!SessionUtil.isAdminOrSuperAdmin(session, res)) return;
 
             Request request = RequestParser.parseRequest(req, Request.class);
+          
             long requestId = request.getId();
+    
 
             
             long adminId = (long) session.getAttribute("adminId");
             String role = session.getAttribute("role").toString();
-
             Request requestObj = requestService.getRequestById(requestId);
             if (requestObj == null || !requestObj.getStatus().equals(RequestStatus.PENDING)) {
                 ResponseUtil.sendError(res, HttpServletResponse.SC_NOT_FOUND, "Request not found or not pending.");

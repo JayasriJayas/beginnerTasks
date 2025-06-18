@@ -55,6 +55,7 @@ public class RequestDAOImpl implements RequestDAO {
 		 qb.select("*").from("request").where("status = ?",RequestStatus.PENDING);
 		 try (Connection conn = DBConnectionPool.getInstance().getConnection()) {
 		        QueryExecutor qe = new QueryExecutor(conn);
+		       
 		 List<Map<String,Object>> rows = qe.executeQuery(qb.build(), qb.getParameters());
 		 return RequestMapper.toMapResult(rows);
 		 }
