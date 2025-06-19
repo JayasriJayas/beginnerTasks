@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
@@ -14,104 +15,94 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.bank.enums.UserRole;
+import com.bank.factory.ServiceFactory;
 import com.bank.models.Admin;
-import com.bank.models.Request;
-import com.bank.service.AccountService;
+import com.bank.models.User;
 import com.bank.service.AdminService;
-import com.bank.service.RequestService;
-import com.bank.service.impl.AccountServiceImpl;
-import com.bank.service.impl.AdminServiceImpl;
-import com.bank.service.impl.RequestServiceImpl;
 import com.bank.util.RequestParser;
+import com.bank.util.RequestValidator;
 import com.bank.util.ResponseUtil;
 import com.bank.util.SessionUtil;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 public class AdminHandler {
 
-    private final Logger logger = Logger.getLogger(AdminHandler.class.getName());
+    private static final Logger logger = Logger.getLogger(AdminHandler.class.getName());
+    private final AdminService adminService = ServiceFactory.getAdminService();
+    private final Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
 
-    private final AccountService accountService = new AccountServiceImpl();
-    private final RequestService requestService = new RequestServiceImpl();
-    private final AdminService adminService = new AdminServiceImpl();
-    private final Gson gson = new Gson();
-   
-
-    public void approveAccount(HttpServletRequest req, HttpServletResponse res) throws IOException {
-    	try {
+    public void edit(HttpServletRequest req, HttpServletResponse res) throws IOException {
         HttpSession session = req.getSession(false);
-        if (!SessionUtil.isAdminOrSuperAdmin(session, res)) return;
+        if (!SessionUtil.isSuperAdmin(session, res)) return;
 
-        String role = session.getAttribute("role").toString();
-        long branchId = (Long)session.getAttribute("branchId");
-        long adminId =(Long) session.getAttribute("userId");
-        
-        if (UserRole.ADMIN.name().equals(role)) {
-            boolean sameBranch = requestService.isAdminInSameBranch(adminId, branchId);
-            if (!sameBranch) {
-                ResponseUtil.sendError(res, HttpServletResponse.SC_FORBIDDEN, "Admins can only approve requests from their own branch.");
-                return;
-            }
-        }
-       
-        Request request = RequestParser.parseRequest(req, Request.class);
-            long requestId = request.getId();
-          
-            boolean success = accountService.approveAccountRequest(requestId, adminId);
+        long modifiedBy = (Long) session.getAttribute("userId");
 
-            if (success) {
-                ResponseUtil.sendSuccess(res, HttpServletResponse.SC_OK, "Account approved and created.");
+        try (BufferedReader reader = req.getReader()) {
+            Map<String, Object> payload = gson.fromJson(reader, Map.class);
+            payload.put("modifiedBy", modifiedBy);
+
+            boolean updated = adminService.updateEmployeeDetails(payload);
+            if (updated) {
+                logger.info("Admin updated successfully by user ID: " + modifiedBy);
+                ResponseUtil.sendSuccess(res, HttpServletResponse.SC_OK, "Employee updated successfully.");
             } else {
-                ResponseUtil.sendError(res, HttpServletResponse.SC_BAD_REQUEST, "Approval failed.");
+                logger.warning("Admin update failed for user ID: " + modifiedBy);
+                ResponseUtil.sendError(res, HttpServletResponse.SC_BAD_REQUEST, "Failed to update employee.");
             }
+
         } catch (Exception e) {
+            logger.log(Level.SEVERE, "Employee update failed", e);
             ResponseUtil.sendError(res, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Server error.");
         }
     }
 
- 
-    public void edit(HttpServletRequest req, HttpServletResponse res) throws IOException {
-	    HttpSession session = req.getSession(false);
-	    if (!SessionUtil.isSuperAdmin(session, res)) return;
+    public void addAdmin(HttpServletRequest req, HttpServletResponse res) throws IOException {
+        HttpSession session = req.getSession(false);
+        if (!SessionUtil.isSuperAdmin(session, res)) return;
 
-	    long modifiedBy = (Long) session.getAttribute("userId"); 
+        User userRequest = RequestParser.parseRequest(req, User.class);
+        String validateError = RequestValidator.validateFields(userRequest);
 
-	    try (BufferedReader reader = req.getReader()) {
-	        Map<String, Object> payload = new Gson().fromJson(reader, Map.class);
-	        payload.put("modifiedBy", modifiedBy); 
+        if (validateError != null) {
+            logger.warning("Add admin failed due to validation: " + validateError);
+            ResponseUtil.sendError(res, HttpServletResponse.SC_BAD_REQUEST, validateError);
+            return;
+        }
 
-	        boolean updated = adminService.updateEmployeeDetails(payload);
+        userRequest.setRoleId(2); // Role ID for Admin
+        long adminId = (long) session.getAttribute("adminId");
 
-	        if (updated) {
-	            ResponseUtil.sendSuccess(res, HttpServletResponse.SC_OK, "Employee updated successfully.");
-	        } else {
-	            ResponseUtil.sendError(res, HttpServletResponse.SC_BAD_REQUEST, "Failed to update employee.");
-	        }
-
-	    } catch (Exception e) {
-	        logger.severe("Employee update failed: " + e.getMessage());
-	        ResponseUtil.sendError(res, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Server error.");
-	    }
-	}
+        boolean success = adminService.addAdmin(userRequest, adminId);
+        if (success) {
+            logger.info("New admin added by superadmin ID: " + adminId);
+            ResponseUtil.sendSuccess(res, HttpServletResponse.SC_OK, "Admin added successfully.");
+        } else {
+            logger.warning("Failed to add admin by superadmin ID: " + adminId);
+            ResponseUtil.sendError(res, HttpServletResponse.SC_BAD_REQUEST, "Failed to add admin.");
+        }
+    }
 
     public void get(HttpServletRequest req, HttpServletResponse res) throws IOException {
         try {
             HttpSession session = req.getSession(false);
             if (!SessionUtil.isSuperAdmin(session, res)) return;
-            
-            Admin admin = RequestParser.parseRequest(req, Admin.class);
-          
-            long adminId = admin.getAdminId();
-            Map<String, Object> adminDetails = adminService.getAdminById(adminId);
 
+            Admin admin = RequestParser.parseRequest(req, Admin.class);
+            long adminId = admin.getAdminId();
+
+            Map<String, Object> adminDetails = adminService.getAdminById(adminId);
             if (adminDetails != null) {
                 JSONObject jsonObject = new JSONObject(gson.toJson(adminDetails));
+                logger.info("Admin details fetched for admin ID: " + adminId);
                 ResponseUtil.sendJson(res, HttpServletResponse.SC_OK, jsonObject);
             } else {
+                logger.warning("Admin not found for ID: " + adminId);
                 ResponseUtil.sendError(res, HttpServletResponse.SC_NOT_FOUND, "Admin not found");
             }
+
         } catch (Exception e) {
-            logger.severe("Error fetching admin: " + e.getMessage());
+            logger.log(Level.SEVERE, "Error fetching admin details", e);
             ResponseUtil.sendError(res, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Server error");
         }
     }
@@ -123,9 +114,11 @@ public class AdminHandler {
 
             List<Map<String, Object>> admins = adminService.getAllAdmins();
             JSONArray jsonArray = new JSONArray(gson.toJson(admins));
+            logger.info("Admin list fetched by superadmin.");
             ResponseUtil.sendJson(res, HttpServletResponse.SC_OK, jsonArray);
+
         } catch (Exception e) {
-            logger.severe("Error fetching all admins: " + e.getMessage());
+            logger.log(Level.SEVERE, "Error fetching all admins", e);
             ResponseUtil.sendError(res, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Server error");
         }
     }

@@ -102,8 +102,18 @@ public class BranchDAOImpl implements BranchDAO {
 	       return BranchMapper.toMapResult(rs);
 	       }
 	   }
+	   @Override
+	    public Branch findByIfscCode(String ifscCode)throws SQLException, QueryException {
+		   QueryBuilder qb = new QueryBuilder(new MySQLDialect());
+	       qb.select("*").from("branch").where("ifscCode = ?", ifscCode);
+	        String sql = "SELECT * FROM branch WHERE ifscCode = ?";
+	        try (Connection conn = DBConnectionPool.getInstance().getConnection()) {
+		           QueryExecutor qe = new QueryExecutor(conn);
+		       List<Map<String, Object>> rs = qe.executeQuery(qb.build(),qb.getParameters());
+		       return BranchMapper.fromResultSet(rs);
+	    }
 
-
+	   }
 
 
 }

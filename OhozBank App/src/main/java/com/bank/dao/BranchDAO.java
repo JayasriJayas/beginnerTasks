@@ -14,6 +14,7 @@ public interface BranchDAO {
 	   boolean updateBranch(Branch branch) throws SQLException, QueryException;
 	   Branch getBranchById(long branchId) throws SQLException, QueryException;
 	   List<Branch> getAllBranches() throws SQLException, QueryException;
+	   Branch findByIfscCode(String ifscCode)throws SQLException, QueryException;
 
 
 }

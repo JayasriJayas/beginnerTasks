@@ -69,74 +69,7 @@ public class AccountDAOImpl implements AccountDAO {
      	}
     }
     
-    @Override
-    public  boolean approveRequest(long requestId,long adminId) throws SQLException,QueryException{
-    	try (Connection conn = DBConnectionPool.getInstance().getConnection()) {
-	        conn.setAutoCommit(false);
-	        
-	       System.out.println("i am hers");
-	        AccountRequest req = getAccountRequest(requestId);
-	        if (req == null) {
-	            conn.rollback();
-	            return false; 
-	        }
-	        
-	        long userId = req.getUserId(); 
-	        long branchId = req.getBranchId(); 
-	
-	        Account account = new Account();
-	        account.setUserId(userId); 
-	        account.setBranchId(branchId); 
-	        account.setBalance(BigDecimal.ZERO);
-	        account.setStatus(UserStatus.ACTIVE);
-	        account.setCreatedAt(System.currentTimeMillis());
-	        account.setModifiedAt(System.currentTimeMillis());
-	        account.setModifiedBy(adminId);
-	       
-	        insertAccount(conn, account); 
-
-	   
-	         deleteAccountRequest(conn, requestId); 
-	   
-	        conn.commit();
-	        return true;
-	    } catch (SQLException e) {
-	        e.printStackTrace();
-	    
-	        throw new SQLException(e.getMessage());
-	   
-        }
-    }
-
-    private AccountRequest getAccountRequest(long requestId) throws SQLException, QueryException {
-        QueryBuilder qb = new QueryBuilder(new MySQLDialect());
-        qb.select().from("accountRequest").where("requestId = ?", requestId);
-        try (Connection conn = DBConnectionPool.getInstance().getConnection()) {
-            QueryExecutor qe = new QueryExecutor(conn);
-        List<Map<String, Object>> rs = qe.executeQuery(qb.build(), qb.getParameters());
-        if (rs.isEmpty()) {
-            return null;
-        }
-        return AccountRequestMapper.fromResultSet(rs);
-        }
-    }
     
-    private boolean insertAccount(Connection conn, Account account) throws SQLException, QueryException {
-        QueryBuilder qb = new QueryBuilder(new MySQLDialect());
-        qb.insertInto("account", "userId", "branchId", "balance", "status", "createdAt", "modifiedAt", "modifiedBy")
-          .values(account.getUserId(), account.getBranchId(), account.getBalance(), account.getStatus().name(), 
-                  account.getCreatedAt(), account.getModifiedAt(), account.getModifiedBy());
-        QueryExecutor qe = new QueryExecutor(conn);
-        return qe.executeUpdate(qb.build(), qb.getParameters()) > 0;
-    }
-
-  
-    private boolean deleteAccountRequest(Connection conn, long requestId) throws SQLException, QueryException {
-        QueryBuilder qb = new QueryBuilder(new MySQLDialect());
-        qb.deleteFrom("accountRequest").where("requestId = ?", requestId);
-        QueryExecutor qe = new QueryExecutor(conn);
-        return qe.executeUpdate(qb.build(), qb.getParameters()) > 0;
-    }
     @Override
     public List<Account> getAccountsByBranchId(long branchId) throws SQLException, QueryException {
         QueryBuilder qb = new QueryBuilder(new MySQLDialect());
@@ -163,9 +96,20 @@ public class AccountDAOImpl implements AccountDAO {
         return AccountMapper.mapToAccounts(rs);
     }
     }
+    @Override
+    public boolean isAccountInBranch(long accountId, long branchId) throws SQLException, QueryException {
+        QueryBuilder qb = new QueryBuilder(new MySQLDialect());
+        qb.select("accountId") 
+          .from("account")
+          .where("accountId = ?", accountId)
+          .andWhere("branchId = ?", branchId);
 
-   
-    
+        try (Connection conn = DBConnectionPool.getInstance().getConnection()) {
+            QueryExecutor qe = new QueryExecutor(conn);
+            List<Map<String, Object>> result = qe.executeQuery(qb.build(), qb.getParameters());
 
- 
+            
+            return !result.isEmpty();
+        }
+    }
 }

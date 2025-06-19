@@ -3,7 +3,7 @@ routes:
     method: POST
     role: PUBLIC
 
-  - path: /api/login/user
+  - path: /api/login/auth
     method: POST
     role: PUBLIC
 
@@ -11,7 +11,7 @@ routes:
     method: POST
     role: ADMIN,SUPERADMIN
 
-  - path: /api/logout/user
+  - path: /api/logout/auth
     method: GET
     role: PUBLIC
 

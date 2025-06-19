@@ -9,21 +9,21 @@ import java.util.logging.Logger;
 import com.bank.dao.BranchDAO;
 import com.bank.dao.RequestDAO;
 import com.bank.dao.UserDAO;
-import com.bank.dao.impl.BranchDAOImpl;
-import com.bank.dao.impl.RequestDAOImpl;
-import com.bank.dao.impl.UserDAOImpl;
+import com.bank.enums.UserRole;
+import com.bank.factory.DaoFactory;
 import com.bank.models.Request;
 import com.bank.service.RequestService;
 import com.bank.util.PasswordUtil;
 
 import exception.QueryException;
 
-
 public class RequestServiceImpl implements RequestService {
-    private final RequestDAO requestDAO = new RequestDAOImpl();
-    private final UserDAO userDAO = new UserDAOImpl();
-    private final BranchDAO branchDAO = new BranchDAOImpl();
-    private final Logger logger = Logger.getLogger(RequestServiceImpl.class.getName());
+
+    private static final Logger logger = Logger.getLogger(RequestServiceImpl.class.getName());
+
+    private final RequestDAO requestDAO = DaoFactory.getRequestDAO();
+    private final UserDAO userDAO = DaoFactory.getUserDAO();
+    private final BranchDAO branchDAO = DaoFactory.getBranchDAO();
 
     @Override
     public boolean registerRequest(Request request) {
@@ -32,8 +32,10 @@ public class RequestServiceImpl implements RequestService {
                 logger.warning("Username already exists: " + request.getUsername());
                 return false;
             }
+
             request.setPassword(PasswordUtil.hashPassword(request.getPassword()));
             return requestDAO.saveRequest(request) > 0;
+
         } catch (QueryException | SQLException e) {
             logger.log(Level.SEVERE, "Error saving user request", e);
             return false;
@@ -49,6 +51,7 @@ public class RequestServiceImpl implements RequestService {
             return false;
         }
     }
+
     @Override
     public boolean isAdminInSameBranch(long adminId, long requestBranchId) {
         try {
@@ -69,13 +72,13 @@ public class RequestServiceImpl implements RequestService {
             return null;
         }
     }
-    
+
     @Override
     public List<Request> getRequestList(String adminRole, long id) {
         try {
-            if ("SUPERADMIN".equalsIgnoreCase(adminRole)) {
+            if (UserRole.SUPERADMIN.name().equalsIgnoreCase(adminRole)) {
                 return requestDAO.getPendingRequests();
-            } else if ("ADMIN".equalsIgnoreCase(adminRole)) {
+            } else if (UserRole.ADMIN.name().equalsIgnoreCase(adminRole)) {
                 long branchId = branchDAO.getBranchIdByAdminId(id);
                 return requestDAO.getPendingRequestsByBranch(branchId);
             } else {
@@ -87,5 +90,4 @@ public class RequestServiceImpl implements RequestService {
             return Collections.emptyList();
         }
     }
-
 }

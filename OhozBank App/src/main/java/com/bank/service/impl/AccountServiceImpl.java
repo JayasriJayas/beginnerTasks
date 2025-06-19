@@ -29,16 +29,6 @@ public class AccountServiceImpl implements AccountService {
     
     
     @Override
-    public boolean approveAccountRequest(long requestId, long adminId)throws SQLException,QueryException {
-        try {
-        	System.out.println("in serv");
-            return accountDAO.approveRequest(requestId, adminId);
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, "Error approving user request", e);
-            return false;
-        }
-    }
-    @Override
     public long getBranchIdByAccountId(long accountId) throws QueryException, SQLException {
         try {
             return accountDAO.getBranchIdByAccountId(accountId);

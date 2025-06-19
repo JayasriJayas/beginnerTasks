@@ -1,25 +1,18 @@
 package com.bank.handler;
 
 import java.io.BufferedReader;
+
 import java.io.IOException;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-
 import org.json.JSONObject;
-
-import com.bank.enums.UserRole;
-import com.bank.models.User;
-import com.bank.service.AdminService;
-import com.bank.service.AuthenticationService;
+import com.bank.factory.ServiceFactory;
 import com.bank.service.UserService;
-import com.bank.service.impl.AdminServiceImpl;
-import com.bank.service.impl.AuthenticationServiceImpl;
-import com.bank.service.impl.UserServiceImpl;
-import com.bank.util.RequestParser;
 import com.bank.util.RequestValidator;
 import com.bank.util.ResponseUtil;
 import com.bank.util.SessionUtil;
@@ -28,50 +21,13 @@ import com.google.gson.GsonBuilder;
 
 public class UserHandler {
 
-    private final Logger logger = Logger.getLogger(UserHandler.class.getName());
-    private final UserService userService = new UserServiceImpl();
-    private final AuthenticationService authenticationService = new AuthenticationServiceImpl();
-    private final AdminService adminService = new AdminServiceImpl();
+    private static final Logger logger = Logger.getLogger(UserHandler.class.getName());
+    private final UserService userService;
     private final Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
 
-
-
-    public void login(HttpServletRequest req, HttpServletResponse res) throws IOException {
-        try {
-        	
-            User loginData = RequestParser.parseRequest(req, User.class);
-            if (loginData == null || loginData.getUsername() == null || loginData.getPassword() == null ||
-                    loginData.getUsername().isEmpty() || loginData.getPassword().isEmpty()) {
-                ResponseUtil.sendError(res, HttpServletResponse.SC_BAD_REQUEST, "Username and password are required.");
-                return;
-            }
-            User user = authenticationService.login(loginData.getUsername(), loginData.getPassword());
-           
-            if (user == null) {
-                ResponseUtil.sendError(res, HttpServletResponse.SC_UNAUTHORIZED, "Invalid username or password.");
-                return;
-            }
-
-            HttpSession session = req.getSession(true);
-            UserRole role = userService.getUserRole(user);
-            
-            session.setAttribute("role", role.name());
-            session.setAttribute("userId", user.getUserId());
-            session.setAttribute("username", user.getUsername());
-            if (!"SUPERADMIN".equalsIgnoreCase(role.name())) {
-                session.setAttribute("branchId", user.getBranchId());
-            }
-
-            if (userService.isAdmin(user)) {
-                session.setAttribute("adminId", user.getUserId());
-            }
-
-            ResponseUtil.sendSuccess(res, HttpServletResponse.SC_OK, "Login successful as " + role.name());
-
-        } catch (Exception e) {
-            logger.severe("Login error: " + e.getMessage());
-            ResponseUtil.sendError(res, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal server error.");
-        }
+    public UserHandler() {
+        this.userService = ServiceFactory.getUserService();
+       
     }
 
     public void profile(HttpServletRequest req, HttpServletResponse res) throws IOException {
@@ -86,7 +42,7 @@ public class UserHandler {
             JSONObject jsonObject = new JSONObject(gson.toJson(profile));
             ResponseUtil.sendJson(res, HttpServletResponse.SC_OK, jsonObject);
         } catch (Exception e) {
-            logger.severe("Error retrieving profile: " + e.getMessage());
+            logger.log(Level.SEVERE,"Error retrieving profile: " , e);
             ResponseUtil.sendError(res, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error retrieving profile");
         }
     }
@@ -98,9 +54,18 @@ public class UserHandler {
 
 
         long userId = (Long) session.getAttribute("userId");
+        String role = (String) session.getAttribute("role");
+        boolean isAdmin = "ADMIN".equalsIgnoreCase(role);
 
         try (BufferedReader reader = req.getReader()) {
             Map<String, Object> payload = gson.fromJson(reader, Map.class);
+
+            String error = RequestValidator.validateEditableFields(payload, isAdmin);
+            if (error != null) {
+                logger.warning("Validation failed: " + error);
+                ResponseUtil.sendError(res, HttpServletResponse.SC_BAD_REQUEST, error);
+                return;
+            }
             boolean updated = userService.updateEditableProfileFields(userId, payload);
 
             if (updated) {
@@ -110,51 +75,13 @@ public class UserHandler {
             }
 
         } catch (Exception e) {
-            logger.severe("Profile update failed: " + e.getMessage());
+        	logger.log(Level.SEVERE, "Profile update failed", e);
             ResponseUtil.sendError(res, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Server error.");
         }
     }
 
-    public void addAdmin(HttpServletRequest req, HttpServletResponse res) throws IOException {
-        HttpSession session = req.getSession(false);
-        if (!SessionUtil.isSuperAdmin(session, res)) return;
-       
-
-        User userRequest = RequestParser.parseRequest(req, User.class);
-        String validateError = RequestValidator.validateFields(userRequest);
-
-        if (validateError != null) {
-            ResponseUtil.sendError(res, HttpServletResponse.SC_BAD_REQUEST, validateError);
-            return;
-        }
-
-        userRequest.setRoleId(2); 
-
-        String role = session.getAttribute("role").toString();
-        long adminId = (long) session.getAttribute("adminId");
-
-        if (UserRole.SUPERADMIN.name().equals(role)) {
-            boolean success = adminService.addAdmin(userRequest, adminId);
-            if (success) {
-                ResponseUtil.sendSuccess(res, HttpServletResponse.SC_OK, "Admin added successfully.");
-            } else {
-                ResponseUtil.sendError(res, HttpServletResponse.SC_BAD_REQUEST, "Failed to add admin.");
-            }
-        } else {
-            ResponseUtil.sendError(res, HttpServletResponse.SC_FORBIDDEN, "Only Super Admin can add Admin.");
-        }
-    }
-    public void logout(HttpServletRequest req, HttpServletResponse res) throws IOException {
-        HttpSession session = req.getSession(false);
-
-        if (session != null) {
-            session.invalidate();
-            ResponseUtil.sendSuccess(res, HttpServletResponse.SC_OK, "Logout successful.");
-        } else {
-            ResponseUtil.sendError(res, HttpServletResponse.SC_BAD_REQUEST, "No active session found.");
-        }
-    }
-
+   
+   
 
     
 }

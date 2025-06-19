@@ -1,4 +1,3 @@
-// js/login.js
 
 function togglePassword() {
   const pwd = document.getElementById("password");
@@ -15,7 +14,6 @@ function togglePassword() {
 }
 
 document.getElementById("toggleEye").addEventListener("click", togglePassword);
-
 document.getElementById("loginForm").addEventListener("submit", async function (event) {
   event.preventDefault();
   const loginBtn = document.getElementById("loginBtn");

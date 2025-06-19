@@ -1,5 +1,8 @@
 package com.bank.util;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.text.DateFormat;
 import java.util.regex.Pattern;
 
 public class FormatValidator {
@@ -32,6 +35,16 @@ public class FormatValidator {
     }
     public static boolean isValidIFSC(String ifscCode) {
     	return IFSC_CODE.matcher(ifscCode).matches();
+    }
+    public static boolean isValidDate(String dateStr) {
+        try {
+            DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+            df.setLenient(false);
+            df.parse(dateStr);
+            return true;
+        } catch (ParseException e) {
+            return false;
+        }
     }
 
 }

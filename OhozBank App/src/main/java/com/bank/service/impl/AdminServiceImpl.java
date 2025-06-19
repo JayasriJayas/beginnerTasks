@@ -6,24 +6,22 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.bank.dao.AdminDAO;
+import com.bank.dao.UserDAO;
+import com.bank.dao.impl.AdminDAOImpl;
+import com.bank.dao.impl.UserDAOImpl;
+import com.bank.enums.Gender;
+import com.bank.enums.UserStatus;
 import com.bank.models.Admin;
-import com.bank.models.Branch;
 import com.bank.models.User;
 import com.bank.service.AdminService;
 import com.bank.util.PasswordUtil;
+
 import exception.QueryException;
-import com.bank.dao.AdminDAO;
-import com.bank.dao.impl.AdminDAOImpl;
-import com.bank.dao.impl.UserDAOImpl;
-import com.bank.dao.UserDAO;
-import com.bank.dao.BranchDAO;
-import com.bank.dao.impl.BranchDAOImpl;
-import com.bank.enums.Gender;
-import com.bank.enums.UserStatus;
 
 public class AdminServiceImpl implements AdminService {
     private final AdminDAO adminDAO = new AdminDAOImpl();
-    private final BranchDAO branchDAO = new BranchDAOImpl();
+  
     private final UserDAO userDAO = new UserDAOImpl();
     private final Logger logger = Logger.getLogger(AdminServiceImpl.class.getName());
 
@@ -41,28 +39,7 @@ public class AdminServiceImpl implements AdminService {
             return false;
         }
     }
-    @Override
-    public boolean updateBranchDetails(long userId,Branch updates) throws SQLException, QueryException {
-        Branch branch = new Branch();
-
-        if (updates.getBranchId()!=null) {
-            branch.setBranchId(updates.getBranchId());
-        } else {
-            logger.warning("BranchId is required");
-            return false; 
-        }
-        if (updates.getBranchName()!=null) branch.setBranchName(updates.getBranchName());
-        if (updates.getIfscCode()!=null) branch.setIfscCode(updates.getIfscCode());
-        if (updates.getLocation()!=null) branch.setLocation(updates.getLocation());
-        if (updates.getContact()!=null) branch.setContact(updates.getContact());
-        if(updates.getAdminId()!=null) branch.setAdminId(updates.getAdminId());
- 
-        branch.setModifiedAt(System.currentTimeMillis());
-        branch.setModifiedBy(userId); 
-
-       
-		return branchDAO.updateBranch(branch);
-    }
+   
     @Override
     public boolean updateEmployeeDetails(Map<String, Object> updates) throws SQLException, QueryException {
         if (!updates.containsKey("userId") || !updates.containsKey("modifiedBy")) return false;

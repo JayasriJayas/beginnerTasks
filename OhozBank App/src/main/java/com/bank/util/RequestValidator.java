@@ -1,10 +1,22 @@
 package com.bank.util;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
 import com.bank.models.Branch;
 import com.bank.models.Request;
 import com.bank.models.User;
 
 public class RequestValidator {
+	 private static final Set<String> customerEditableFields = new HashSet<>(Arrays.asList(
+		        "address", "dob", "maritalStatus", "occupation", "annualIncome","name", "email", "phone", "gender"
+		    ));
+
+		    private static final Set<String> adminEditableFields = new HashSet<>(Arrays.asList(
+		         "name", "email", "phone", "gender", "branchId"
+		    ));
 	
     public static boolean isNullOrEmpty(Object value) {
         return value == null;
@@ -64,6 +76,75 @@ public class RequestValidator {
 
         return null;
     }
-    
+    public static String validateEditableFields(Map<String, Object> payload, boolean isAdmin) {
+        Set<String> allowedFields = isAdmin ? adminEditableFields : customerEditableFields;
+
+        for (Map.Entry<String, Object> entry : payload.entrySet()) {
+            String key = entry.getKey();
+            Object value = entry.getValue();
+
+            
+            if (!allowedFields.contains(key)) {
+                return key + " is not editable";
+            }
+
+            
+            if (value == null || String.valueOf(value).trim().isEmpty()) {
+                return key + " cannot be null or empty";
+            }
+
+            
+            switch (key) {
+                
+                case "email":
+                    if (!FormatValidator.isValidEmail(String.valueOf(value))) {
+                        return key + " is not a valid email";
+                    }
+                    break;
+
+                case "phone":
+                    if (!FormatValidator.isValidPhone(String.valueOf(value))) {
+                        return "Invalid phone number format";
+                    }
+                    break;
+
+                case "annualIncome":
+                    try {
+                        double income = Double.parseDouble(String.valueOf(value));
+                        if (income <= 0) {
+                            return "Annual income must be greater than zero";
+                        }
+                    } catch (NumberFormatException e) {
+                        return "Annual income must be a valid number";
+                    }
+                    break;
+
+                case "branchId":
+                    try {
+                        long branchId = Long.parseLong(String.valueOf(value));
+                        if (branchId <= 0) {
+                            return "Branch ID must be greater than zero";
+                        }
+                    } catch (NumberFormatException e) {
+                        return "Branch ID must be a valid number";
+                    }
+                    break;
+
+                case "dob":
+                    if (value instanceof String) {
+                        if (!FormatValidator.isValidDate((String) value)) {
+                            return "Invalid date format for DOB (expected yyyy-MM-dd)";
+                        }
+                    }
+                    break;
+            }
+        }
+
+        return null; 
+    }
+
     
 }
+    
+    
+

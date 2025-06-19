@@ -12,7 +12,6 @@ import exception.QueryException;
 
 public interface AccountService {
     BigDecimal getAccountBalance(long accountId) throws QueryException, SQLException;
-    boolean approveAccountRequest(long requestId, long adminId)throws SQLException,QueryException;
     long getBranchIdByAccountId(long accountId) throws QueryException, SQLException ;
     boolean updateAccountStatus(Account payload, long modifiedBy) throws QueryException, SQLException;
     Account getAccountById(long accountId) throws SQLException;
