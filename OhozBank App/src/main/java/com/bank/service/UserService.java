@@ -4,8 +4,6 @@ import java.sql.SQLException;
 import java.util.Map;
 
 import com.bank.enums.UserRole;
-import com.bank.models.Customer;
-import com.bank.models.Request;
 import com.bank.models.User;
 
 import exception.QueryException;

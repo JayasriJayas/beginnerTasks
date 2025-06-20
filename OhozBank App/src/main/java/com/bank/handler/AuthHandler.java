@@ -23,11 +23,6 @@ public class AuthHandler {
     private final AuthenticationService authenticationService = ServiceFactory.getAuthService();
     private final UserService userService = ServiceFactory.getUserService();
 
-//    public AuthHandler() {
-//        this.authenticationService = ServiceFactory.getAuthService();
-//        this.userService = ServiceFactory.getUserService();
-//    }
-
     public void login(HttpServletRequest req, HttpServletResponse res) throws IOException {
         try {
             User loginData = RequestParser.parseRequest(req, User.class);

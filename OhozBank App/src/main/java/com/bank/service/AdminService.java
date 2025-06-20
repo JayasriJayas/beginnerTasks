@@ -4,7 +4,6 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
-import com.bank.models.Branch;
 import com.bank.models.User;
 
 import exception.QueryException;

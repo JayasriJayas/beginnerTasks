@@ -6,7 +6,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.bank.dao.BranchDAO;
-import com.bank.dao.impl.BranchDAOImpl;
 import com.bank.factory.DaoFactory;
 import com.bank.models.Branch;
 import com.bank.service.BranchService;
