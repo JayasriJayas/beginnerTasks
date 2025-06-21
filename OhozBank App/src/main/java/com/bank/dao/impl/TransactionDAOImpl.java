@@ -47,13 +47,128 @@ public class TransactionDAOImpl implements TransactionDAO {
 
 
     @Override
-    public List<Transaction> getTransactionsByAccountIdAndDateRange(long accountId, long fromMillis, long toMillis) throws SQLException, QueryException {
-    	QueryBuilder qb = new QueryBuilder(new MySQLDialect());
-        qb.select("*").from("transaction").where("accountId = ?", accountId).orWhere("transactionAccountId = ?",accountId).andBetween("timestamp",fromMillis,toMillis).orderBy("timestamp").orderDirection("DESC");
+    public List<Transaction> getTransactionsByAccountIdAndDateRange(long accountId, long fromMillis, long toMillis, int pageSize, int offset) throws SQLException, QueryException {
+        QueryBuilder qb = new QueryBuilder(new MySQLDialect());
+        
+        qb.select("*")
+          .from("transaction")
+          .openGroup()
+          .where("accountId = ?", accountId)
+          .orWhere("transactionAccountId = ?", accountId)
+          .closeGroup()
+          .andBetween("timestamp", fromMillis, toMillis)
+          .orderBy("timestamp").orderDirection("DESC")
+          .limit(pageSize)
+          .offset(offset); 
+
         try (Connection conn = DBConnectionPool.getInstance().getConnection()) {
             QueryExecutor qe = new QueryExecutor(conn);
-        List<Map<String,Object>> rows = qe.executeQuery(qb.build(), qb.getParameters());
-        return TransactionMapper.fromResultSet(rows);
+            List<Map<String, Object>> rows = qe.executeQuery(qb.build(), qb.getParameters());
+            return TransactionMapper.fromResultSet(rows);
         }
     }
+    @Override
+    public int countTransactionsByAccountIdAndDateRange(long accountId, long fromMillis, long toMillis) throws SQLException, QueryException {
+        QueryBuilder qb = new QueryBuilder(new MySQLDialect());
+
+        qb.select().aggregate("COUNT", "*").as("total")
+          .from("transaction")
+          .openGroup()
+          .where("accountId = ?", accountId)
+          .orWhere("transactionAccountId = ?", accountId)
+          .closeGroup()
+          .andBetween("timestamp", fromMillis, toMillis);
+
+        try (Connection conn = DBConnectionPool.getInstance().getConnection()) {
+            QueryExecutor qe = new QueryExecutor(conn);
+            List<Map<String, Object>> rows = qe.executeQuery(qb.build(), qb.getParameters());
+            
+            if (!rows.isEmpty()) {
+                Object totalObj = rows.get(0).get("total");
+                return totalObj != null ? ((Number) totalObj).intValue() : 0;
+            } else {
+                return 0;
+            }
+        }
+    }
+    @Override
+    public List<Transaction> getReceivedTransactionsForUser(long userId, long fromTimestamp, long toTimestamp, int limit, int offset)
+            throws SQLException, QueryException {
+
+        QueryBuilder qb = new QueryBuilder(new MySQLDialect());
+        qb.select().from("transaction")
+          .where("transactionAccountId IS NOT NULL")
+          .andWhere("userId = ?", userId)
+          .andWhere("timestamp >= ?", fromTimestamp)
+          .andWhere("timestamp <= ?", toTimestamp)
+          .orderBy("timestamp").orderDirection("DESC")
+          .limit(limit)
+          .offset(offset);
+
+        try (Connection conn = DBConnectionPool.getInstance().getConnection()) {
+            QueryExecutor executor = new QueryExecutor(conn);
+            List<Map<String, Object>> rows = executor.executeQuery(qb.build(), qb.getParameters());
+            return TransactionMapper.fromResultSet(rows);
+        }
+    }
+    @Override
+    public int countReceivedTransactionsForUser(long userId, long fromTimestamp, long toTimestamp)
+            throws SQLException, QueryException {
+
+        QueryBuilder qb = new QueryBuilder(new MySQLDialect());
+        qb.select().aggregate("COUNT", "*").from("transaction")
+          .where("transactionAccountId IS NOT NULL")
+          .andWhere("userId = ?", userId).openGroup()
+          .andWhere("timestamp >= ?", fromTimestamp)
+          .andWhere("timestamp <= ?", toTimestamp).closeGroup();
+
+        try (Connection conn = DBConnectionPool.getInstance().getConnection()) {
+            QueryExecutor executor = new QueryExecutor(conn);
+            List<Map<String, Object>> result = executor.executeQuery(qb.build(), qb.getParameters());
+            return result.isEmpty() ? 0 : ((Number) result.get(0).get("COUNT(*)")).intValue();
+        }
+    }
+    @Override
+    public List<Transaction> getReceivedTransactionsForAccount(long accountId, long fromTimestamp, long toTimestamp, int limit, int offset)
+            throws SQLException, QueryException {
+
+        QueryBuilder qb = new QueryBuilder(new MySQLDialect());
+        qb.select().from("transaction")
+          .where("transactionAccountId IS NOT NULL")
+          .andWhere("accountId = ?", accountId)
+          .andWhere("timestamp >= ?", fromTimestamp)
+          .andWhere("timestamp <= ?", toTimestamp)
+          .orderBy("timestamp").orderDirection("DESC")
+          .limit(limit)
+          .offset(offset);
+
+        try (Connection conn = DBConnectionPool.getInstance().getConnection()) {
+            QueryExecutor executor = new QueryExecutor(conn);
+            List<Map<String, Object>> rows = executor.executeQuery(qb.build(), qb.getParameters());
+            return TransactionMapper.fromResultSet(rows);
+        }
+    }
+    @Override
+    public int countReceivedTransactionsForAccount(long accountId, long fromTimestamp, long toTimestamp)
+            throws SQLException, QueryException {
+
+        QueryBuilder qb = new QueryBuilder(new MySQLDialect());
+        qb.select().aggregate("COUNT", "*").from("transaction")
+          .where("transactionAccountId IS NOT NULL")
+          .andWhere("accountId = ?", accountId)
+          .andWhere("timestamp >= ?", fromTimestamp)
+          .andWhere("timestamp <= ?", toTimestamp);
+
+        try (Connection conn = DBConnectionPool.getInstance().getConnection()) {
+            QueryExecutor executor = new QueryExecutor(conn);
+            List<Map<String, Object>> result = executor.executeQuery(qb.build(), qb.getParameters());
+            return result.isEmpty() ? 0 : ((Number) result.get(0).get("COUNT(*)")).intValue();
+        }
+    }
+
+
+
+
+
+
 }

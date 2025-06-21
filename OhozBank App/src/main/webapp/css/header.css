@@ -23,7 +23,7 @@ body {
   z-index: 1000;
 }
 
-/* 🔶 Nav Bar */
+/* Nav Bar */
 .nav {
   display: flex;
   justify-content: space-between;
@@ -32,7 +32,7 @@ body {
   padding: 0 1.5rem;
 }
 
-/* 🔶 Logo */
+/* Logo */
 .nav__logo {
   display: flex;
   align-items: center;
@@ -97,7 +97,7 @@ body {
   display: inline-block;
 }
 
-/* 🔳 Hamburger & Close Buttons */
+/* Hamburger & Close Buttons */
 .nav__toggle,
 .nav__close {
   font-size: 1.5rem;
@@ -107,11 +107,26 @@ body {
   cursor: pointer;
   display: none;
 }
+.nav__profile {
+  font-size: 1.8rem;
+  color: var(--text-color);
+  cursor: pointer;
+  margin-left: 1rem;
+  display: flex;
+  align-items: center;
+}
 
-/* ✅ Responsive (Mobile View) */
+
+/* Responsive (Mobile View) */
 @media screen and (max-width: 768px) {
   .nav__logo-img {
     height: 158px;
+  }
+  .nav__profile {
+    position: absolute;
+    top: 1rem;
+    right: 4rem; /* Adjust based on hamburger position */
+    z-index: 1001;
   }
 
   .nav__toggle {

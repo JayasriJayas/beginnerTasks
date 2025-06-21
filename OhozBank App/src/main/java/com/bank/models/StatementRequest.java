@@ -1,13 +1,27 @@
 package com.bank.models;
 
 public class StatementRequest {
-	private long accountId;
+	private Long accountId;
 	private String fromDate;
 	private String toDate;
-	public long getAccountId() {
+	private int pageNumber;
+	private int pageSize;
+	public int getPageNumber() {
+		return pageNumber;
+	}
+	public void setPageNumber(int pageNumber) {
+		this.pageNumber = pageNumber;
+	}
+	public int getPageSize() {
+		return pageSize;
+	}
+	public void setPageSize(int pageSize) {
+		this.pageSize = pageSize;
+	}
+	public Long getAccountId() {
 		return accountId;
 	}
-	public void setAccountId(long accountId) {
+	public void setAccountId(Long accountId) {
 		this.accountId = accountId;
 	}
 	public String getFromDate() {

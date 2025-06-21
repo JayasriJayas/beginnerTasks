@@ -158,7 +158,7 @@ public class MySQLDialect implements DatabaseDialect {
         if (orderByColumns != null) {
             sql.append("ORDER BY ").append(String.join(", ", orderByColumns)).append(" ");
             if (orderByDirection != null) {
-                sql.append(orderByDirection );
+                sql.append(orderByDirection).append(" ");
             }
         }
 

@@ -150,4 +150,26 @@ public class AccountHandler {
             ResponseUtil.sendError(res, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Server error");
         }
     }
+
+    public void getAccounts(HttpServletRequest req, HttpServletResponse res) throws IOException {
+        try {
+            HttpSession session = req.getSession(false);
+            if (!SessionUtil.isSessionAvailable(session, res)) return;
+
+            Long userId = (Long) session.getAttribute("userId");
+            List<Account> accounts = accountService.getAccountsByUserId(userId);
+
+            if (accounts == null || accounts.isEmpty()) {
+                ResponseUtil.sendError(res, HttpServletResponse.SC_NOT_FOUND, "No accounts found for user.");
+                return;
+            }
+
+            JSONArray jsonArray = new JSONArray(gson.toJson(accounts));
+            ResponseUtil.sendJson(res, HttpServletResponse.SC_OK, jsonArray);
+
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error fetching user accounts", e);
+            ResponseUtil.sendError(res, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Server error");
+        }
+    }
 }

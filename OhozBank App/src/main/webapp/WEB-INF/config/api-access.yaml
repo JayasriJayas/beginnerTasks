@@ -71,6 +71,10 @@ routes:
     method: POST
     role: USER
 
+  - path: /api/get-accounts/account
+    method: POST
+    role: USER
+
   - path: /api/transfer/transaction
     method: POST
     role: USER,ADMIN,SUPERADMIN
@@ -78,6 +82,14 @@ routes:
   - path: /api/statement/transaction
     method: POST
     role: USER,ADMIN,SUPERADMIN
+
+  - path: /api/received-all/transaction
+    method: POST
+    role: USER
+
+  - path: /api/received-account/transaction
+    method: POST
+    role: USER
 
   - path: /api/get/branch
     method: POST

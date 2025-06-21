@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.format.DateTimeParseException;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -13,12 +12,15 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.json.JSONArray;
+import org.json.JSONObject;
 
 import com.bank.enums.UserRole;
 import com.bank.factory.ServiceFactory;
+import com.bank.models.PaginatedResponse;
 import com.bank.models.StatementRequest;
 import com.bank.models.Transaction;
 import com.bank.service.TransactionService;
+import com.bank.util.PaginationUtil;
 import com.bank.util.RequestParser;
 import com.bank.util.ResponseUtil;
 import com.bank.util.SessionUtil;
@@ -164,8 +166,7 @@ public class TransactionHandler {
             if (UserRole.ADMIN.name().equals(role)) {
                 if (!transactionService.isAccountInBranch(accountId, branchId)) {
                     logger.warning("Unauthorized statement request by admin for account " + accountId);
-                    ResponseUtil.sendError(res, HttpServletResponse.SC_FORBIDDEN,
-                            "Access denied: Account not in your branch.");
+                    ResponseUtil.sendError(res, HttpServletResponse.SC_FORBIDDEN, "Access denied: Account not in your branch.");
                     return;
                 }
             }
@@ -173,11 +174,17 @@ public class TransactionHandler {
             long fromTimestamp = Instant.parse(fromDateStr + "T00:00:00Z").toEpochMilli();
             long toTimestamp = Instant.parse(toDateStr + "T23:59:59Z").toEpochMilli();
 
-            List<Transaction> transactions =
-                    transactionService.getStatementByDateRange(accountId, fromTimestamp, toTimestamp);
+            // Extract pagination info
+            int pageNumber = payload.getPageNumber();
+            int pageSize = payload.getPageSize();
 
-            JSONArray jsonArray = new JSONArray(gson.toJson(transactions));
-            logger.info("Statement fetched for account " + accountId);
+
+            // Get paginated results from the service
+            PaginatedResponse<Transaction> paginatedResponse =
+                    transactionService.getStatementByDateRange(accountId, fromTimestamp, toTimestamp, pageNumber, pageSize);
+
+            // Send paginated response to frontend
+            JSONArray jsonArray = new JSONArray(gson.toJson(paginatedResponse.getData()));
             ResponseUtil.sendJson(res, HttpServletResponse.SC_OK, jsonArray);
 
         } catch (DateTimeParseException | NumberFormatException e) {
@@ -186,5 +193,73 @@ public class TransactionHandler {
             logger.log(Level.SEVERE, "Exception during statement processing", e);
             ResponseUtil.sendError(res, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Server error occurred.");
         }
+        
     }
+    public void receivedAll(HttpServletRequest req, HttpServletResponse res) throws IOException {
+        try {
+            HttpSession session = req.getSession(false);
+            if (!SessionUtil.isSessionAvailable(session, res)) return;
+
+            long userId = (long) session.getAttribute("userId");
+
+            // Parse date and pagination fields from request
+            StatementRequest payload = RequestParser.parseRequest(req, StatementRequest.class);
+
+            if (payload == null || payload.getFromDate() == null || payload.getToDate() == null) {
+                ResponseUtil.sendError(res, HttpServletResponse.SC_BAD_REQUEST, "Missing required date fields.");
+                return;
+            }
+
+            long fromTimestamp = Instant.parse(payload.getFromDate() + "T00:00:00Z").toEpochMilli();
+            long toTimestamp = Instant.parse(payload.getToDate() + "T23:59:59Z").toEpochMilli();
+
+            int page = PaginationUtil.validatePageNumber((payload.getPageNumber()));       // fallback to 1 if null
+            int size = PaginationUtil.validatePageSize(payload.getPageSize());       // fallback to default like 10 or 20
+
+            PaginatedResponse<Transaction> paginated = transactionService
+                .getReceivedTransactionsForUser(userId, fromTimestamp, toTimestamp, page, size);
+
+            ResponseUtil.sendJson(res, HttpServletResponse.SC_OK, new JSONObject(gson.toJson(paginated)));
+
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error retrieving received transactions for user", e);
+            ResponseUtil.sendError(res, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Server error.");
+        }
+    }
+    public void receivedAccount(HttpServletRequest req, HttpServletResponse res) throws IOException {
+        try {
+            HttpSession session = req.getSession(false);
+            if (!SessionUtil.isSessionAvailable(session, res)) return;
+
+            long userId = (long) session.getAttribute("userId");
+
+            // Parse date and pagination fields from request
+            StatementRequest payload = RequestParser.parseRequest(req, StatementRequest.class);
+
+            if (payload == null || payload.getFromDate() == null || payload.getToDate() == null) {
+                ResponseUtil.sendError(res, HttpServletResponse.SC_BAD_REQUEST, "Missing required date fields.");
+                return;
+            }
+            long accountId = payload.getAccountId();
+
+            long fromTimestamp = Instant.parse(payload.getFromDate() + "T00:00:00Z").toEpochMilli();
+            long toTimestamp = Instant.parse(payload.getToDate() + "T23:59:59Z").toEpochMilli();
+
+            int page = PaginationUtil.validatePageNumber((payload.getPageNumber()));       // fallback to 1 if null
+            int size = PaginationUtil.validatePageSize(payload.getPageSize());    // fallback to default like 10 or 20
+
+            PaginatedResponse<Transaction> paginated = transactionService
+                .getReceivedTransactionsForAccount(userId, fromTimestamp, toTimestamp, page, size);
+
+            ResponseUtil.sendJson(res, HttpServletResponse.SC_OK, new JSONObject(gson.toJson(paginated)));
+
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error retrieving received transactions for user", e);
+            ResponseUtil.sendError(res, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Server error.");
+        }
+    }
+
+
+
+
 }

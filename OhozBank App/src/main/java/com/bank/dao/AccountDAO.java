@@ -15,6 +15,8 @@ public interface AccountDAO {
 	  List<Account> getAccountsByBranchId(long branchId) throws SQLException, QueryException;
 	  List<Account> getAllAccounts() throws SQLException, QueryException;
 	  boolean isAccountInBranch(long accountId, long branchId) throws SQLException, QueryException ;
+	  List<Account> getAccountsByUserId(long userId) throws SQLException, QueryException;
+
 
 
 

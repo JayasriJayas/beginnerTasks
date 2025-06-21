@@ -35,10 +35,12 @@ public class QueryBuilder {
 	 private boolean isCreateTable = false;
 	 private boolean isAlterTable = false;
 	 private int limit;
+	 private int offset;
 	 private boolean distinct;
 	 private String orderDirection;
 	 private DatabaseDialect dialect;
-	
+	 private String lastSelectedColumn;
+
 	
 
 	 public QueryBuilder(DatabaseDialect dialect) {
@@ -119,6 +121,12 @@ public class QueryBuilder {
 	        this.columns.addAll(Arrays.asList(columns));
 	        return this;
 	    }
+	    public QueryBuilder select(String column) {
+	        this.columns = initIfNull(this.columns);
+	        this.lastSelectedColumn = column;
+	        columns.add(column);
+	        return this;
+	    }	
 
 
 	    public QueryBuilder from(String table) {
@@ -187,12 +195,26 @@ public class QueryBuilder {
 	        this.limit = limit;
 	        return this;
 	    }
-	    
-	    public QueryBuilder aggregate(String function, String column) {
-	    	this.columns = initIfNull(this.columns);
-	        columns.add(function + "(" + column + ")");
+	    public QueryBuilder offset(int offset) {
+	        this.offset = offset;
 	        return this;
 	    }
+	    
+	    public QueryBuilder aggregate(String function, String column) {
+	        String expression = function + "(" + column + ")";
+	        this.columns = initIfNull(this.columns);
+	        this.lastSelectedColumn = expression;
+	        columns.add(expression);
+	        return this;
+	    }
+	    public QueryBuilder as(String alias) {
+	        int lastIndex = columns.size() - 1;
+			columns.set(lastIndex, lastSelectedColumn + " AS " + alias);
+	        lastSelectedColumn = null;
+	        return this;
+	    }
+
+
 
 	    public QueryBuilder where(String condition, Object... values) {
 	        this.whereConditions = initIfNull(this.whereConditions);
@@ -378,19 +400,41 @@ public class QueryBuilder {
 
 	        return this;
 	    }
+	    public QueryBuilder openGroup() {
+	        this.whereConditions = initIfNull(this.whereConditions);
+	        this.whereConditions.add("(");
+	        return this;
+	    }
+
+	    public QueryBuilder closeGroup() {
+	        this.whereConditions = initIfNull(this.whereConditions);
+	        this.whereConditions.add(")");
+	        return this;
+	    }
+
 
 	    public String buildConditionClause(List<String> conditions, List<String> operators) {
-	        if (conditions == null) return "";
-	    
+	        if (conditions == null || conditions.isEmpty()) return "";
 
-	        StringBuilder clause = new StringBuilder(conditions.get(0));
-	        for (int i = 1; i < conditions.size(); i++) {
-	            clause.append(" ").append(operators.get(i - 1)).append(" ").append(conditions.get(i));
-	           
+	        StringBuilder clause = new StringBuilder();
+	        int operatorIndex = 0;
+
+	        for (int i = 0; i < conditions.size(); i++) {
+	            String condition = conditions.get(i).trim();
+
+	            // Do not add an operator before the first condition or after an open bracket
+	            if (i > 0 && !condition.equals(")") && !conditions.get(i - 1).equals("(")) {
+	                if (operators != null && operatorIndex < operators.size()) {
+	                    clause.append(" ").append(operators.get(operatorIndex++)).append(" ");
+	                }
+	            }
+
+	            clause.append(condition);
 	        }
-	      
+
 	        return clause.toString();
 	    }
+
 	    private <T> List<T> initIfNull(List<T> list) {
 	        return (list == null) ? new ArrayList<>() : list;
 	    }

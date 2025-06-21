@@ -89,4 +89,14 @@ public class AccountServiceImpl implements AccountService {
             return Collections.emptyList();
         }
     }
+    @Override
+    public List<Account> getAccountsByUserId(long userId) throws SQLException {
+        try {
+            return accountDAO.getAccountsByUserId(userId);
+        } catch (Exception e) {
+            logger.severe("Error fetching accounts by userId: " + e.getMessage());
+            return null;
+        }
+    }
+
 }

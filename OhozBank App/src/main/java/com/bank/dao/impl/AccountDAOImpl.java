@@ -112,4 +112,16 @@ public class AccountDAOImpl implements AccountDAO {
             return !result.isEmpty();
         }
     }
+    @Override
+    public List<Account> getAccountsByUserId(long userId) throws SQLException, QueryException {
+        QueryBuilder qb = new QueryBuilder(new MySQLDialect());
+        qb.select("*").from("account").where("userId = ?", userId);
+
+        try (Connection conn = DBConnectionPool.getInstance().getConnection()) {
+            QueryExecutor qe = new QueryExecutor(conn);
+            List<Map<String, Object>> result = qe.executeQuery(qb.build(), qb.getParameters());
+            return AccountMapper.mapToAccounts(result);
+        }
+    }
+
 }

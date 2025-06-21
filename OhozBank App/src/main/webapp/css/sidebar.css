@@ -1,0 +1,216 @@
+:root {
+  --primary-color: #E09E50;
+  --secondary-color: #8CBDB9;
+  --text-color: #2D3E4E;
+  --white: #ffffff;
+  --background-color: #f5f5f5;
+  --shadow-color: rgba(0, 0, 0, 0.1);
+  --sidebar-width: 240px;
+  --sidebar-collapsed-width: 70px;
+  --border-radius: 16px;
+}
+
+/* Reset and Base */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Poppins', sans-serif;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  display: flex;
+}
+
+/* SIDEBAR */
+.sidebar {
+  position: fixed;
+  top: 0; /* <-- Set to 0 to align exactly with header */
+  left: 0;
+  height: 100vh;
+  width: var(--sidebar-collapsed-width);
+  background-color: var(--primary-color);
+  color: var(--white);
+  display: flex;
+  flex-direction: column;
+  padding: 1rem 0.5rem;
+  box-shadow: 2px 0 10px var(--shadow-color);
+  transition: width 0.3s ease;
+  overflow-x: hidden;
+  z-index: 999;
+  border-top-right-radius: var(--border-radius);
+  border-bottom-right-radius: var(--border-radius);
+}
+.sidebar__container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding-top: 64px; /* match your header height */
+}
+.sidebar__content {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;  /* ✅ Vertically center the menu only */
+}
+
+
+.sidebar.expanded {
+  width: var(--sidebar-width);
+}
+
+/* USER */
+.sidebar__user {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+
+.sidebar__img img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+.sidebar__info {
+  display: none;
+}
+
+.sidebar.expanded .sidebar__info {
+  display: block;
+  margin-left: 0.8rem;
+}
+
+.sidebar__info h3 {
+  font-size: 1rem;
+}
+
+.sidebar__info span {
+  font-size: 0.75rem;
+  color: #eee;
+}
+
+.sidebar__title {
+  font-size: 0.75rem;
+  color: #fff;
+  opacity: 0.8;
+  padding-left: 1rem;
+  display: none;
+}
+
+.sidebar.expanded .sidebar__title {
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+/* MENU */
+.sidebar__list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.8rem; /* More spacing between icons */
+  align-items: center;
+}
+
+.sidebar__link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 0.6rem 1rem;
+  color: var(--white);
+  text-decoration: none;
+  border-radius: 50px;
+  transition: background 0.2s ease;
+  white-space: nowrap;
+}
+
+.sidebar__link i {
+  font-size: 1.25rem;
+}
+
+.sidebar__link span {
+  display: none;
+}
+
+.sidebar.expanded .sidebar__link {
+  justify-content: flex-start;
+}
+
+.sidebar.expanded .sidebar__link span {
+  display: inline;
+}
+
+.sidebar__link:hover,
+.sidebar__link.active-link {
+  background-color: var(--secondary-color);
+  color: var(--text-color);
+}
+
+/* DASHBOARD CONTAINER */
+.dashboard-container {
+  flex-grow: 1;
+  margin-left: var(--sidebar-collapsed-width);
+  padding: 2rem;
+  transition: margin-left 0.3s ease;
+}
+
+.sidebar.expanded ~ .dashboard-container {
+  margin-left: var(--sidebar-width);
+}
+
+/* TOGGLE BUTTON */
+#sidebar-toggle {
+  position: fixed;
+  top: 70px;
+  left: 10px;
+  background-color: var(--secondary-color);
+  color: var(--white);
+  border-radius: 50%;
+  padding: 6px;
+  z-index: 1001;
+  font-size: 20px;
+  cursor: pointer;
+  transition: transform 0.2s, background-color 0.3s;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+
+#sidebar-toggle:hover {
+  transform: scale(1.1);
+  background-color: #76a6a4; /* darker shade of secondary */
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .sidebar {
+    width: 100%;
+    height: auto;
+    position: relative;
+    flex-direction: row;
+    flex-wrap: wrap;
+    border-radius: 0;
+  }
+
+  .dashboard-container {
+    margin-left: 0;
+    padding: 1rem;
+  }
+
+  .sidebar__list {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-around;
+  }
+
+  .sidebar__link {
+    justify-content: center;
+    flex: 1 1 30%;
+    margin: 0.5rem;
+  }
+
+  .sidebar__info {
+    display: none;
+  }
+}

@@ -24,8 +24,7 @@
   <%@ include file="header.jsp" %>
 
   <main class="main-container">
-    <!-- Left: Cartoon -->
-    <!-- Left: Cartoon + Welcome Text -->
+
 <div class="left-section">
   <div class="left-text">
     <h2>Welcome to OHOZ Bank</h2>

@@ -17,6 +17,8 @@ public interface AccountService {
     Account getAccountById(long accountId) throws SQLException;
     List<Account> getAccountsByBranchId(long branchId) throws SQLException;
     List<Account> getAllAccounts() throws SQLException;
+    List<Account> getAccountsByUserId(long userId) throws SQLException;
+
     
    
 
