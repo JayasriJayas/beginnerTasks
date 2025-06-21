@@ -225,6 +225,93 @@ public class TransactionServiceImpl implements TransactionService {
 
         return new PaginatedResponse<>(transactions, pageNumber, pageSize, total);
     }
+    @Override
+    public PaginatedResponse<Transaction> getDepositTransactionsForUser(long userId, long fromTimestamp, long toTimestamp, int pageNumber, int pageSize)
+            throws SQLException, QueryException {
+
+        pageNumber = PaginationUtil.validatePageNumber(pageNumber);
+        pageSize = PaginationUtil.validatePageSize(pageSize);
+        int offset = PaginationUtil.calculateOffset(pageNumber, pageSize);
+
+        // Fetch data
+        List<Transaction> transactions = transactionDAO.getDepositTransactionsForUser(userId, fromTimestamp, toTimestamp, pageSize, offset);
+        int total = transactionDAO.countDepositTransactionsForUser(userId, fromTimestamp, toTimestamp);
+
+        return new PaginatedResponse<>(transactions, pageNumber, pageSize, total);
+    }
+
+    @Override
+    public PaginatedResponse<Transaction> getDepositTransactionsForAccount(long accountId, long fromTimestamp, long toTimestamp, int pageNumber, int pageSize)
+            throws SQLException, QueryException {
+
+        pageNumber = PaginationUtil.validatePageNumber(pageNumber);
+        pageSize = PaginationUtil.validatePageSize(pageSize);
+        int offset = PaginationUtil.calculateOffset(pageNumber, pageSize);
+
+        // Fetch data
+        List<Transaction> transactions = transactionDAO.getDepositTransactionsForAccount(accountId, fromTimestamp, toTimestamp, pageSize, offset);
+        int total = transactionDAO.countDepositTransactionsForAccount(accountId, fromTimestamp, toTimestamp);
+
+        return new PaginatedResponse<>(transactions, pageNumber, pageSize, total);
+    }
+    @Override
+    public PaginatedResponse<Transaction> getWithdrawTransactionsForUser(long userId, long fromTimestamp, long toTimestamp, int pageNumber, int pageSize)
+            throws SQLException, QueryException {
+
+        pageNumber = PaginationUtil.validatePageNumber(pageNumber);
+        pageSize = PaginationUtil.validatePageSize(pageSize);
+        int offset = PaginationUtil.calculateOffset(pageNumber, pageSize);
+
+        // Fetch data
+        List<Transaction> transactions = transactionDAO.getWithdrawTransactionsForUser(userId, fromTimestamp, toTimestamp, pageSize, offset);
+        int total = transactionDAO.countWithdrawTransactionsForUser(userId, fromTimestamp, toTimestamp);
+
+        return new PaginatedResponse<>(transactions, pageNumber, pageSize, total);
+    }
+
+    @Override
+    public PaginatedResponse<Transaction> getWithdrawTransactionsForAccount(long accountId, long fromTimestamp, long toTimestamp, int pageNumber, int pageSize)
+            throws SQLException, QueryException {
+
+        pageNumber = PaginationUtil.validatePageNumber(pageNumber);
+        pageSize = PaginationUtil.validatePageSize(pageSize);
+        int offset = PaginationUtil.calculateOffset(pageNumber, pageSize);
+
+        // Fetch data
+        List<Transaction> transactions = transactionDAO.getWithdrawTransactionsForAccount(accountId, fromTimestamp, toTimestamp, pageSize, offset);
+        int total = transactionDAO.countWithdrawTransactionsForAccount(accountId, fromTimestamp, toTimestamp);
+
+        return new PaginatedResponse<>(transactions, pageNumber, pageSize, total);
+    }
+    @Override
+    public PaginatedResponse<Transaction> getTransferTransactionsForUser(long userId, long fromTimestamp, long toTimestamp, int pageNumber, int pageSize)
+            throws SQLException, QueryException {
+
+        pageNumber = PaginationUtil.validatePageNumber(pageNumber);
+        pageSize = PaginationUtil.validatePageSize(pageSize);
+        int offset = PaginationUtil.calculateOffset(pageNumber, pageSize);
+
+        // Fetch data
+        List<Transaction> transactions = transactionDAO.getTransferTransactionsForUser(userId, fromTimestamp, toTimestamp, pageSize, offset);
+        int total = transactionDAO.countTransferTransactionsForUser(userId, fromTimestamp, toTimestamp);
+
+        return new PaginatedResponse<>(transactions, pageNumber, pageSize, total);
+    }
+
+    @Override
+    public PaginatedResponse<Transaction> getTransferTransactionsForAccount(long accountId, long fromTimestamp, long toTimestamp, int pageNumber, int pageSize)
+            throws SQLException, QueryException {
+
+        pageNumber = PaginationUtil.validatePageNumber(pageNumber);
+        pageSize = PaginationUtil.validatePageSize(pageSize);
+        int offset = PaginationUtil.calculateOffset(pageNumber, pageSize);
+
+        // Fetch data
+        List<Transaction> transactions = transactionDAO.getTransferTransactionsForAccount(accountId, fromTimestamp, toTimestamp, pageSize, offset);
+        int total = transactionDAO.countTransferTransactionsForAccount(accountId, fromTimestamp, toTimestamp);
+
+        return new PaginatedResponse<>(transactions, pageNumber, pageSize, total);
+    }
 
 
 

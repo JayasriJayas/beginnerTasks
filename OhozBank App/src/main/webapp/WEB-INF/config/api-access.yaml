@@ -7,6 +7,14 @@ routes:
     method: POST
     role: PUBLIC
 
+  - path: /api/check-password/auth
+    method: POST
+    role: USER,ADMIN,SUPERADMIN
+
+  - path: /api/change-password/auth
+    method: POST
+    role: USER,ADMIN,SUPERADMIN
+
   - path: /api/list/request
     method: POST
     role: ADMIN,SUPERADMIN
@@ -90,6 +98,30 @@ routes:
   - path: /api/received-account/transaction
     method: POST
     role: USER
+
+  - path: /api/deposit-all/transaction
+    method: POST
+    role: USER
+
+  - path: /api/deposit-account/transaction
+    method: POST
+    role: USER
+
+  - path: /api/withdraw-all/transaction
+    method: POST
+    role: USER
+
+  - path: /api/withdraw-account/transaction
+    method: POST
+    role: USER
+
+  - path: /api/transfer-all/transaction
+    method: POST
+    role: USER
+
+  - path: /api/transfer-account/transaction
+    method: POST
+    role: USER  
 
   - path: /api/get/branch
     method: POST

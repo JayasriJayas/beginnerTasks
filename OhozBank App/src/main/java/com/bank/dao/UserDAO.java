@@ -12,5 +12,6 @@ public interface UserDAO {
 	 User findByUsername(String username) throws SQLException,QueryException;
 	 User getUserById(long userId) throws SQLException,QueryException;
 	 boolean updateUserProfile(User user) throws SQLException,QueryException;
+	 boolean updatePassword(long userId, String newPassword) throws SQLException, QueryException;
 
 }

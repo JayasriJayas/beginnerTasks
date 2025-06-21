@@ -1,6 +1,8 @@
 package com.bank.handler;
 
 import java.io.IOException;
+import java.sql.SQLException;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -15,6 +17,9 @@ import com.bank.service.AuthenticationService;
 import com.bank.service.UserService;
 import com.bank.util.RequestParser;
 import com.bank.util.ResponseUtil;
+import com.bank.util.SessionUtil;
+
+import exception.QueryException;
 
 public class AuthHandler {
 
@@ -65,8 +70,72 @@ public class AuthHandler {
             ResponseUtil.sendError(res, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal server error.");
         }
     }
+    public void checkPassword(HttpServletRequest req, HttpServletResponse res) throws IOException {
+    	 try {
+        HttpSession session = req.getSession(false);
+        if (!SessionUtil.isSessionAvailable(session, res)) return;
+
+        long userId = (Long) session.getAttribute("userId");
+
+        User  payload = RequestParser.parseRequest(req, User.class);
+        String enteredPassword = payload.getPassword();
+
+        if (enteredPassword == null || enteredPassword.trim().isEmpty()) {
+            ResponseUtil.sendError(res, HttpServletResponse.SC_BAD_REQUEST, "Password is required.");
+            return;
+        }
+
+        boolean isMatch = userService.verifyPassword(userId, enteredPassword);
+
+        if (isMatch) {
+            ResponseUtil.sendSuccess(res, HttpServletResponse.SC_OK, "Password verified successfully.");
+        } else {
+            ResponseUtil.sendError(res, HttpServletResponse.SC_UNAUTHORIZED, "Password does not match.");
+        }
+    	 }catch (Exception e) {
+            logger.log(Level.SEVERE, "Login error", e);
+            ResponseUtil.sendError(res, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal server error.");
+        }
+    }
+    public void changePassword(HttpServletRequest req, HttpServletResponse res) throws IOException {
+    	try {
+        HttpSession session = req.getSession(false);
+        if (!SessionUtil.isSessionAvailable(session, res)) return;
+
+        long userId = (Long) session.getAttribute("userId");
+
+        Map<String, String> payload = RequestParser.parseRequest(req,Map.class);
+        String currentPassword = payload.get("currentPassword");
+        String newPassword = payload.get("newPassword");
+        String confirmPassword = payload.get("confirmPassword");
+
+        if (currentPassword == null || newPassword == null || confirmPassword == null) {
+            ResponseUtil.sendError(res, HttpServletResponse.SC_BAD_REQUEST, "All password fields are required.");
+            return;
+        }
+
+        if (!newPassword.equals(confirmPassword)) {
+            ResponseUtil.sendError(res, HttpServletResponse.SC_BAD_REQUEST, "New password and confirm password do not match.");
+            return;
+        }
+
+        boolean changed = userService.changePassword(userId, currentPassword, newPassword);
+
+        if (changed) {
+            ResponseUtil.sendSuccess(res, HttpServletResponse.SC_OK, "Password changed successfully.");
+        } else {
+            ResponseUtil.sendError(res, HttpServletResponse.SC_BAD_REQUEST, "Invalid current password.");
+        }
+    	}catch (Exception e) {
+            logger.log(Level.SEVERE, "Login error", e);
+            ResponseUtil.sendError(res, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal server error.");
+        }
+    }
+
+
 
     public void logout(HttpServletRequest req, HttpServletResponse res) throws IOException {
+    	 try {
         HttpSession session = req.getSession(false);
 
         if (session != null) {
@@ -78,5 +147,9 @@ public class AuthHandler {
             logger.warning("Logout failed: No active session");
             ResponseUtil.sendError(res, HttpServletResponse.SC_BAD_REQUEST, "No active session found.");
         }
+    }catch (Exception e) {
+        logger.log(Level.SEVERE, "Login error", e);
+        ResponseUtil.sendError(res, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal server error.");
+    }
     }
 }

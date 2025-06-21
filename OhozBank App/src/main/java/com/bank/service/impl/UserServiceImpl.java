@@ -4,6 +4,7 @@ import java.sql.Date;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.bank.dao.AdminDAO;
@@ -16,6 +17,7 @@ import com.bank.models.Admin;
 import com.bank.models.Customer;
 import com.bank.models.User;
 import com.bank.service.UserService;
+import com.bank.util.PasswordUtil;
 
 import exception.QueryException;
 
@@ -104,4 +106,32 @@ public class UserServiceImpl implements UserService {
 
         logger.fine("Customer profile fields updated: " + updates.keySet());
     }
+    @Override
+    public boolean verifyPassword(long userId, String password) throws SQLException, QueryException {
+        try {
+            User user = userDAO.getUserById(userId);
+            return user != null && PasswordUtil.checkPassword(password, user.getPassword());
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error verifying password for userId: " + userId, e);
+            return false;
+        }
+    }
+    @Override
+    public boolean changePassword(long userId, String currentPassword, String newPassword) throws SQLException, QueryException {
+        try {
+            User user = userDAO.getUserById(userId);
+            if (user == null || !PasswordUtil.checkPassword(currentPassword, user.getPassword())) {
+                return false;
+            }
+
+            String hashedPassword = PasswordUtil.hashPassword(newPassword);
+            return userDAO.updatePassword(userId, hashedPassword);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error changing password for userId: " + userId, e);
+            return false;
+        }
+    }
+
+
+
 }

@@ -201,6 +201,23 @@ public class UserDAOImpl implements UserDAO{
 	    return rowsAffected >0;
 		}
 	}
+	@Override
+	public boolean updatePassword(long userId, String newPassword) throws SQLException, QueryException {
+	    QueryBuilder qb = new QueryBuilder(new MySQLDialect());
+	    qb.update("user")
+	      .set("password",newPassword)
+	      .set("modifiedAt",System.currentTimeMillis())
+	      .where("userId = ?", userId);
+
+	    
+
+	    try (Connection conn = DBConnectionPool.getInstance().getConnection()) {
+	        QueryExecutor qe = new QueryExecutor(conn);
+	        int rowsAffected = qe.executeUpdate( qb.build(),qb.getParameters());
+		    return rowsAffected >0;
+	    }
+	}
+
 }
 
 
