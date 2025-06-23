@@ -73,7 +73,7 @@ public class ApiAccessFilter implements Filter {
 
         HttpSession session = httpReq.getSession(false);
 
-        if (path.endsWith(".jsp") || path.endsWith(".css") || path.endsWith(".js") || path.endsWith(".png")) {
+        if (path.endsWith(".jsp") || path.endsWith(".css") || path.endsWith(".js") || path.endsWith(".png") || path.endsWith(".html"))  {
             chain.doFilter(req, res);
             return;
         }

@@ -460,6 +460,7 @@ public class QueryBuilder {
     public List<String> getHavingConditions() { return  havingConditions; }
     public List<String> getOrderByColumns() { return orderByColumns; }
     public Integer getLimit() { return limit; }
+    public Integer getOffset() { return offset; }
     public boolean isDistinct() { return distinct; }
     public String getOrderDirection() { return orderDirection; }
     public boolean getUseAllColumns() { return useAllColumns; }

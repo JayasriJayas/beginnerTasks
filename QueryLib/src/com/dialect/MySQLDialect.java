@@ -23,6 +23,7 @@ public class MySQLDialect implements DatabaseDialect {
         String unionClause = qb.getUnionClause();
         String orderByDirection = qb.getOrderDirection();
         int limit = qb.getLimit();
+        int offset= qb.getOffset();
         
         switch (qb.getQueryType()) {
         
@@ -164,6 +165,9 @@ public class MySQLDialect implements DatabaseDialect {
 
         if (limit > 0) {
             sql.append("LIMIT ").append(limit).append(" ");
+        }
+        if (offset > 0) {
+            sql.append("OFFSET ").append(offset).append(" ");
         }
 
         if (groupByColumns != null) {

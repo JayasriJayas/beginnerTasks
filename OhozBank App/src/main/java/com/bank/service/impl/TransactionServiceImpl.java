@@ -179,6 +179,7 @@ public class TransactionServiceImpl implements TransactionService {
         pageNumber = PaginationUtil.validatePageNumber(pageNumber);
         pageSize = PaginationUtil.validatePageSize(pageSize);
         int offset = PaginationUtil.calculateOffset(pageNumber, pageSize);
+        System.out.println(offset);
 
         List<Transaction> transactions = transactionDAO.getTransactionsByAccountIdAndDateRange(
             accountId, fromTimestamp, toTimestamp, pageSize, offset);

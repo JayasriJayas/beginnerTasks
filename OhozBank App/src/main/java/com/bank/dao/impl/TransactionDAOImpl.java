@@ -60,10 +60,11 @@ public class TransactionDAOImpl implements TransactionDAO {
           .orderBy("timestamp").orderDirection("DESC")
           .limit(pageSize)
           .offset(offset); 
-
+System.out.println(qb.build());
         try (Connection conn = DBConnectionPool.getInstance().getConnection()) {
             QueryExecutor qe = new QueryExecutor(conn);
             List<Map<String, Object>> rows = qe.executeQuery(qb.build(), qb.getParameters());
+            System.out.println(qb.getParameters());
             return TransactionMapper.fromResultSet(rows);
         }
     }

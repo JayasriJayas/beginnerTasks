@@ -1,0 +1,73 @@
+
+<div class="table-container">  <div class="table-header">
+      <h2>Transaction History</h2>
+      <div class="table-search">
+        <input type="text" placeholder="Search..." />
+        <button>Search</button>
+      </div>
+    </div>
+
+    <!-- 🔁 Navigation and Filter Bar -->
+    <div class="transaction-nav">
+      <div class="transaction-tabs">
+        <button class="active">All</button>
+        <button>Received</button>
+        <button>Transfer</button>
+        <button>Deposit</button>
+        <button>Withdraw</button>
+      </div>
+
+      <div class="transaction-filters">
+        <select id="accountFilter">
+          <option disabled selected>Loading...</option>
+        </select>
+        <input type="date" id="fromDate" />
+        <input type="date" id="toDate" />
+      </div>
+      
+    </div>
+
+    <!-- 🧾 Table -->
+    <table>
+      <thead>
+        <tr>
+          <th>Account ID</th>
+          <th>Date</th>
+          <th>Transaction Account ID</th>
+          <th>Amount</th>
+          <th>Type</th>
+          <th>Closing Balance</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      
+      <tbody id="transactionBody">
+        <!-- Rows will be injected dynamically via JS -->
+      </tbody>
+      
+    </table>
+
+    <!-- 📄 Pagination -->
+    <div class="pagination-bar">
+      <div class="pagination-left">
+        Show 
+        <select id="entriesPerPage">
+          <option value="10" selected>10</option>
+          <option value="25">25</option>
+          <option value="50">50</option>
+          <option value="100">100</option>
+        </select> entries
+      </div>
+    
+      <div class="pagination-center">
+        <button class="page-btn" id="prevBtn" disabled>&laquo; Previous</button>
+        <div id="pageNumbers" class="page-numbers">
+
+        </div>
+        <button class="page-btn" id="nextBtn">Next &raquo;</button>
+      </div>
+    
+      <div class="pagination-right">
+        Showing <span id="showingRange">1 to 10</span> of <span id="totalEntries">50</span> entries
+      </div>
+    </div></div>

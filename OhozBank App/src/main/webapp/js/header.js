@@ -42,7 +42,33 @@ document.addEventListener("DOMContentLoaded", function () {
     const tooltipText = link.getAttribute("data-tooltip");
     link.setAttribute("title", tooltipText);
   });
-
+  //  Profile icon click handler  // ✅ Profile icon click handler
+  if (profileIcon) {
+    profileIcon.addEventListener("click", () => {
+      fetch(BASE_URL + "/api/profile/user")
+        .then(res => res.json())
+        .then(data => {
+          alert(`Welcome, ${data.name}`);
+          // Extend this to show a profile modal if needed
+        })
+        .catch(err => {
+          console.error("Failed to load profile:", err);
+        });
+    });
+  }
+  if (profileIcon) {
+    profileIcon.addEventListener("click", () => {
+      fetch(BASE_URL + "/api/profile/user")
+        .then(res => res.json())
+        .then(data => {
+          alert(`Welcome, ${data.name}`);
+          // Extend this to show a profile modal if needed
+        })
+        .catch(err => {
+          console.error("Failed to load profile:", err);
+        });
+    });
+  }
   // ✅ Profile icon click handler
   if (profileIcon) {
     profileIcon.addEventListener("click", () => {

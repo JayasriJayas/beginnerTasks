@@ -183,9 +183,9 @@ public class TransactionHandler {
             PaginatedResponse<Transaction> paginatedResponse =
                     transactionService.getStatementByDateRange(accountId, fromTimestamp, toTimestamp, pageNumber, pageSize);
 
-            // Send paginated response to frontend
-            JSONArray jsonArray = new JSONArray(gson.toJson(paginatedResponse.getData()));
-            ResponseUtil.sendJson(res, HttpServletResponse.SC_OK, jsonArray);
+//            // Send paginated response to frontend
+//            JSONArray jsonArray = new JSONArray(gson.toJson(paginatedResponse.getData()));
+            ResponseUtil.sendJson(res, HttpServletResponse.SC_OK, new JSONObject(gson.toJson(paginatedResponse)));
 
         } catch (DateTimeParseException | NumberFormatException e) {
             ResponseUtil.sendError(res, HttpServletResponse.SC_BAD_REQUEST, "Invalid input format.");
