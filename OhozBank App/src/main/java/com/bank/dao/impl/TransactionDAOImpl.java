@@ -371,6 +371,24 @@ System.out.println(qb.build());
         }
     }
 
+    @Override
+    public List<Transaction> getRecentTransactionsForUser(long userId, int limit) throws SQLException, QueryException {
+        QueryBuilder qb = new QueryBuilder(new MySQLDialect());
+
+        qb.select("*")
+          .from("transaction")
+          .where("userId = ?", userId)
+          .orderBy("timestamp").orderDirection("DESC")
+          .limit(limit);
+
+        try (Connection conn = DBConnectionPool.getInstance().getConnection()) {
+            QueryExecutor qe = new QueryExecutor(conn);
+            List<Map<String, Object>> rows = qe.executeQuery(qb.build(), qb.getParameters());
+            return TransactionMapper.fromResultSet(rows);
+        }
+    }
+    
+
 
 
 

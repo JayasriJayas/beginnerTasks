@@ -172,4 +172,24 @@ public class AccountHandler {
             ResponseUtil.sendError(res, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Server error");
         }
     }
+    public void totalBalance(HttpServletRequest req, HttpServletResponse res) throws IOException {
+        try {
+            HttpSession session = req.getSession(false);
+            if (!SessionUtil.isSessionAvailable(session, res)) return;
+
+            long userId = (Long) session.getAttribute("userId");
+
+            BigDecimal totalBalance = accountService.getTotalBalanceByUser(userId);
+
+            JSONObject json = new JSONObject();
+            json.put("totalBalance", totalBalance);
+
+            ResponseUtil.sendJson(res, HttpServletResponse.SC_OK, json);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error getting total balance", e);
+            ResponseUtil.sendError(res, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Server error.");
+        }
+    }
+
+
 }

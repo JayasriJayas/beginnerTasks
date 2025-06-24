@@ -1,4 +1,6 @@
-console.log("📦 transaction.js loaded");
+
+function initTransactionPage() {
+  console.log("✅ Transaction page initialized");
 
 // DOM References
 const pageNumbersContainer = document.getElementById("pageNumbers");
@@ -17,12 +19,12 @@ let currentPage = 1;
 let entriesPerPage = 10;
 let totalEntries = 0;
 
-// 1️⃣ Init
+// 1️ Init
 populateAccounts();
 setDefaultFilters();
 attachFilterListeners();
 
-// 2️⃣ Populate Account Dropdown (with 'All Accounts')
+// 2️ Populate Account Dropdown (with 'All Accounts')
 async function populateAccounts() {
   try {
     const response = await fetch(BASE_URL + "/api/get-accounts/account", {
@@ -42,13 +44,13 @@ async function populateAccounts() {
       accountSelect.appendChild(opt);
     });
 
-    console.log("✅ Accounts loaded:", accounts);
+    console.log(" Accounts loaded:", accounts);
   } catch (err) {
-    console.error("❌ Error loading accounts", err);
+    console.error("Error loading accounts", err);
   }
 }
 
-// 3️⃣ Set default filters (date + entries)
+// 3️ Set default filters (date + entries)
 function setDefaultFilters() {
   const now = new Date();
   const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
@@ -57,10 +59,10 @@ function setDefaultFilters() {
   fromDateInput.value = firstDay.toISOString().split("T")[0];
   toDateInput.value = lastDay.toISOString().split("T")[0];
   entriesSelect.value = "10";
-  console.log("📅 Filters set:", fromDateInput.value, toDateInput.value);
+ 
 }
 
-// 4️⃣ Tab Navigation (All / Received / Transfer / Deposit / Withdraw)
+//Tab Navigation (All / Received / Transfer / Deposit / Withdraw)
 document.querySelectorAll(".transaction-tabs button").forEach((btn) => {
   btn.addEventListener("click", () => {
     document.querySelectorAll(".transaction-tabs button").forEach(b => b.classList.remove("active"));
@@ -72,7 +74,7 @@ document.querySelectorAll(".transaction-tabs button").forEach((btn) => {
   });
 });
 
-// 5️⃣ Filter listeners
+//Filter listeners
 function attachFilterListeners() {
   accountSelect.addEventListener("change", loadFilteredTransactions);
   fromDateInput.addEventListener("change", loadFilteredTransactions);
@@ -154,28 +156,35 @@ async function loadTransactions(payload) {
     if (transactions.length === 0) {
       tbody.innerHTML = `<tr><td colspan="7">No transactions found.</td></tr>`;
     } else {
-      transactions.forEach(tx => {
-        const row = document.createElement("tr");
-        const typeColor = tx.type === "DEPOSIT" || tx.type === "RECEIVED" ? "green" : "red";
-        const sign = typeColor === "green" ? "+" : "-";
-        const txAccount = tx.transactionAccountId ? `#${tx.transactionAccountId}` : "-";
+		transactions.forEach(tx => {
+		  const row = document.createElement("tr");
+		  const typeColor = tx.type === "DEPOSIT" || tx.type === "RECEIVED" ? "green" : "red";
+		  const sign = typeColor === "green" ? "+" : "-";
+		  const txAccount = tx.transactionAccountId ? `#${tx.transactionAccountId}` : "-";
 
-        row.innerHTML = `
-          <td>#${tx.accountId}</td>
-          <td>${formatTimestamp(tx.timestamp)}</td>
-          <td>${txAccount}</td>
-          <td style="color: ${typeColor}">${sign} ₹${tx.amount.toLocaleString()}</td>
-          <td>${tx.type}</td>
-          <td>₹${tx.closingBalance.toLocaleString()}</td>
-          <td>${getStatusIcon(tx.status)}</td>
-        `;
-        tbody.appendChild(row);
-      });
+		  const typeIcon = {
+		    "DEPOSIT": `<i class='bx bx-download' style="color:green" title="Deposit"></i>`,
+		    "WITHDRAWAL": `<i class='bx bx-upload' style="color:red" title="Withdraw"></i>`,
+		    "TRANSFER": `<i class='bx bx-transfer-alt' style="color:orange" title="Transfer"></i>`,
+		    "RECEIVED": `<i class='bx bx-receipt' style="color:blue" title="Received"></i>`
+		  }[tx.type] || tx.type;
+
+		  row.innerHTML = `
+		    <td><i class='bx bx-credit-card' title="Account ID"></i> #${tx.accountId}</td>
+		    <td>${formatTimestamp(tx.timestamp)}</td>
+		    <td><i class='bx bx-user' title="Transaction Account"></i> ${txAccount}</td>
+		    <td style="color: ${typeColor}">${sign} ₹${tx.amount.toLocaleString()}</td>
+		    <td>${typeIcon}</td>
+		    <td>₹${tx.closingBalance.toLocaleString()}</td>
+		    <td>${getStatusIcon(tx.status)}</td>
+		  `;
+		  tbody.appendChild(row);
+		});
     }
 
     updatePaginationDisplay();
   } catch (err) {
-    console.error("❌ Failed to load transactions:", err);
+    console.error(" Failed to load transactions:", err);
     tbody.innerHTML = `<tr><td colspan="7">Error loading transactions.</td></tr>`;
   }
 }
@@ -208,7 +217,7 @@ function updatePaginationDisplay() {
   nextBtn.disabled = currentPage === totalPages;
 }
 
-// 9️⃣ Format Timestamp
+// Format Timestamp
 function formatTimestamp(ms) {
   const date = new Date(ms);
   const dateStr = date.toLocaleDateString("en-IN");
@@ -220,9 +229,10 @@ function formatTimestamp(ms) {
   return `${dateStr}<br><small>${timeStr}</small>`;
 }
 
-// 🔟 Status Icons
+// Status Icons
 function getStatusIcon(status) {
-  if (status === "SUCCESS") return "✅";
-  if (status === "FAILED") return "❌";
-  return "⏳";
+  if (status === "SUCCESS") return `<i class='bx bx-check-circle' style="color:green" title="Success"></i>`;
+  if (status === "FAILED") return `<i class='bx bx-error-circle' style="color:red" title="Failed"></i>`;
+  return `<i class='bx bx-time' style="color:orange" title="Pending"></i>`;
 }
+}window.initTransactionPage = initTransactionPage;

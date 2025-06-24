@@ -1,7 +1,68 @@
- <div class="main-content" id="mainContent">
-    <div class="content-box">
-      <h3>Welcome to the Dashboard</h3>
-      <p>This is a placeholder content area. Add widgets or components here.</p>
+<div class="dashboard-welcome">
+  <div class="welcome-text">
+    <h2><i class='bx bx-smile'></i> Welcome back, <span id="userName">User</span>!</h2>
+    <p class="welcome-subtext">
+      Logged in as <span class="role-badge"><i class='bx bx-user'></i> Customer</span> · 
+      <span id="welcomeDate"></span>
+    </p>
+  </div>
+</div>
+
+<!-- ⬆ Upper Half: Account Cards + Insights -->
+<section class="dashboard-upper">
+  <!-- Left: My Accounts -->
+  <div class="dashboard-left">
+    <h3 class="section-title"><i class='bx bx-wallet-alt'></i> My Accounts</h3>
+    <div class="account-card-container" id="accountCardContainer">
+      <!-- Account cards will be inserted here via JS -->
     </div>
   </div>
+
+  <!-- Right: Dashboard Insights -->
+  <div class="dashboard-right">
+    <h3 class="section-title"><i class='bx bx-bar-chart-alt-2'></i> Insights</h3>
+    <!-- Add insight cards like total balance, pie chart, etc. -->
+    <div class="insight-placeholder"> Total, Summary Cards</div>
+  </div>
+</section>
+
+<!-- ⬇ Lower Half: Recent Transactions -->
+<section class="dashboard-lower">
+  <div class="transaction-preview">
+    <h3><i class='bx bx-history'></i> Recent Transactions</h3>
+    
+    <div class="txn-table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th><i class='bx bx-credit-card'></i> Account</th>
+            <th><i class='bx bx-calendar'></i> Date</th>
+            <th><i class='bx bx-transfer-alt'></i> Type</th>
+            <th><i class='bx bx-rupee'></i> Amount</th>
+            <th><i class='bx bx-link-alt'></i> Transaction Account</th>
+          </tr>
+        </thead>
+        <tbody id="recentTxnBody">
+          <!-- Transaction rows will be populated by JS -->
+        </tbody>
+      </table>
+    </div>
+
+
   
+  </div>
+</section>
+
+<!-- JS for Welcome Text -->
+<script>
+  document.getElementById("userName") &&
+    (document.getElementById("userName").innerText = user.name);
+
+  document.getElementById("welcomeDate") &&
+    (document.getElementById("welcomeDate").innerText = new Date().toLocaleDateString("en-IN", {
+      weekday: "short",
+      day: "numeric",
+      month: "short",
+      year: "numeric"
+    }));
+</script>

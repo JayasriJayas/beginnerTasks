@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.format.DateTimeParseException;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -441,6 +442,28 @@ public class TransactionHandler {
             ResponseUtil.sendError(res, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Server error.");
         }
     }
+    public void recentTransactions(HttpServletRequest req, HttpServletResponse res) throws IOException {
+        try {
+            HttpSession session = req.getSession(false);
+            if (!SessionUtil.isSessionAvailable(session, res)) return;
+
+            long userId = (long) session.getAttribute("userId");
+
+            StatementRequest payload = RequestParser.parseRequest(req, StatementRequest.class);
+            int limit = (payload.getLimit() == 0) ? 10 : payload.getLimit();
+
+
+            List<Transaction> transactions = transactionService.getRecentTransactionsForUser(userId, limit);
+            JSONArray jsonArray = new JSONArray(gson.toJson(transactions));
+            ResponseUtil.sendJson(res, HttpServletResponse.SC_OK, jsonArray);
+
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error fetching recent transactions", e);
+            ResponseUtil.sendError(res, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Server error");
+        }
+    }
+    
+
 
 
 

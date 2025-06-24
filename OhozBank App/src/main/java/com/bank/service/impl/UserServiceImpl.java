@@ -88,24 +88,46 @@ public class UserServiceImpl implements UserService {
     }
 
     private void updateUserFields(User user, Map<String, Object> updates, long modifierId) {
-        if (updates.containsKey("name")) user.setName((String) updates.get("name"));
-        if (updates.containsKey("email")) user.setEmail((String) updates.get("email"));
-        if (updates.containsKey("phone")) user.setPhone(((Number) updates.get("phone")).longValue());
-        if (updates.containsKey("gender")) user.setGender(Gender.valueOf(updates.get("gender").toString().toUpperCase()));
+        if (updates.containsKey("name") && updates.get("name") != null) user.setName((String) updates.get("name"));
+        if (updates.containsKey("email") && updates.get("email") != null) user.setEmail((String) updates.get("email"));
+        if (updates.containsKey("phone") && updates.get("phone") != null) {
+            Object phoneObj = updates.get("phone");
+            if (phoneObj instanceof Number) {
+                user.setPhone(((Number) phoneObj).longValue());
+            } else {
+                logger.warning("Phone is not a valid number: " + phoneObj);
+            }
+        }
+        if (updates.containsKey("gender") && updates.get("gender") != null) {
+            user.setGender(Gender.valueOf(updates.get("gender").toString().toUpperCase()));
+        }
 
         user.setModifiedAt(System.currentTimeMillis());
         user.setModifiedBy(modifierId);
     }
 
     private void updateCustomerFields(Customer customer, Map<String, Object> updates) {
-        if (updates.containsKey("address")) customer.setAddress(updates.get("address").toString());
-        if (updates.containsKey("dob")) customer.setDob(Date.valueOf(updates.get("dob").toString()));
-        if (updates.containsKey("maritalStatus")) customer.setMaritalStatus(updates.get("maritalStatus").toString());
-        if (updates.containsKey("occupation")) customer.setOccupation(updates.get("occupation").toString());
-        if (updates.containsKey("annualIncome")) customer.setAnnualIncome(Double.parseDouble(updates.get("annualIncome").toString()));
+        if (updates.containsKey("address") && updates.get("address") != null) customer.setAddress(updates.get("address").toString());
+        if (updates.containsKey("dob") && updates.get("dob") != null) {
+            try {
+                customer.setDob(Date.valueOf(updates.get("dob").toString()));
+            } catch (IllegalArgumentException e) {
+                logger.warning("Invalid date format for DOB: " + updates.get("dob"));
+            }
+        }
+        if (updates.containsKey("maritalStatus") && updates.get("maritalStatus") != null) customer.setMaritalStatus(updates.get("maritalStatus").toString());
+        if (updates.containsKey("occupation") && updates.get("occupation") != null) customer.setOccupation(updates.get("occupation").toString());
+        if (updates.containsKey("annualIncome") && updates.get("annualIncome") != null) {
+            try {
+                customer.setAnnualIncome(Double.parseDouble(updates.get("annualIncome").toString()));
+            } catch (NumberFormatException e) {
+                logger.warning("Invalid annual income value: " + updates.get("annualIncome"));
+            }
+        }
 
         logger.fine("Customer profile fields updated: " + updates.keySet());
     }
+
     @Override
     public boolean verifyPassword(long userId, String password) throws SQLException, QueryException {
         try {

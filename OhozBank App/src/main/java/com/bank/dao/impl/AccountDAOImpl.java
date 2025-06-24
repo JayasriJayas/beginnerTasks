@@ -3,17 +3,13 @@ package com.bank.dao.impl;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import com.bank.connection.DBConnectionPool;
 import com.bank.dao.AccountDAO;
-import com.bank.enums.UserStatus;
 import com.bank.mapper.AccountMapper;
-import com.bank.mapper.AccountRequestMapper;
 import com.bank.models.Account;
-import com.bank.models.AccountRequest;
 import com.dialect.MySQLDialect;
 import com.querybuilder.QueryBuilder;
 import com.querybuilder.QueryExecutor;
@@ -123,5 +119,26 @@ public class AccountDAOImpl implements AccountDAO {
             return AccountMapper.mapToAccounts(result);
         }
     }
+    @Override
+    public BigDecimal getTotalBalanceByUser(long userId) throws SQLException, QueryException {
+        QueryBuilder qb = new QueryBuilder(new MySQLDialect());
+        qb.select().aggregate("SUM", "balance").as("total")
+          .from("account")
+          .where("userId = ?", userId)
+          .andWhere("status = ?", "ACTIVE");
+
+        try (Connection conn = DBConnectionPool.getInstance().getConnection()) {
+            QueryExecutor qe = new QueryExecutor(conn);
+            List<Map<String, Object>> rows = qe.executeQuery(qb.build(), qb.getParameters());
+
+            if (!rows.isEmpty()) {
+                Object totalObj = rows.get(0).get("total");
+                return totalObj != null ? new BigDecimal(totalObj.toString()) : BigDecimal.ZERO;
+            }
+            return BigDecimal.ZERO;
+        }
+    }
+
+
 
 }

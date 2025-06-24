@@ -32,6 +32,8 @@ public interface TransactionDAO {
 
 	 List<Transaction> getTransferTransactionsForAccount(long accountId, long fromTimestamp, long toTimestamp, int limit, int offset) throws SQLException, QueryException;
 	 int countTransferTransactionsForAccount(long accountId, long fromTimestamp, long toTimestamp) throws SQLException, QueryException;
-
+	 
+	 List<Transaction> getRecentTransactionsForUser(long userId, int limit) throws SQLException, QueryException;
+	 
 }
 

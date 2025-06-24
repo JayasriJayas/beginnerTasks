@@ -51,6 +51,10 @@ routes:
     method: POST
     role: USER
 
+  - path: /api/pending/account-request
+    method: GET
+    role: USER
+
   - path: /api/list/account-request
     method: POST
     role: ADMIN,SUPERADMIN
@@ -80,6 +84,10 @@ routes:
     role: USER
 
   - path: /api/get-accounts/account
+    method: POST
+    role: USER
+
+  - path: /api/total-balance/account
     method: POST
     role: USER
 
@@ -122,6 +130,10 @@ routes:
   - path: /api/transfer-account/transaction
     method: POST
     role: USER  
+
+  - path: /api/recent-transactions/transaction
+    method: POST
+    role: USER
 
   - path: /api/get/branch
     method: POST

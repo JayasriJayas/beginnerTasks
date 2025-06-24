@@ -98,5 +98,10 @@ public class AccountServiceImpl implements AccountService {
             return null;
         }
     }
+    @Override
+    public BigDecimal getTotalBalanceByUser(long userId) throws SQLException, QueryException {
+        return accountDAO.getTotalBalanceByUser(userId);
+    }
+
 
 }

@@ -12,4 +12,6 @@ public interface AccountRequestDAO {
     List<AccountRequest> fetchRequestsByAdminBranch(long adminId) throws SQLException,QueryException;
     boolean save(AccountRequest request) throws SQLException,QueryException;
     boolean approveRequest(long requestId,long adminId) throws SQLException,QueryException;
+    List<AccountRequest> findPendingRequestsByUserId(long userId) throws SQLException, QueryException;
+
 }

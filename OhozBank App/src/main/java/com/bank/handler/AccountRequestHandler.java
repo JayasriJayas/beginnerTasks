@@ -118,4 +118,27 @@ public class AccountRequestHandler {
             ResponseUtil.sendError(res, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Server error.");
         }
     }
+    public void pending(HttpServletRequest req, HttpServletResponse res) throws IOException {
+        try {
+            HttpSession session = req.getSession(false);
+            if (!SessionUtil.isSessionAvailable(session, res)) return;
+
+            long userId = (Long) session.getAttribute("userId");
+
+            List<AccountRequest> pendingRequests = accountService.getPendingRequestsForUser(userId);
+
+            if (pendingRequests != null && !pendingRequests.isEmpty()) {
+                JSONArray jsonArray = new JSONArray(new Gson().toJson(pendingRequests));
+                ResponseUtil.sendJson(res, HttpServletResponse.SC_OK, jsonArray);
+            } else {
+                ResponseUtil.sendError(res, HttpServletResponse.SC_NOT_FOUND, "No pending requests found for this user.");
+            }
+
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error fetching pending requests for user", e);
+            ResponseUtil.sendError(res, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Server error.");
+        }
+    }
+
+
 }

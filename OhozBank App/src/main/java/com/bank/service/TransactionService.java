@@ -2,6 +2,7 @@ package com.bank.service;
 
 import java.math.BigDecimal;
 import java.sql.SQLException;
+import java.util.List;
 
 import com.bank.exception.BankingException;
 import com.bank.models.PaginatedResponse;
@@ -22,6 +23,9 @@ public interface TransactionService {
 	PaginatedResponse<Transaction> getWithdrawTransactionsForAccount(long accountId, long fromTimestamp, long toTimestamp, int pageNumber, int pageSize)throws SQLException, QueryException;
 	PaginatedResponse<Transaction> getTransferTransactionsForUser(long userId, long fromTimestamp, long toTimestamp, int pageNumber, int pageSize)throws SQLException, QueryException;
 	PaginatedResponse<Transaction> getTransferTransactionsForAccount(long accountId, long fromTimestamp, long toTimestamp, int pageNumber, int pageSize)throws SQLException, QueryException;
+	List<Transaction> getRecentTransactionsForUser(long userId, int limit) throws SQLException, QueryException;
+	
+
 	
 //	boolean transfer(long fromAccountId, long toAccountId, BigDecimal amount, String performedBy);
 //	List<Transaction> getStatement(long accountId);

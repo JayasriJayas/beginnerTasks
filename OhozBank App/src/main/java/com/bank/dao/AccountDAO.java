@@ -1,5 +1,6 @@
 package com.bank.dao;
 
+import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -16,6 +17,7 @@ public interface AccountDAO {
 	  List<Account> getAllAccounts() throws SQLException, QueryException;
 	  boolean isAccountInBranch(long accountId, long branchId) throws SQLException, QueryException ;
 	  List<Account> getAccountsByUserId(long userId) throws SQLException, QueryException;
+	  BigDecimal getTotalBalanceByUser(long userId) throws SQLException, QueryException;
 
 
 

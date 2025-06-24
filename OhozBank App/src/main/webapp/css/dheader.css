@@ -39,3 +39,50 @@
       color: var(--text-color);
       cursor: pointer;
     }
+    .modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+/* Logo */
+.nav__logo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-color);
+  font-size: 1.2rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  text-decoration: none;
+  padding-left: 0.5rem;
+}
+
+.nav__logo-img {
+  height: 128px;
+  width: auto;
+  object-fit: contain;
+}
+/* This MUST exist exactly like this */
+.modal-overlay.hidden {
+  display: none !important;
+}
+
+.modal-box {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  max-width: 500px;
+  width: 90%;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+}
+@media screen and (max-width: 768px) {
+  .nav__logo-img {
+    height: 158px;
+  }}

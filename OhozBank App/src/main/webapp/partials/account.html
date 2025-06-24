@@ -1,0 +1,43 @@
+<div class="account-container">
+  <div class="account-heading-row">
+    <h2 class="account-heading">
+      <i class='bx bx-wallet-alt'></i> My Accounts
+    </h2>
+    <button class="account-request-btn" onclick="requestNewAccount()">
+      <i class='bx bx-plus-circle'></i> 
+       <span class="tooltip">New Account</span>
+    </button>
+  </div>
+
+  <!-- Account Cards Section -->
+  <div class="account-list">
+    <!-- Cards injected here -->
+  </div>
+
+  <!-- Pending Account Requests Section -->
+  <div class="pending-filter-row">
+    <h3 class="pending-heading">
+      <i class='bx bx-time-five'></i> Pending Account Requests
+    </h3>
+    <select id="statusFilter" class="status-filter">
+      <option value="ALL">All</option>
+      <option value="PENDING" selected>Pending</option>
+      <option value="APPROVED">Approved</option>
+      <option value="REJECTED">Rejected</option>
+    </select>
+  </div>
+
+  <table class="pending-table">
+    <thead>
+      <tr>
+        <th><i class='bx bx-building-house'></i> Branch ID</th>
+        <th><i class='bx bx-calendar'></i> Requested On</th>
+        <th><i class='bx bx-id-card'></i> Request ID</th>
+        <th><i class='bx bx-shield-quarter'></i> Status</th>
+      </tr>
+    </thead>
+    <tbody id="pendingRequestsBody">
+      <!-- Rows inserted via JS -->
+    </tbody>
+  </table>
+</div>

@@ -8,6 +8,7 @@ import java.util.Map;
 
 import com.bank.connection.DBConnectionPool;
 import com.bank.dao.AccountRequestDAO;
+import com.bank.enums.RequestStatus;
 import com.bank.enums.UserStatus;
 import com.bank.mapper.AccountRequestMapper;
 import com.bank.models.Account;
@@ -126,6 +127,21 @@ public class AccountRequestDAOImpl implements AccountRequestDAO {
         QueryExecutor qe = new QueryExecutor(conn);
         return qe.executeUpdate(qb.build(), qb.getParameters()) > 0;
     }
+    @Override
+    public List<AccountRequest> findPendingRequestsByUserId(long userId) throws SQLException, QueryException {
+        QueryBuilder qb = new QueryBuilder(new MySQLDialect());
+        qb.select("*")
+          .from("accountRequest")
+          .where("userId = ?", userId)
+          .andWhere("status = ?", RequestStatus.PENDING);  // status column expected to hold 'PENDING'
+
+        try (Connection conn = DBConnectionPool.getInstance().getConnection()) {
+            QueryExecutor qe = new QueryExecutor(conn);
+            List<Map<String, Object>> rows = qe.executeQuery(qb.build(), qb.getParameters());
+            return AccountRequestMapper.mapToRequests(rows);
+        }
+    }
+
 
     
 }

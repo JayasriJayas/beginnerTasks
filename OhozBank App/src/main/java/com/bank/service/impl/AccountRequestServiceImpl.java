@@ -1,6 +1,7 @@
 package com.bank.service.impl;
 
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -63,4 +64,14 @@ public class AccountRequestServiceImpl implements AccountRequestService {
             return false;
         }
     }
+    @Override
+    public List<AccountRequest> getPendingRequestsForUser(long userId) throws SQLException, QueryException {
+        try {
+            return accountReqDAO.findPendingRequestsByUserId(userId);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error getting pending requests for userId: " + userId, e);
+            return Collections.emptyList();
+        }
+    }
+
 }

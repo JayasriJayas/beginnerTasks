@@ -1,101 +1,83 @@
-console.log("✅ payform.js script loaded");
+function initPayform() {
+  console.log("✅ Payform initialized");
 
-const contextPath = BASE_URL || "";
+  const transferForm = document.querySelector(".form-wrapper");
+  const passwordModal = document.getElementById("passwordModal");
+  const confirmPasswordInput = document.getElementById("confirmPassword");
+  const fromAccountInput = document.getElementById("fromAccount");
+  const toAccountInput = document.getElementById("toAccount");
+  const amountInput = document.getElementById("amount");
 
-const transferForm = document.querySelector(".form-wrapper");
-const passwordModal = document.getElementById("passwordModal");
-const confirmPasswordInput = document.getElementById("confirmPassword");
-const fromAccountInput = document.getElementById("fromAccount");
-const toAccountInput = document.getElementById("toAccount");
-const amountInput = document.getElementById("amount");
+  if (!transferForm) {
+    console.error("❌ Form not found!");
+    return;
+  }
 
-// Attach event listener to form
-if (transferForm) {
-  transferForm.addEventListener("submit", function (event) {
-    event.preventDefault(); // Prevent form from submitting normally
+  transferForm.addEventListener("submit", (e) => {
+    e.preventDefault();
     openModal();
   });
-} else {
-  console.error("❌ Form with class 'form-wrapper' not found.");
-}
 
-function openModal() {
-  if (passwordModal) {
-    passwordModal.style.display = "flex";
-    if (confirmPasswordInput) {
-      confirmPasswordInput.value = "";
+  function openModal() {
+    if (passwordModal) {
+      passwordModal.style.display = "flex";
+      if (confirmPasswordInput) confirmPasswordInput.value = "";
     }
   }
-}
 
-function closeModal() {
-  if (passwordModal) {
-    passwordModal.style.display = "none";
-  }
-}
+  async function submitTransfer() {
+    const password = confirmPasswordInput?.value.trim();
+    const accountId = fromAccountInput?.value.trim();
+    const transactionAccountId = toAccountInput?.value.trim();
+    const amount = parseFloat(amountInput?.value);
 
-async function submitTransfer() {
-  const password = confirmPasswordInput?.value.trim();
-  const accountId = fromAccountInput?.value.trim();
-  const transactionAccountId = toAccountInput?.value.trim();
-  const amount = parseFloat(amountInput?.value);
-
-  if (!password) {
-    alert("Please enter your password.");
-    return;
-  }
-
-  if (!accountId || !transactionAccountId || isNaN(amount)) {
-    alert("Please fill in all transfer details.");
-    closeModal();
-    return;
-  }
-
-  try {
-    // Step 1: Verify password
-    const verifyRes = await fetch(`${contextPath}/api/check-password/auth`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-      body: JSON.stringify({ password }),
-    });
-
-    const verifyData = await verifyRes.json();
-
-    if (!verifyRes.ok || verifyData.status !== "SUCCESS") {
-      alert(verifyData.message || "Password verification failed.");
-      closeModal();
+    if (!password || !accountId || !transactionAccountId || isNaN(amount)) {
+      alert("Fill in all fields.");
       return;
     }
 
-    alert("✅ Password verified successfully!");
-    console.log("➡️ Password verification response:", verifyData);
-    console.log("🔁 Proceeding to transfer...");
+    try {
+      // Step 1: Verify password
+      const verifyRes = await fetch(`${BASE_URL}/api/check-password/auth`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ password }),
+      });
 
-    // Step 2: Perform fund transfer
-    const transferRes = await fetch(`${contextPath}/api/transfer/transaction`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-      body: JSON.stringify({ accountId, transactionAccountId, amount }),
-    });
+      const verifyData = await verifyRes.json();
+      if (!verifyRes.ok || verifyData.status !== "SUCCESS") {
+        alert(verifyData.message || "Invalid password.");
+        return;
+      }
 
-    console.log("🔢 Sending transfer data:", { accountId, transactionAccountId, amount });
+      // Step 2: Transfer
+      const res = await fetch(`${BASE_URL}/api/transfer/transaction`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ accountId, transactionAccountId, amount }),
+      });
 
-    const transferData = await transferRes.json();
+      const result = await res.json();
+      alert(result.message || "Transfer done");
 
-    if (transferRes.ok) {
-      alert(transferData.message || "✅ Funds transferred successfully!");
-      closeModal();
-      transferForm.reset();
-    } else {
-      alert(transferData.message || "❌ Fund transfer failed.");
+      if (res.ok) {
+        transferForm.reset();
+        closeModal();
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Unexpected error");
     }
-  } catch (error) {
-    console.error("Transfer error:", error);
-    alert("An unexpected error occurred. Please try again.");
   }
+
+  function closeModal() {
+    if (passwordModal) passwordModal.style.display = "none";
+  }
+
+  window.submitTransfer = submitTransfer;
+  window.closeModal = closeModal;
 }
 
-window.submitTransfer = submitTransfer;
-window.closeModal = closeModal;
+window.initPayform = initPayform;

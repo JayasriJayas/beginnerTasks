@@ -313,6 +313,11 @@ public class TransactionServiceImpl implements TransactionService {
 
         return new PaginatedResponse<>(transactions, pageNumber, pageSize, total);
     }
+    @Override
+    public List<Transaction> getRecentTransactionsForUser(long userId, int limit) throws SQLException, QueryException {
+        return transactionDAO.getRecentTransactionsForUser(userId, limit);
+    }
+    
 
 
 

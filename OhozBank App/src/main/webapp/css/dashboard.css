@@ -1,0 +1,347 @@
+.dashboard-welcome {
+  margin-top: 1.5rem; /* 👈 Pushes it down from header */
+  padding: 1.5rem 2rem;
+  background-color: #ffffff;
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  margin-left: var(--sidebar-collapsed-width);
+      margin-top: 64px;
+      padding: 1.5rem;
+      flex: 1;
+      transition: margin-left 0.3s;
+}
+
+
+.welcome-text h2 {
+  font-size: 1.8rem;
+  color: #2D3E4E;
+  margin-bottom: 0.25rem;
+}
+
+#welcomeDate {
+  font-weight: 500;
+}
+
+.welcome-text span#userName {
+  color: #E09E50;
+  font-weight: 600;
+}
+
+.welcome-subtext {
+  font-size: 0.95rem;
+  color: #555;
+}
+
+.role-badge {
+  background-color: #8CBDB9;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+}
+.dashboard-upper {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+  margin-bottom: 2rem;
+}
+
+.dashboard-left {
+  flex: 1;
+  min-width: 300px;
+}
+
+.section-title {
+  color: #2D3E4E;
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+}
+
+.account-card-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.account-card {
+  background: #fff;
+  border-left: 6px solid #E09E50;
+  border-radius: 10px;
+  padding: 1rem 1.5rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.account-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.account-number {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #2D3E4E;
+}
+
+.account-meta {
+  font-size: 0.9rem;
+  color: #777;
+  margin-top: 4px;
+}
+
+.status-badge {
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  background-color: #8CBDB9;
+  color: white;
+}
+
+.balance-btn {
+  background-color: #E09E50;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.balance-btn:hover {
+  background-color: #cf833e;
+}
+.dashboard-upper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+.dashboard-lower {
+  display: flex;
+  flex-direction: column;
+  flex: 1; /* Ensures the lower section gets 50% of the available space */
+  padding: 1rem;
+}
+
+.dashboard-left {
+  flex: 1 1 60%; /* Left column takes ~60% */
+  min-width: 300px;
+  max-width: 600px; /* Optional: restrict max size */
+}
+
+.dashboard-right {
+  flex: 1 1 40%; /* Right column takes the rest */
+  min-width: 250px;
+}
+.txn-table-scroll {
+  max-height: 240px;
+  overflow-y: auto;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+}
+
+.txn-table-scroll table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.txn-table-scroll th,
+.txn-table-scroll td {
+   padding: 15px 10px;
+  text-align: left;
+  font-size: 0.95rem;
+  border-bottom: 1px solid #eee;
+}
+.txn-table-scroll th i {
+  display: none; /* Removes icons from the table headers */
+}
+
+.txn-table-scroll thead {
+  background: #8CBDB9;
+  color: white;
+  position: sticky;
+  top: 0;
+}
+
+.txn-table-scroll tbody tr:nth-child(even) {
+  background-color: #fffaf0;
+}
+.type-badge {
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  color: white;
+}
+
+.badge-transfer {
+  background-color: #8CBDB9; /* light blue */
+}
+
+.badge-deposit {
+  background-color: #28a745; /* green */
+}
+
+.badge-withdrawal {
+  background-color: #d9534f; /* red */
+}
+
+.badge-default {
+  background-color: #999;
+}
+.dashboard-welcome {
+  margin-left: var(--sidebar-collapsed-width);
+  transition: margin-left 0.3s;
+}
+
+.sidebar.expanded ~ .dashboard-container .dashboard-welcome {
+  margin-left: var(--sidebar-width);
+}
+
+.dashboard-upper {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+  margin-bottom: 2rem;
+  transition: margin-left 0.3s;
+}
+
+.sidebar.expanded ~ .dashboard-container .dashboard-upper {
+  margin-left: var(--sidebar-width);
+}
+
+.dashboard-left {
+  flex: 1 1 60%; /* Left column takes ~60% */
+  min-width: 300px;
+  max-width: 600px; /* Optional: restrict max size */
+}
+
+.dashboard-right {
+  flex: 1 1 40%; /* Right column takes the rest */
+  min-width: 250px;
+}
+  .dashboard-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh; /* Ensure the container takes the full height of the viewport */
+}
+  
+  .dashboard-upper,
+.dashboard-lower {
+  flex: 1; /* Makes both sections take equal space */
+  padding: 1rem;
+  overflow: auto; /* Ensures content doesn't overflow the container */
+}
+
+
+
+.sidebar.expanded ~ .dashboard-container .dashboard-lower {
+  margin-left: var(--sidebar-width);
+}
+@media (max-width: 768px) {
+  /* Sidebar at the bottom */
+  .sidebar {
+    top: auto;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 60px;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    padding: 0.5rem 0;
+    z-index: 999;
+  }
+
+  .sidebar.expanded {
+    width: 100%;
+    padding-left: 0;
+  }
+
+  .sidebar .toggle-btn {
+    display: none;
+  }
+
+  .menu-item {
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 2px;
+    padding: 0.4rem;
+    font-size: 0.7rem;
+  }
+
+  .menu-item i {
+    font-size: 1.3rem;
+  }
+
+  .menu-item span {
+    display: block;
+    font-size: 0.65rem;
+  }
+
+  .main-content {
+    margin-left: 0;
+    margin-bottom: 60px; /* Ensures space for bottom nav */
+    transition: margin-left 0.3s;
+  }
+
+  .dashboard-welcome {
+    margin-top: 1.5rem;
+    margin-left: 0;
+    margin-bottom: 1.5rem;
+  }
+
+  .dashboard-upper {
+    margin-left: 0;
+  }
+
+  .dashboard-lower {
+    margin-top: 2rem;
+    transition: margin-left 0.3s;
+    min-height: 300px; 
+  }
+
+ .dashboard-container {
+    display: block; /* Stacks sections vertically on mobile */
+  }
+
+  .dashboard-upper,
+  .dashboard-lower {
+    flex: none; /* Remove flex behavior on small screens */
+  }
+  
+}
+/* Laptop/Desktop view: Sidebar expands, consistent gap */
+@media (min-width: 769px) {
+  .dashboard-container {
+
+    transition: margin-left 0.3s ease;
+  }
+
+  .sidebar.expanded ~ .dashboard-container {
+    margin-left: 20px; /* Same gap when sidebar is expanded */
+  }
+
+  .dashboard-welcome {
+    margin-top: 1.5rem;
+    margin-left: calc(var(--sidebar-collapsed-width) + 1rem); /* Keep gap in welcome section */
+    margin-bottom: 1.5rem;
+  }
+
+  .dashboard-upper {
+    margin-left: calc(var(--sidebar-collapsed-width) + 1rem); /* Maintain gap for upper section */
+  }
+
+  .dashboard-lower {
+    margin-left: calc(var(--sidebar-collapsed-width) + 1rem); /* Maintain gap for lower section */
+    margin-top: 2rem;
+  }
+}
+

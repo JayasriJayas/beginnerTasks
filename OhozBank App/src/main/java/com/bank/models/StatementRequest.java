@@ -6,6 +6,13 @@ public class StatementRequest {
 	private String toDate;
 	private int pageNumber;
 	private int pageSize;
+	private int limit;
+	public int getLimit() {
+		return limit;
+	}
+	public void setLimit(int limit) {
+		this.limit = limit;
+	}
 	public int getPageNumber() {
 		return pageNumber;
 	}
