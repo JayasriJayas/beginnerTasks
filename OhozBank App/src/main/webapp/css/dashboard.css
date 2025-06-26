@@ -113,6 +113,12 @@
   align-items: center;
   gap: 6px;
 }
+.balance-info {
+  margin-top: 10px;
+  font-size: 1rem;
+  color: #2D3E4E;
+  font-weight: bold;
+}
 
 .balance-btn:hover {
   background-color: #cf833e;
@@ -164,8 +170,7 @@
 }
 
 .txn-table-scroll thead {
-  background: #8CBDB9;
-  color: white;
+
   position: sticky;
   top: 0;
 }
@@ -226,10 +231,48 @@
   flex: 1 1 40%; /* Right column takes the rest */
   min-width: 250px;
 }
-  .dashboard-container {
+
+/* Main container should fill the available space */
+.dashboard-container {
   display: flex;
   flex-direction: column;
-  height: 100vh; /* Ensure the container takes the full height of the viewport */
+  min-height: 100%;
+}
+
+/* Content section should grow */
+.dashboard-content-box {
+  flex-grow: 1; /* This makes the content grow to take available space */
+}
+
+/* Styling for the footer */
+/* Footer styling */
+footer {
+
+  padding: 10px 0;
+  text-align: center;
+  position: relative;
+  bottom: 0;
+  width: 100%;
+}
+
+footer hr {
+  border: 1px solid #ccc;
+  margin: 20px 0;
+}
+
+/* Ensure the footer has good padding and content is aligned */
+footer div {
+  padding: 10px;
+}
+
+/* Footer Links Styling */
+footer a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+footer a:hover {
+  text-decoration: underline;
 }
   
   .dashboard-upper,
@@ -244,6 +287,173 @@
 .sidebar.expanded ~ .dashboard-container .dashboard-lower {
   margin-left: var(--sidebar-width);
 }
+/* General Styles */
+.dashboard-right {
+  padding: 20px;
+  background-color: #f4f7fa;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.section-title {
+  font-size: 1.6rem;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #333;
+}
+
+.insight-placeholder {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.insight-placeholder div {
+  padding: 10px 20px;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.insight-placeholder div p {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+#totalBalance {
+  background-color: #e0f7fa;
+}
+
+#thisMonthCredits {
+  background-color: #c8e6c9;
+}
+
+#thisMonthDebits {
+  background-color: #ffccbc;
+}
+
+/* Pie Chart Styling */
+#pieChartContainer {
+  position: relative;
+  height: 250px; /* Reduce the height of the container */
+  width: 80%;  /* Adjust the width to make it smaller */
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+canvas#insightChart {
+  width: 250px !important;  /* Adjust the width */
+  height: 250px !important; /* Adjust the height */
+}
+canvas {
+  display: block;
+  box-sizing: border-box;
+  height: 250px;  /* Reduced height */
+  width: 250px;   /* Reduced width */
+}
+
+
+/* Account Card Styling */
+.account-card {
+  padding: 15px;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+}
+
+.account-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.account-info span {
+  font-size: 1rem;
+  color: #555;
+}
+
+.balance-btn {
+  display: block;
+ 
+}
+
+.balance-btn:disabled {
+  background-color: #c8e6c9;
+  cursor: not-allowed;
+}
+
+.balance-btn i {
+  margin-right: 8px;
+}
+
+.type-badge {
+  font-size: 0.9rem;
+  padding: 5px 10px;
+  border-radius: 10px;
+  color: #fff;
+  display: inline-block;
+}
+
+.badge-transfer {
+  background-color:#8CBDB9;
+}
+
+.badge-deposit {
+  background-color: #2196f3;
+}
+
+.badge-withdrawal {
+  background-color: #f44336;
+}
+
+/* Table Styling */
+.transaction-preview table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.transaction-preview th,
+.transaction-preview td {
+  padding: 10px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+.transaction-preview th {
+  background-color: #8cbdb9;
+  font-weight: bold;
+}
+
+.transaction-preview td {
+  font-size: 1rem;
+}
+
+.transaction-preview .type-badge {
+  padding: 5px 10px;
+  font-size: 0.85rem;
+}
+
+.transaction-preview .type-badge.badge-default {
+  background-color: #757575;
+}
+
+/* Tooltip */
+.tooltip {
+  position: absolute;
+  background-color: rgba(0, 0, 0, 0.7);
+  color: #fff;
+  padding: 5px 10px;
+  border-radius: 5px;
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 10;
+}
+
 @media (max-width: 768px) {
   /* Sidebar at the bottom */
   .sidebar {

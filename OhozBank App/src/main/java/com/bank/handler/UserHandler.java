@@ -59,13 +59,14 @@ public class UserHandler {
 
         try (BufferedReader reader = req.getReader()) {
             Map<String, Object> payload = gson.fromJson(reader, Map.class);
-
+            
             String error = RequestValidator.validateEditableFields(payload, isAdmin);
             if (error != null) {
                 logger.warning("Validation failed: " + error);
                 ResponseUtil.sendError(res, HttpServletResponse.SC_BAD_REQUEST, error);
                 return;
             }
+            
             boolean updated = userService.updateEditableProfileFields(userId, payload);
 
             if (updated) {

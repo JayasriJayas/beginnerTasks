@@ -19,11 +19,34 @@
   </div>
 
   <!-- Right: Dashboard Insights -->
-  <div class="dashboard-right">
-    <h3 class="section-title"><i class='bx bx-bar-chart-alt-2'></i> Insights</h3>
-    <!-- Add insight cards like total balance, pie chart, etc. -->
-    <div class="insight-placeholder"> Total, Summary Cards</div>
+  <!-- Right: Dashboard Insights -->
+<div class="dashboard-right">
+  <h3 class="section-title"><i class='bx bx-bar-chart-alt-2'></i> Insights</h3>
+  
+  <div id="insightsContainer">
+    <div>
+      <label for="accountSelect"><strong>Select Account:</strong></label>
+      <select id="accountSelect">
+        <option value="ALL">All Accounts</option>
+        <!-- Account options will be dynamically injected here -->
+      </select>
+    </div>
+    <div id="totalBalance">
+      <p><strong>Total Balance:</strong></p>
+    </div>
+    <div id="thisMonthCredits">
+      <p><strong>This Month's Credits:</strong></p>
+    </div>
+    <div id="thisMonthDebits">
+      <p><strong>This Month's Debits:</strong></p>
+    </div>
+    <div id="pieChartContainer" style="width: 100%; height: 300px;">
+      <!-- Pie Chart will be rendered here -->
+      <canvas id="insightChart"></canvas>
+    </div>
   </div>
+</div>
+
 </section>
 
 <!-- ⬇ Lower Half: Recent Transactions -->
@@ -52,7 +75,7 @@
   
   </div>
 </section>
-
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <!-- JS for Welcome Text -->
 <script>
   document.getElementById("userName") &&

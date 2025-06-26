@@ -9,7 +9,7 @@
 
 form.register-form {
   background: #fff;
-  padding: 2rem;
+ 
   border-radius: 16px;
   width: 100%;
 }
@@ -207,3 +207,23 @@ input.btn:hover {
   background-color: var(--secondary-color);
   color: var(--accent-color);
 }
+/* Eye icon for password toggle */
+.icon {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 20px;
+  color: var(--text-color);
+  cursor: pointer;
+}
+
+/* Styling for hiding the eye when the password is shown */
+.bx-show {
+  color: #e09e50;
+}
+
+.bx-hide {
+  color: #8CBDB9;
+}
+

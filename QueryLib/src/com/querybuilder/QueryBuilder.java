@@ -356,6 +356,11 @@ public class QueryBuilder {
 	        whereConditions.add(column + " IN (" + subQuery.build() + ")");
 	        return this;
 	    }
+	    public QueryBuilder whereNotIn(String column, QueryBuilder subQuery) throws QueryException {
+	        this.whereConditions = initIfNull(this.whereConditions);
+	        whereConditions.add(column + " NOT IN (" + subQuery.build() + ")");
+	        return this;
+	    }
 	    public QueryBuilder whereExists(QueryBuilder subQuery) throws QueryException {
 	        this.whereConditions = initIfNull(this.whereConditions);
 	        whereConditions.add("EXISTS (" + subQuery.build() + ")");

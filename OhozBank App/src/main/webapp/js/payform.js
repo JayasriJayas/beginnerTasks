@@ -1,5 +1,5 @@
 function initPayform() {
-  console.log("✅ Payform initialized");
+  console.log("Payform initialized");
 
   const transferForm = document.querySelector(".form-wrapper");
   const passwordModal = document.getElementById("passwordModal");
@@ -9,7 +9,7 @@ function initPayform() {
   const amountInput = document.getElementById("amount");
 
   if (!transferForm) {
-    console.error("❌ Form not found!");
+    console.error(" Form not found!");
     return;
   }
 
@@ -32,7 +32,7 @@ function initPayform() {
     const amount = parseFloat(amountInput?.value);
 
     if (!password || !accountId || !transactionAccountId || isNaN(amount)) {
-      alert("Fill in all fields.");
+      showToast("Please fill in all the fields.", "error"); // Error Toast
       return;
     }
 
@@ -47,7 +47,7 @@ function initPayform() {
 
       const verifyData = await verifyRes.json();
       if (!verifyRes.ok || verifyData.status !== "SUCCESS") {
-        alert(verifyData.message || "Invalid password.");
+        showToast(verifyData.message || "Invalid password.", "error"); // Error Toast
         return;
       }
 
@@ -60,15 +60,18 @@ function initPayform() {
       });
 
       const result = await res.json();
-      alert(result.message || "Transfer done");
 
       if (res.ok) {
+        showToast(result.message || "Transfer completed successfully!", "success"); // Success Toast
         transferForm.reset();
         closeModal();
+      } else {
+        showToast(result.message || "Transfer failed. Please try again.", "error"); // Error Toast
       }
+
     } catch (err) {
-      console.error(err);
-      alert("Unexpected error");
+      console.error("Error:", err);
+      showToast("Unexpected error occurred. Please try again.", "error"); // Error Toast
     }
   }
 
@@ -81,3 +84,34 @@ function initPayform() {
 }
 
 window.initPayform = initPayform;
+
+// Toast Function (Make sure this function is in the global scope or imported)
+function showToast(message, type = "info") {
+  const toastContainer = document.getElementById("toast-container");
+  if (!toastContainer) return;
+
+  const icons = {
+    info: "bx bx-info-circle",
+    success: "bx bx-check-circle",
+    error: "bx bx-error-circle",
+    warning: "bx bx-error"
+  };
+
+  const iconClass = icons[type] || icons.info;
+
+  const toast = document.createElement("div");
+  toast.className = `toast show ${type}`;
+  toast.innerHTML = `
+    <i class="toast-icon ${iconClass}"></i>
+    <span class="toast-msg">${message}</span>
+    <span class="toast-close" onclick="this.parentElement.remove()">&times;</span>
+    <div class="toast-timer"></div>
+  `;
+
+  toastContainer.appendChild(toast);
+
+  setTimeout(() => {
+    toast.classList.remove("show");
+    setTimeout(() => toast.remove(), 300);
+  }, 3500);
+}

@@ -110,7 +110,7 @@
           <div class="form-step">
             <div class="input-group">
               <label for="reg-phone">Phone</label>
-              <input type="text" name="phone" id="reg-phone" required>
+              <input type="number" name="phone" id="reg-phone" required>
             </div>
             <div class="input-group">
               <label for="reg-email">Email</label>
@@ -142,7 +142,7 @@
             </div>
             <div class="input-group">
               <label for="reg-aadhar">Aadhar Number</label>
-              <input type="text" name="aadharNo" id="reg-aadhar" required>
+              <input type="number" name="aadharNo" id="reg-aadhar" required>
             </div>
             <div class="input-group">
               <label for="reg-pan">PAN Number</label>
@@ -167,6 +167,7 @@
             <div class="input-group">
               <label for="reg-password">Password</label>
               <input type="password" name="password" id="reg-password" required>
+                <i class="bx bx-show icon" id="toggleEyeRegister"></i> 
             </div>
             <div class="btns-group">
               <button type="button" class="btn btn-prev">Previous</button>

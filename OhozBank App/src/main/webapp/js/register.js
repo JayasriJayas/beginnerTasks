@@ -135,11 +135,11 @@ function validateCurrentStep() {
       break;
     }
 
-    if (name === "password" && !isStrongPassword(value)) {
-      showToast("Password must be strong (8+ chars, UPPER, lower, digit, special).", "error");
-      valid = false;
-      break;
-    }
+ //   if (name === "password" && !/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(value)) {
+ //     showToast("Password must be strong (8+ chars, UPPER, lower, digit, special).", "error");
+ //     valid = false;
+ //     break;
+ //   }
   }
 
   // If on last step and all valid, show preview
@@ -150,9 +150,7 @@ function validateCurrentStep() {
   return valid;
 }
 
-function isStrongPassword(password) {
-  return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(password);
-}
+
 
 
 // Toast Notification using Boxicons
@@ -262,3 +260,21 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 });
+
+
+// Toggle password visibility for register form
+const toggleEyeRegister = document.getElementById("toggleEyeRegister");
+const passwordRegister = document.getElementById("reg-password");
+
+toggleEyeRegister.addEventListener("click", () => {
+  if (passwordRegister.type === "password") {
+    passwordRegister.type = "text"; // Show password
+    toggleEyeRegister.classList.remove("bx-show");
+    toggleEyeRegister.classList.add("bx-hide");
+  } else {
+    passwordRegister.type = "password"; // Hide password
+    toggleEyeRegister.classList.remove("bx-hide");
+    toggleEyeRegister.classList.add("bx-show");
+  }
+});
+

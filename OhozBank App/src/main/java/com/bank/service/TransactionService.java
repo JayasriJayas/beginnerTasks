@@ -24,7 +24,10 @@ public interface TransactionService {
 	PaginatedResponse<Transaction> getTransferTransactionsForUser(long userId, long fromTimestamp, long toTimestamp, int pageNumber, int pageSize)throws SQLException, QueryException;
 	PaginatedResponse<Transaction> getTransferTransactionsForAccount(long accountId, long fromTimestamp, long toTimestamp, int pageNumber, int pageSize)throws SQLException, QueryException;
 	List<Transaction> getRecentTransactionsForUser(long userId, int limit) throws SQLException, QueryException;
-	
+	BigDecimal getTotalIncomeByUser(long userId) throws SQLException, QueryException;
+	BigDecimal getTotalExpenseByUser(long userId) throws SQLException, QueryException;
+	 BigDecimal getTotalIncomeByAccount(long accountId) throws SQLException, QueryException;
+	    BigDecimal getTotalExpenseByAccount(long accountId) throws SQLException, QueryException;
 
 	
 //	boolean transfer(long fromAccountId, long toAccountId, BigDecimal amount, String performedBy);

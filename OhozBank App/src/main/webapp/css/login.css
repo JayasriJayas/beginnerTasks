@@ -58,18 +58,20 @@ body {
 }
 
 .wrapper {
-  background-color: var(--white);
-  padding: 2rem;
-  width: 400px;
-  border-radius: 16px;
-  box-shadow: 0 0 10px var(--shadow-color);
-  position: relative;
+      height: 755px;
+    background-color: var(--white);
+    padding: 2rem;
+    width: 500px;
+    border-radius: 16px;
+    box-shadow: 0 0 10px var(--shadow-color);
+    position: relative;
 }
 
 /* Header */
 .form-header {
-  text-align: center;
-  margin-bottom: 1.5rem;
+      text-align: center;
+    margin-top: 4.2rem;
+    margin-bottom: 0.5rem;
 }
 
 .titles {
@@ -85,8 +87,8 @@ body {
 
 /* Input box */
 .input-box {
-  position: relative;
-  margin: 1.2rem 0;
+     position: relative;
+    margin: 3.2rem 0;
 }
 
 .input-field {
@@ -153,16 +155,16 @@ input[type="checkbox"] {
 
 /* Submit button */
 .btn-submit {
-  background-color: var(--primary-color);
-  color: var(--white);
-  border: none;
-  padding: 14px;
-  font-size: 16px;
-  width: 100%;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: var(--transition-speed);
-  margin-top: 10px;
+background-color: var(--primary-color);
+    color: var(--white);
+    border: none;
+    padding: 16px;
+    font-size: 16px;
+    width: 100%;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: var(--transition-speed);
+    margin-top: 22px;
 }
 
 .btn-submit:hover {
@@ -171,8 +173,8 @@ input[type="checkbox"] {
 
 /* Form switch link */
 .switch-form {
-  text-align: center;
-  margin-top: 1rem;
+text-align: center;
+    margin-top: 3rem;
 }
 
 .switch-form a {

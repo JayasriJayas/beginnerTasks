@@ -20,15 +20,10 @@
         <li class="nav__item">
           <a href="<%= request.getContextPath() %>/login.jsp?form=login" class="nav__link" data-tooltip="Home">
             <i class="ri-home-4-line"></i>
-            <span>Home</span>
+            <span></span>
           </a>
         </li>
-        <li class="nav__item">
-          <a href="<%= request.getContextPath() %>/login.jsp?form=register" class="nav__link" data-tooltip="Register">
-            <i class="ri-user-add-line"></i>
-            <span>Register</span>
-          </a>
-        </li>
+       
       </ul>
       <% } %>
 
@@ -52,4 +47,3 @@
 
   </nav>
 </header>
-x

@@ -27,7 +27,10 @@ public class RequestValidator {
         if (isNullOrEmpty(request.getPassword())) return "Password is required";
         if (isNullOrEmpty(request.getName())) return "Name is required";
         if (isNullOrEmpty(request.getEmail())) return "Email is required";
-        if (isNullOrEmpty(request.getPhone())) return "Phone number is required";
+        if (isNullOrEmpty(request.getPhone())) {
+        	
+        	return "Phone number is required";
+        }
         if (isNullOrEmpty(request.getGender())) return "Gender is required";
         if (request.getDob() == null) return "Date of Birth is required";
         if (isNullOrEmpty(request.getAddress())) return "Address is required";
@@ -40,7 +43,10 @@ public class RequestValidator {
 
         if (!FormatValidator.isValidEmail(request.getUsername())) return "Username must be your email or Ivalid email format";
         if (!FormatValidator.isValidEmail(request.getEmail())) return "Invalid email format";
-        if (!FormatValidator.isValidPhone(String.valueOf(request.getPhone()))) return "Invalid phone number format";
+        if (!FormatValidator.isValidPhone(String.valueOf(request.getPhone()))) {
+        	System.out.println(!FormatValidator.isValidPhone(String.valueOf(request.getPhone())));
+        	return "Invalid phone number format";
+        }
         if (!FormatValidator.isValidPassword(request.getPassword())) return "Password does not meet strength requirements";
         if (!FormatValidator.isValidAadhar(String.valueOf(request.getAadharNo()))) return "Invalid Aadhar number format";
         
@@ -58,7 +64,10 @@ public class RequestValidator {
 	        
 	        if (!FormatValidator.isValidEmail(user.getUsername())) return "Username must be your email or Ivalid email format";
 	        if (!FormatValidator.isValidEmail(user.getEmail())) return "Invalid email format";
-	        if (!FormatValidator.isValidPhone(String.valueOf(user.getPhone()))) return "Invalid phone number format";
+	        if (!FormatValidator.isValidPhone(String.valueOf(user.getPhone()))) {
+	        	
+	        	return "Invalid phone number format";
+	        }
 	        if (!FormatValidator.isValidPassword(user.getPassword())) return "Password does not meet strength requirements";
 	        
 	        return null;      
@@ -71,7 +80,10 @@ public class RequestValidator {
         if (isNullOrEmpty(branch.getLocation())) return "Branch location is required";
         if (branch.getContact() <= 0) return "Contact number must be valid";
 
-        if (!FormatValidator.isValidPhone(String.valueOf(branch.getContact()))) return "Invalid contact number format";
+        if (!FormatValidator.isValidPhone(String.valueOf(branch.getContact()))) {
+        	
+        	return "Invalid contact number format";
+        }
         if (!FormatValidator.isValidIFSC(branch.getIfscCode())) return "Invalid IFSC code format";
 
         return null;
@@ -104,6 +116,8 @@ public class RequestValidator {
 
                 case "phone":
                     if (!FormatValidator.isValidPhone(String.valueOf(value))) {
+                    	System.out.println(String.valueOf(value));
+                    	System.out.println(!FormatValidator.isValidPhone(String.valueOf(value)));
                         return "Invalid phone number format";
                     }
                     break;

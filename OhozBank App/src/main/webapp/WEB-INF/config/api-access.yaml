@@ -135,6 +135,22 @@ routes:
     method: POST
     role: USER
 
+  - path: /api/income-account/transaction
+    method: POST
+    role: USER
+
+  - path: /api/expense-account/transaction
+    method: POST
+    role: USER
+
+  - path: /api/total-income/transaction
+    method: POST
+    role: USER
+
+  - path: /api/total-expense/transaction
+    method: POST
+    role: USER
+
   - path: /api/get/branch
     method: POST
     role: SUPERADMIN

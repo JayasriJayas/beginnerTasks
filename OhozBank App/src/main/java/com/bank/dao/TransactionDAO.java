@@ -1,5 +1,6 @@
 package com.bank.dao;
 
+import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -34,6 +35,9 @@ public interface TransactionDAO {
 	 int countTransferTransactionsForAccount(long accountId, long fromTimestamp, long toTimestamp) throws SQLException, QueryException;
 	 
 	 List<Transaction> getRecentTransactionsForUser(long userId, int limit) throws SQLException, QueryException;
-	 
+	 BigDecimal getTotalIncomeByUser(long userId) throws SQLException, QueryException;
+	 BigDecimal getTotalExpenseByUser(long userId) throws SQLException, QueryException;
+	  BigDecimal getTotalIncomeByAccount(long accountId) throws SQLException, QueryException;
+	    BigDecimal getTotalExpenseByAccount(long accountId) throws SQLException, QueryException;
 }
 

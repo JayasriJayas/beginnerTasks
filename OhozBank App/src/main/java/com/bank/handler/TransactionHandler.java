@@ -462,6 +462,81 @@ public class TransactionHandler {
             ResponseUtil.sendError(res, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Server error");
         }
     }
+    public void totalIncome(HttpServletRequest req, HttpServletResponse res) throws IOException {
+        try {
+            HttpSession session = req.getSession(false);
+            if (!SessionUtil.isSessionAvailable(session, res)) return;
+
+            long userId = (Long) session.getAttribute("userId");
+
+            BigDecimal income = transactionService.getTotalIncomeByUser(userId);
+
+            JSONObject response = new JSONObject();
+            response.put("totalIncome", income);
+
+            ResponseUtil.sendJson(res, HttpServletResponse.SC_OK, response);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error calculating income summary", e);
+            ResponseUtil.sendError(res, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error fetching income");
+        }
+    }
+    public void totalExpense(HttpServletRequest req, HttpServletResponse res) throws IOException {
+        try {
+            HttpSession session = req.getSession(false);
+            if (!SessionUtil.isSessionAvailable(session, res)) return;
+
+            long userId = (Long) session.getAttribute("userId");
+
+            BigDecimal expense = transactionService.getTotalExpenseByUser(userId);
+
+            JSONObject response = new JSONObject();
+            response.put("totalExpense", expense);
+
+            ResponseUtil.sendJson(res, HttpServletResponse.SC_OK, response);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error calculating expense summary", e);
+            ResponseUtil.sendError(res, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error fetching expense");
+        }
+    }
+    public void incomeAccount(HttpServletRequest req, HttpServletResponse res) throws IOException {
+        try {
+            HttpSession session = req.getSession(false);
+            if (!SessionUtil.isSessionAvailable(session, res)) return;
+
+            long accountId = Long.parseLong(req.getParameter("accountId")); // Get accountId from request parameters
+
+            BigDecimal totalIncome = transactionService.getTotalIncomeByAccount(accountId); // Call service method
+
+            JSONObject json = new JSONObject();
+            json.put("totalIncome", totalIncome);
+
+            ResponseUtil.sendJson(res, HttpServletResponse.SC_OK, json);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error calculating income for account", e);
+            ResponseUtil.sendError(res, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error fetching income");
+        }
+    }
+
+    public void expenseAccount(HttpServletRequest req, HttpServletResponse res) throws IOException {
+        try {
+            HttpSession session = req.getSession(false);
+            if (!SessionUtil.isSessionAvailable(session, res)) return;
+
+            long accountId = Long.parseLong(req.getParameter("accountId")); // Get accountId from request parameters
+
+            BigDecimal totalExpense = transactionService.getTotalExpenseByAccount(accountId); // Call service method
+
+            JSONObject json = new JSONObject();
+            json.put("totalExpense", totalExpense);
+
+            ResponseUtil.sendJson(res, HttpServletResponse.SC_OK, json);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error calculating expense for account", e);
+            ResponseUtil.sendError(res, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error fetching expense");
+        }
+    }
+
+
     
 
 

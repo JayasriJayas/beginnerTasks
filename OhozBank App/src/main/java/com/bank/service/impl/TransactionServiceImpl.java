@@ -317,6 +317,15 @@ public class TransactionServiceImpl implements TransactionService {
     public List<Transaction> getRecentTransactionsForUser(long userId, int limit) throws SQLException, QueryException {
         return transactionDAO.getRecentTransactionsForUser(userId, limit);
     }
+    @Override
+    public BigDecimal getTotalIncomeByUser(long userId) throws SQLException, QueryException {
+        return transactionDAO.getTotalIncomeByUser(userId);
+    }
+    @Override
+    public BigDecimal getTotalExpenseByUser(long userId) throws SQLException, QueryException {
+        return transactionDAO.getTotalExpenseByUser(userId);
+    }
+
     
 
 
@@ -335,5 +344,14 @@ public class TransactionServiceImpl implements TransactionService {
         t.setDescription(description);
         t.setStatus(status);
         return t;
+    }
+    @Override
+    public BigDecimal getTotalIncomeByAccount(long accountId) throws SQLException, QueryException {
+        return transactionDAO.getTotalIncomeByAccount(accountId);
+    }
+
+    @Override
+    public BigDecimal getTotalExpenseByAccount(long accountId) throws SQLException, QueryException {
+        return transactionDAO.getTotalExpenseByAccount(accountId);
     }
 }

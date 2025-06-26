@@ -105,7 +105,8 @@
     return `
       <form onsubmit="submitProfileUpdate(event)">
         <label>Name: <input name="name" value="${user.name || ''}" required /></label><br />
-        <label>Phone: <input name="phone" value="${user.phone || ''}" required /></label><br />
+		<label>Phone: <input type="tel" id="phone" name="phone" required pattern="[0-9]{10}" value="${user.phone || ''}" /></label><br />
+
         <label>Email: <input name="email" value="${user.email || ''}" required /></label><br />
         <label>Gender:
           <select name="gender" required>
@@ -144,7 +145,7 @@ window.submitProfileUpdate=  async function submitProfileUpdate(event) {
     // Convert FormData to an object for easy access
     const updatedData = {
       name: formData.get("name").trim(),
-      phone: Number(formData.get("phone").trim()),
+      phone: formData.get("phone").trim(),
       email: formData.get("email").trim(),
       gender: formData.get("gender"),
       address: formData.get("address").trim(),

@@ -1,6 +1,7 @@
 
 package com.bank.dao.impl;
 	
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
@@ -387,6 +388,136 @@ System.out.println(qb.build());
             return TransactionMapper.fromResultSet(rows);
         }
     }
+    @Override
+    public BigDecimal getTotalIncomeByUser(long userId) throws SQLException, QueryException {
+        
+//        QueryBuilder accountIdsSubQuery = new QueryBuilder(new MySQLDialect())
+//            .select("accountId")
+//            .from("account")
+//            .where("userId = ?", userId);
+       
+        QueryBuilder qb = new QueryBuilder(new MySQLDialect());
+
+        
+        qb.select().aggregate("SUM", "amount").as("total")
+          .from("transaction")
+          .openGroup()
+            .where("type = ?", "DEPOSIT") 
+            .andWhere("accountId IN ( select accountId from account where userId ="+ userId+")") // Account IDs from subquery
+          .closeGroup()
+          .orWhere("transactionAccountId IN ( select accountId from account where userId ="+ userId+")") // transactionAccountId in accounts
+          .andWhere("type = ?", "TRANSFER") 
+          .andWhere("MONTH(FROM_UNIXTIME(timestamp / 1000)) = MONTH(CURRENT_DATE)") 
+          .andWhere("YEAR(FROM_UNIXTIME(timestamp / 1000)) = YEAR(CURRENT_DATE)"); 
+
+
+
+        // Execute the query and return the result
+        try (Connection conn = DBConnectionPool.getInstance().getConnection()) {
+            QueryExecutor qe = new QueryExecutor(conn);
+            List<Map<String, Object>> result = qe.executeQuery(qb.build(),qb.getParameters());
+
+            if (!result.isEmpty()) {
+                Object value = result.get(0).get("total");
+                return value != null ? new BigDecimal(value.toString()) : BigDecimal.ZERO;
+            }
+            return BigDecimal.ZERO;
+        }
+    }
+
+    @Override
+    public BigDecimal getTotalExpenseByUser(long userId) throws SQLException, QueryException {
+      
+    	QueryBuilder qb = new QueryBuilder(new MySQLDialect());
+//    	QueryBuilder accountIdsSubQuery = new QueryBuilder(new MySQLDialect())
+//    	    .select("accountId")
+//    	    .from("account")
+//    	    .where("userId = ?", userId); 
+    	
+    		  qb  .select().aggregate("SUM", "amount").as("total")
+    		    .from("transaction")
+    		    .openGroup()
+    		        .where("type = ?", "WITHDRAWAL")
+    		        .andWhere("accountId IN ( select accountId from account where userId ="+ userId+")") 
+    		    .closeGroup()
+    		    .orWhere("accountId IN ( select accountId from account where userId ="+ userId+")")
+    		    .andWhere("type = ?", "TRANSFER")
+    		    .andWhere("MONTH(FROM_UNIXTIME(timestamp / 1000)) = MONTH(CURRENT_DATE)")
+    		    .andWhere("YEAR(FROM_UNIXTIME(timestamp / 1000)) = YEAR(CURRENT_DATE)");
+    
+
+        try (Connection conn = DBConnectionPool.getInstance().getConnection()) {
+            QueryExecutor qe = new QueryExecutor(conn);
+            List<Map<String, Object>> result = qe.executeQuery(qb.build(), qb.getParameters());
+
+            if (!result.isEmpty()) {
+                Object value = result.get(0).get("total");
+                return value != null ? new BigDecimal(value.toString()) : BigDecimal.ZERO;
+            }
+            return BigDecimal.ZERO;
+        }
+    }
+    @Override
+    public BigDecimal getTotalIncomeByAccount(long accountId) throws SQLException, QueryException {
+
+        QueryBuilder qb = new QueryBuilder(new MySQLDialect());
+
+        qb.select().aggregate("SUM", "amount").as("total")
+          .from("transaction")
+          .openGroup()
+            .where("type = ?", "DEPOSIT") 
+            .andWhere("accountId = ?", accountId) // Filter by specific accountId
+          .closeGroup()
+          .orWhere("transactionAccountId = ?", accountId) // Include transactionAccountId for transfer
+          .andWhere("type = ?", "TRANSFER") 
+          .andWhere("MONTH(FROM_UNIXTIME(timestamp / 1000)) = MONTH(CURRENT_DATE)") 
+          .andWhere("YEAR(FROM_UNIXTIME(timestamp / 1000)) = YEAR(CURRENT_DATE)");
+
+        try (Connection conn = DBConnectionPool.getInstance().getConnection()) {
+            QueryExecutor qe = new QueryExecutor(conn);
+            List<Map<String, Object>> result = qe.executeQuery(qb.build(), qb.getParameters());
+
+            if (!result.isEmpty()) {
+                Object value = result.get(0).get("total");
+                return value != null ? new BigDecimal(value.toString()) : BigDecimal.ZERO;
+            }
+            return BigDecimal.ZERO;
+        }
+    }
+    @Override
+    public BigDecimal getTotalExpenseByAccount(long accountId) throws SQLException, QueryException {
+
+        QueryBuilder qb = new QueryBuilder(new MySQLDialect());
+
+        qb.select().aggregate("SUM", "amount").as("total")
+          .from("transaction")
+          .openGroup()
+            .where("type = ?", "WITHDRAWAL")
+            .andWhere("accountId = ?", accountId) // Filter by specific accountId
+          .closeGroup()
+          .orWhere("accountId = ?", accountId) // Include accountId for transfers
+          .andWhere("type = ?", "TRANSFER")
+          .andWhere("MONTH(FROM_UNIXTIME(timestamp / 1000)) = MONTH(CURRENT_DATE)") 
+          .andWhere("YEAR(FROM_UNIXTIME(timestamp / 1000)) = YEAR(CURRENT_DATE)");
+
+        try (Connection conn = DBConnectionPool.getInstance().getConnection()) {
+            QueryExecutor qe = new QueryExecutor(conn);
+            List<Map<String, Object>> result = qe.executeQuery(qb.build(), qb.getParameters());
+
+            if (!result.isEmpty()) {
+                Object value = result.get(0).get("total");
+                return value != null ? new BigDecimal(value.toString()) : BigDecimal.ZERO;
+            }
+            return BigDecimal.ZERO;
+        }
+    }
+
+
+
+
+
+
+
     
 
 

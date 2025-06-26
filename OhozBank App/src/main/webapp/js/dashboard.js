@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // 👤 Profile icon click
+  // Profile icon click
   const profileIcon = document.getElementById("profileIcon");
   if (profileIcon) {
     profileIcon.addEventListener("click", async () => {
@@ -35,9 +35,11 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // Initial dashboard load
-  loadPartial(
+ loadPartial(
     `${BASE_URL}/partials/dashboard-content.html`,
     `${BASE_URL}/css/dashboard.css`,
+	`${BASE_URL}/css/dheader.css`,
+	`${BASE_URL}/css/sidebar.css`,
     `${BASE_URL}/js/dashboard-content.js`,
     () => initDashboardContent()
   );
@@ -56,6 +58,7 @@ document.addEventListener("DOMContentLoaded", () => {
           loadPartial(
             `${BASE_URL}/partials/dashboard-content.html`,
             `${BASE_URL}/css/dashboard.css`,
+		
             `${BASE_URL}/js/dashboard-content.js`,
             () => initDashboardContent()
           );
@@ -66,7 +69,7 @@ document.addEventListener("DOMContentLoaded", () => {
             `${BASE_URL}/partials/payment-form.html`,
             `${BASE_URL}/css/form.css`,
             `${BASE_URL}/js/payform.js`,
-			() => initPayform()
+            () => initPayform()
           );
           break;
 
@@ -83,6 +86,7 @@ document.addEventListener("DOMContentLoaded", () => {
           loadPartial(
             `${BASE_URL}/partials/account.html`,
             `${BASE_URL}/css/account.css`,
+           
             `${BASE_URL}/js/account.js`,
             () => initAccountPage()
           );
@@ -108,8 +112,9 @@ function loadPartial(path, cssPath, jsPath, initCallback) {
       contentDiv.innerHTML = html;
 
       requestAnimationFrame(() => {
-        loadCSS(cssPath);
-        loadScript(jsPath, initCallback);
+        removeAllCSS(); // Remove previously loaded CSS
+        loadCSS(cssPath); // Load the new CSS
+        loadScript(jsPath, initCallback); // Load the JS and execute callback
       });
     })
     .catch((err) => {
@@ -119,7 +124,7 @@ function loadPartial(path, cssPath, jsPath, initCallback) {
     });
 }
 
-// 📄 Utility: Load JS only once
+// Utility: Load JS only once
 function loadScript(src, callback) {
   if (document.querySelector(`script[src="${src}"]`)) {
     if (callback) callback();
@@ -133,7 +138,7 @@ function loadScript(src, callback) {
   document.body.appendChild(script);
 }
 
-// 🎨 Utility: Load CSS only once
+// Utility: Load CSS only once
 function loadCSS(href) {
   if (document.querySelector(`link[href="${href}"]`)) return;
 
@@ -142,6 +147,25 @@ function loadCSS(href) {
   link.href = href;
   document.head.appendChild(link);
 }
+
+// Utility: Remove only specific previously loaded CSS files
+function removeAllCSS() {
+  const removableCSS = [
+"dashboard.css"
+    "payform.css",
+    "transaction.css",
+    "account.css"
+  ];
+
+  const links = document.querySelectorAll('link[rel="stylesheet"]');
+  links.forEach(link => {
+    const href = link.getAttribute("href");
+    if (href && removableCSS.some(css => href.includes(css))) {
+      link.parentElement.removeChild(link);
+    }
+  });
+}
+
 
 // Modal utilities (can be reused globally)
 function openModal(title, bodyHTML) {
