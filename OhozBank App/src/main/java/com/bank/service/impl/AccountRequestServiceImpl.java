@@ -10,7 +10,9 @@ import com.bank.dao.AccountRequestDAO;
 import com.bank.enums.RequestStatus;
 import com.bank.factory.DaoFactory;
 import com.bank.models.AccountRequest;
+import com.bank.models.PaginatedResponse;
 import com.bank.service.AccountRequestService;
+import com.bank.util.PaginationUtil;
 
 import exception.QueryException;
 
@@ -20,9 +22,16 @@ public class AccountRequestServiceImpl implements AccountRequestService {
     private final AccountRequestDAO accountReqDAO = DaoFactory.getAccountRequestDAO();
 
     @Override
-    public List<AccountRequest> getAllRequests() throws SQLException, QueryException {
+    public PaginatedResponse<AccountRequest> getAllRequests(long fromTimestamp, long toTimestamp, int pageNumber, int pageSize) throws SQLException, QueryException {
         try {
-            return accountReqDAO.fetchAllRequests();
+        	pageNumber = PaginationUtil.validatePageNumber(pageNumber);
+            pageSize = PaginationUtil.validatePageSize(pageSize);
+            int offset = PaginationUtil.calculateOffset(pageNumber, pageSize);
+            List<AccountRequest> requestList;
+            long totalRequests;
+            requestList =  accountReqDAO.fetchAllRequests(fromTimestamp, toTimestamp, pageSize, offset);
+            totalRequests = accountReqDAO.countRequests(fromTimestamp, toTimestamp);
+            return new PaginatedResponse<>(requestList, pageNumber, pageSize, totalRequests);
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Failed to fetch all account requests", e);
             throw e;
@@ -30,9 +39,16 @@ public class AccountRequestServiceImpl implements AccountRequestService {
     }
 
     @Override
-    public List<AccountRequest> getRequestsByAdminBranch(long adminId) throws SQLException, QueryException {
+    public PaginatedResponse<AccountRequest> getRequestsByAdminBranch(long adminId,long fromTimestamp, long toTimestamp, int pageNumber, int pageSize) throws SQLException, QueryException {
         try {
-            return accountReqDAO.fetchRequestsByAdminBranch(adminId);
+        	pageNumber = PaginationUtil.validatePageNumber(pageNumber);
+            pageSize = PaginationUtil.validatePageSize(pageSize);
+            int offset = PaginationUtil.calculateOffset(pageNumber, pageSize);
+            List<AccountRequest> requestList;
+            long totalRequests;
+            requestList =  accountReqDAO.fetchRequestsByAdminBranch(adminId,fromTimestamp, toTimestamp, pageSize, offset);
+            totalRequests =accountReqDAO.countRequestsByBranch(adminId, fromTimestamp, toTimestamp); // Total for the branch
+            return new PaginatedResponse<>(requestList, pageNumber, pageSize, totalRequests);
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Failed to fetch requests by admin branch: " + adminId, e);
             throw e;

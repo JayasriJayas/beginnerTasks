@@ -16,8 +16,11 @@ import org.json.JSONObject;
 
 import com.bank.factory.ServiceFactory;
 import com.bank.models.Admin;
+import com.bank.models.PaginatedResponse;
+import com.bank.models.Pagination;
 import com.bank.models.User;
 import com.bank.service.AdminService;
+import com.bank.util.PaginationUtil;
 import com.bank.util.RequestParser;
 import com.bank.util.RequestValidator;
 import com.bank.util.ResponseUtil;
@@ -110,11 +113,20 @@ public class AdminHandler {
         try {
             HttpSession session = req.getSession(false);
             if (!SessionUtil.isSuperAdmin(session, res)) return;
+            Pagination payload = RequestParser.parseRequest(req, Pagination.class);
+            if (payload == null ) {
+                ResponseUtil.sendError(res, HttpServletResponse.SC_BAD_REQUEST, "Missing required date fields.");
+                return;
+            }
+          
 
-            List<Map<String, Object>> admins = adminService.getAllAdmins();
-            JSONArray jsonArray = new JSONArray(gson.toJson(admins));
+            int page = PaginationUtil.validatePageNumber((payload.getPageNumber()));      
+            int size = PaginationUtil.validatePageSize(payload.getPageSize());   
+
+            PaginatedResponse<Map<String, Object>> admins = adminService.getAllAdmins(page,size);
+            String response = gson.toJson(admins);
             logger.info("Admin list fetched by superadmin.");
-            ResponseUtil.sendJson(res, HttpServletResponse.SC_OK, jsonArray);
+            ResponseUtil.sendJson(res, HttpServletResponse.SC_OK, response);
 
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error fetching all admins", e);

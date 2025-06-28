@@ -10,7 +10,7 @@
 
     <!--  Logo -->
     <a href="<%= request.getContextPath() %>/login.jsp" class="nav__logo">
-      <img src="<%= request.getContextPath() %>/assets/logo.png" alt="OHOZ Logo" class="nav__logo-img" />
+      <img src="<%= request.getContextPath() %>/assets/logo%20im.png" alt="OHOZ Logo" class="nav__logo-img" />
     </a>
 
     <!--  Navigation Menu -->

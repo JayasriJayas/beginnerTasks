@@ -1,0 +1,53 @@
+<!-- admin-request-list.html -->
+<div class="table-container">
+  <div class="table-header">
+    <h2>My Request History</h2>
+  </div>
+
+  <!-- Filters -->
+  <div class="transaction-nav">
+    <div class="transaction-filters">
+      <input type="date" id="fromDate" />
+      <input type="date" id="toDate" />
+      <button id="filterBtn">Filter</button>
+    </div>
+  </div>
+
+  <!-- Request Table -->
+  <table>
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Request Type</th>
+        <th>Status</th>
+        <th>Requested On</th>
+      </tr>
+    </thead>
+    <tbody id="adminRequestTableBody">
+      <!-- Filled by JS -->
+    </tbody>
+  </table>
+
+  <!-- Pagination Bar -->
+  <div class="pagination-bar">
+    <div class="pagination-left">
+      Show 
+      <select id="entriesPerPage">
+        <option value="10" selected>10</option>
+        <option value="25">25</option>
+        <option value="50">50</option>
+        <option value="100">100</option>
+      </select> entries
+    </div>
+
+    <div class="pagination-center">
+      <button class="page-btn" id="prevBtn" disabled>&laquo; Previous</button>
+      <div id="pageNumbers" class="page-numbers"></div>
+      <button class="page-btn" id="nextBtn">Next &raquo;</button>
+    </div>
+
+    <div class="pagination-right">
+      Showing <span id="showingRange">1 to 10</span> of <span id="totalEntries">0</span> entries
+    </div>
+  </div>
+</div>

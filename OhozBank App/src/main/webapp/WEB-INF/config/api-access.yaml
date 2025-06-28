@@ -39,6 +39,18 @@ routes:
     method: POST
     role: ADMIN,SUPERADMIN
 
+  - path: /api/multiple-approve/request
+    method: POST
+    role: ADMIN,SUPERADMIN
+
+  - path: /api/reject/request
+    method: POST
+    role: ADMIN,SUPERADMIN
+
+  - path: /api/view-details/request
+    method: POST
+    role: ADMIN,SUPERADMIN
+
   - path: /api/edit/branch
     method: PUT
     role: SUPERADMIN
@@ -56,6 +68,14 @@ routes:
     role: USER
 
   - path: /api/list/account-request
+    method: POST
+    role: ADMIN,SUPERADMIN
+
+  - path: /api/status-counts/request
+    method: GET
+    role: ADMIN,SUPERADMIN
+
+  - path: /api/multiple-reject/request
     method: POST
     role: ADMIN,SUPERADMIN
  

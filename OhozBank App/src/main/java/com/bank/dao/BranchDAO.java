@@ -13,8 +13,10 @@ public interface BranchDAO {
 	   boolean saveBranch(Branch branch,long superadminadminId) throws SQLException, QueryException;
 	   boolean updateBranch(Branch branch) throws SQLException, QueryException;
 	   Branch getBranchById(long branchId) throws SQLException, QueryException;
-	   List<Branch> getAllBranches() throws SQLException, QueryException;
+	   List<Branch> getAllBranches(int limit, int offset) throws SQLException, QueryException;
 	   Branch findByIfscCode(String ifscCode)throws SQLException, QueryException;
+	   int countGetAllBranch() throws SQLException, QueryException ;
+	   
 
 
 }

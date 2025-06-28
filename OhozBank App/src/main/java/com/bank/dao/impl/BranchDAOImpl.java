@@ -93,15 +93,35 @@ public class BranchDAOImpl implements BranchDAO {
 	   }
 
 	   @Override
-	   public List<Branch> getAllBranches() throws SQLException, QueryException{
+	   public List<Branch> getAllBranches(int limit, int offset) throws SQLException, QueryException {
 	       QueryBuilder qb = new QueryBuilder(new MySQLDialect());
-	       qb.select("*").from("branch");
+	       qb.select("*")
+	         .from("branch")
+	         .limit(limit)
+	         .offset(offset);
+
 	       try (Connection conn = DBConnectionPool.getInstance().getConnection()) {
 	           QueryExecutor qe = new QueryExecutor(conn);
-	       List<Map<String, Object>> rs = qe.executeQuery(qb.build());
-	       return BranchMapper.toMapResult(rs);
+	           List<Map<String, Object>> rs = qe.executeQuery(qb.build());
+	           return BranchMapper.toMapResult(rs);
 	       }
 	   }
+	   @Override
+	   public int countGetAllBranch() throws SQLException, QueryException {
+	       QueryBuilder qb = new QueryBuilder(new MySQLDialect());
+	       qb.select("COUNT(*) AS total")
+	         .from("branch");
+
+	       try (Connection conn = DBConnectionPool.getInstance().getConnection()) {
+	    	    List<Map<String, Object>> result = new QueryExecutor(conn)
+	    	        .executeQuery(qb.build());
+
+	    	    return result.isEmpty() ? 0 : ((Number) result.get(0).get("total")).intValue();
+	    	}
+
+	   }
+
+
 	   @Override
 	    public Branch findByIfscCode(String ifscCode)throws SQLException, QueryException {
 		   QueryBuilder qb = new QueryBuilder(new MySQLDialect());

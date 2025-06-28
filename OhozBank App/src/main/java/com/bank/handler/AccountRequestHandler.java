@@ -1,6 +1,7 @@
 package com.bank.handler;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -14,9 +15,12 @@ import org.json.JSONArray;
 import com.bank.enums.UserRole;
 import com.bank.factory.ServiceFactory;
 import com.bank.models.AccountRequest;
+import com.bank.models.PaginatedResponse;
+import com.bank.models.Pagination;
 import com.bank.models.Request;
 import com.bank.service.AccountRequestService;
 import com.bank.service.RequestService;
+import com.bank.util.PaginationUtil;
 import com.bank.util.RequestParser;
 import com.bank.util.ResponseUtil;
 import com.bank.util.SessionUtil;
@@ -56,25 +60,36 @@ public class AccountRequestHandler {
     public void list(HttpServletRequest req, HttpServletResponse res) throws IOException {
         HttpSession session = req.getSession(false);
         if (!SessionUtil.isSessionAvailable(session, res)) return;
+        Pagination payload = RequestParser.parseRequest(req, Pagination.class);
 
+
+        String fromDateStr = payload.getFromDate();
+        String toDateStr = payload.getToDate();
         try {
+        	 long fromTimestamp = Instant.parse(fromDateStr.trim() + "T00:00:00Z").toEpochMilli();
+             long toTimestamp = Instant.parse(toDateStr.trim() + "T23:59:59Z").toEpochMilli();
+
+       
+             int page = PaginationUtil.validatePageNumber(payload.getPageNumber());
+             int size = PaginationUtil.validatePageSize(payload.getPageSize());
             UserRole role = UserRole.valueOf(session.getAttribute("role").toString().toUpperCase());
-            List<AccountRequest> requests;
+            PaginatedResponse<AccountRequest> requests;
+            
 
             if (role == UserRole.SUPERADMIN) {
-                requests = accountService.getAllRequests();
+                requests = accountService.getAllRequests(fromTimestamp, toTimestamp, page, size);
             } else if (role == UserRole.ADMIN) {
                 long adminId = (long) session.getAttribute("adminId");
-                requests = accountService.getRequestsByAdminBranch(adminId);
+                requests = accountService.getRequestsByAdminBranch(adminId,fromTimestamp, toTimestamp, page, size);
             } else {
                 logger.warning("Unauthorized access attempt to list account requests by role: " + role);
                 ResponseUtil.sendError(res, HttpServletResponse.SC_FORBIDDEN, "Unauthorized access");
                 return;
             }
 
-            JSONArray jsonArray = new JSONArray(gson.toJson(requests));
+            String response = gson.toJson(requests);
             logger.info("Account requests listed by role: " + role);
-            ResponseUtil.sendJson(res, HttpServletResponse.SC_OK, jsonArray);
+            ResponseUtil.sendJson(res, HttpServletResponse.SC_OK, response);
 
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Failed to retrieve account requests", e);

@@ -8,7 +8,10 @@ import java.util.logging.Logger;
 import com.bank.dao.BranchDAO;
 import com.bank.factory.DaoFactory;
 import com.bank.models.Branch;
+import com.bank.models.PaginatedResponse;
+import com.bank.models.Transaction;
 import com.bank.service.BranchService;
+import com.bank.util.PaginationUtil;
 
 import exception.QueryException;
 
@@ -43,8 +46,15 @@ public class BranchServiceImpl implements BranchService {
     }
 
     @Override
-    public List<Branch> getAllBranches() throws SQLException, QueryException {
-        return branchDAO.getAllBranches();
+    public  PaginatedResponse<Branch> getAllBranches(int pageNumber, int pageSize) throws SQLException, QueryException {
+    	pageNumber = PaginationUtil.validatePageNumber(pageNumber);
+        pageSize = PaginationUtil.validatePageSize(pageSize);
+        int offset = PaginationUtil.calculateOffset(pageNumber, pageSize);
+        int total = branchDAO.countGetAllBranch();
+        List<Branch> branch = branchDAO.getAllBranches(pageSize, offset);
+       
+
+        return new PaginatedResponse<>(branch, pageNumber, pageSize, total);
     }
 
     @Override

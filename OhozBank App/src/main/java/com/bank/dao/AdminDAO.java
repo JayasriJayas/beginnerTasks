@@ -16,6 +16,7 @@ public interface AdminDAO {
     Admin getAdminByUserId(long userId)throws SQLException , QueryException;
     boolean updateAdmin(Admin admin) throws SQLException,QueryException;
     Map<String, Object> fetchAdmin(long adminId) throws SQLException, QueryException;
-    List<Map<String, Object>> fetchAllAdmins() throws SQLException, QueryException;
+    List<Map<String, Object>> fetchAllAdmins(int limit, int offset) throws SQLException, QueryException ;
+    int countAllAdmins() throws SQLException, QueryException;
 
 }

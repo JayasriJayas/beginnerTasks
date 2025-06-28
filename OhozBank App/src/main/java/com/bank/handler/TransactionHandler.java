@@ -502,8 +502,8 @@ public class TransactionHandler {
         try {
             HttpSession session = req.getSession(false);
             if (!SessionUtil.isSessionAvailable(session, res)) return;
-
-            long accountId = Long.parseLong(req.getParameter("accountId")); // Get accountId from request parameters
+            Transaction transaction = RequestParser.parseRequest(req, Transaction.class);
+            long accountId = transaction.getAccountId(); // Get accountId from request parameters
 
             BigDecimal totalIncome = transactionService.getTotalIncomeByAccount(accountId); // Call service method
 
@@ -521,8 +521,8 @@ public class TransactionHandler {
         try {
             HttpSession session = req.getSession(false);
             if (!SessionUtil.isSessionAvailable(session, res)) return;
-
-            long accountId = Long.parseLong(req.getParameter("accountId")); // Get accountId from request parameters
+            Transaction transaction = RequestParser.parseRequest(req, Transaction.class);
+            long accountId = transaction.getAccountId();
 
             BigDecimal totalExpense = transactionService.getTotalExpenseByAccount(accountId); // Call service method
 

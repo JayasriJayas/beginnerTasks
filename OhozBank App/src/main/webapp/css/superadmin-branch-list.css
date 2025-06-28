@@ -1,0 +1,141 @@
+.branch-table-container {
+  padding: 1.5rem;
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  overflow-x: auto;
+}
+
+.branch-table-header h2 {
+  margin-bottom: 1rem;
+  color: var(--primary-color);
+  font-size: 1.6rem;
+}
+
+.branch-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.branch-page-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.branch-page-controls select {
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+}
+
+.branch-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 850px;
+  margin-bottom: 1rem;
+}
+
+.branch-table thead th {
+  background-color: var(--primary-color);
+  color: #fff;
+  text-align: left;
+  padding: 10px;
+  white-space: nowrap;
+}
+
+.branch-table tbody td {
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.branch-pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  font-size: 14px;
+}
+
+.branch-pagination .page-numbers button {
+  padding: 6px 12px;
+  margin: 0 3px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  background-color: white;
+  cursor: pointer;
+}
+
+.branch-pagination .page-numbers .active {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.branch-pagination .page-btn {
+  padding: 6px 12px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  background-color: white;
+  cursor: pointer;
+}
+
+.branch-pagination .page-btn:disabled {
+  background-color: #f0f0f0;
+  color: #999;
+  cursor: not-allowed;
+}
+
+/* ✅ Responsive Design */
+@media (max-width: 768px) {
+  .branch-table-header h2 {
+    font-size: 1.3rem;
+  }
+
+  .branch-nav {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .branch-page-controls {
+    justify-content: space-between;
+  }
+
+  .branch-pagination {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .branch-table {
+    font-size: 13px;
+  }
+
+  .branch-table thead th,
+  .branch-table tbody td {
+    padding: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .branch-page-controls select {
+    width: 100%;
+  }
+
+  .branch-pagination {
+    font-size: 12px;
+  }
+
+  .branch-pagination .page-numbers button,
+  .branch-pagination .page-btn {
+    padding: 5px 10px;
+    font-size: 12px;
+  }
+}

@@ -13,8 +13,10 @@ import com.bank.enums.Gender;
 import com.bank.enums.UserStatus;
 import com.bank.factory.DaoFactory;
 import com.bank.models.Admin;
+import com.bank.models.PaginatedResponse;
 import com.bank.models.User;
 import com.bank.service.AdminService;
+import com.bank.util.PaginationUtil;
 import com.bank.util.PasswordUtil;
 
 import exception.QueryException;
@@ -113,12 +115,11 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public List<Map<String, Object>> getAllAdmins() throws SQLException {
-        try {
-            return adminDAO.fetchAllAdmins();
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, "Error in getAllAdmins", e);
-            return Collections.emptyList();
-        }
+    public PaginatedResponse<Map<String, Object>> getAllAdmins(int page, int size) throws SQLException, QueryException {
+        int offset = PaginationUtil.calculateOffset(page, size);
+        int total = adminDAO.countAllAdmins();
+        List<Map<String, Object>> admins = adminDAO.fetchAllAdmins(size, offset);
+        return new PaginatedResponse<>(admins, page, size, total);
     }
+
 }

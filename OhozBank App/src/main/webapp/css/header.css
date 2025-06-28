@@ -47,7 +47,7 @@ body {
 }
 
 .nav__logo-img {
-  height: 128px;
+  height: 56px;
   width: auto;
   object-fit: contain;
 }
@@ -125,7 +125,7 @@ main {
 /* Responsive (Mobile View) */
 @media screen and (max-width: 768px) {
   .nav__logo-img {
-    height: 158px;
+    height: 55px;
   }
   .nav__profile {
     position: absolute;

@@ -1,7 +1,6 @@
 package com.bank.handler;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -15,8 +14,11 @@ import org.json.JSONObject;
 import com.bank.enums.UserRole;
 import com.bank.factory.ServiceFactory;
 import com.bank.models.Branch;
+import com.bank.models.PaginatedResponse;
+import com.bank.models.Pagination;
 import com.bank.service.BranchService;
 import com.bank.util.BranchValidator;
+import com.bank.util.PaginationUtil;
 import com.bank.util.RequestParser;
 import com.bank.util.ResponseUtil;
 import com.bank.util.SessionUtil;
@@ -129,11 +131,20 @@ public class BranchHandler {
         try {
             HttpSession session = req.getSession(false);
             if (!SessionUtil.isSuperAdmin(session, res)) return;
+            
+            Pagination payload = RequestParser.parseRequest(req, Pagination.class);
+            if (payload == null ) {
+                ResponseUtil.sendError(res, HttpServletResponse.SC_BAD_REQUEST, "Missing required date fields.");
+                return;
+            }
+          
 
-            List<Branch> branches = branchService.getAllBranches();
-            JSONArray jsonArray = new JSONArray(gson.toJson(branches));
+            int page = PaginationUtil.validatePageNumber((payload.getPageNumber()));      
+            int size = PaginationUtil.validatePageSize(payload.getPageSize());   
+            PaginatedResponse<Branch>branches = branchService.getAllBranches( page, size	);
+            String response = gson.toJson(branches);
             logger.info("All branches listed by superadmin.");
-            ResponseUtil.sendJson(res, HttpServletResponse.SC_OK, jsonArray);
+            ResponseUtil.sendJson(res, HttpServletResponse.SC_OK, response);
 
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error listing branches", e);

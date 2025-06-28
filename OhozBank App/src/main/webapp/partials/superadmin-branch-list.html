@@ -1,0 +1,43 @@
+<div class="branch-table-container">
+  <div class="branch-table-header">
+    <h2>Branch List</h2>
+  </div>
+
+  <!-- Table -->
+  <table class="branch-table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Branch ID</th>
+        <th>Branch Name</th>
+          <th>Location</th>
+        <th>IFSC</th>
+        <th>Contact</th>
+      </tr>
+    </thead>
+    <tbody id="branchTableBody">
+      <tr><td colspan="5">Loading...</td></tr>
+    </tbody>
+  </table>
+
+  <!-- Entries per page now BELOW the table -->
+  <div class="branch-page-controls" style="margin-top: 0.5rem;">
+    <label for="branchEntriesPerPage">Entries per page:</label>
+    <select id="branchEntriesPerPage">
+      <option value="5">5</option>
+      <option value="10" selected>10</option>
+      <option value="20">20</option>
+    </select>
+  </div>
+
+  <!-- Pagination -->
+  <div class="branch-pagination">
+    <button id="branchPrevBtn" class="page-btn">Previous</button>
+    <div class="page-numbers" id="branchPageNumbers"></div>
+    <button id="branchNextBtn" class="page-btn">Next</button>
+
+    <div>
+      Showing <span id="branchShowingRange">0 to 0</span> of <span id="branchTotalEntries">0</span>
+    </div>
+  </div>
+</div>

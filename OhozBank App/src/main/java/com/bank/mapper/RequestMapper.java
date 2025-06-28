@@ -39,7 +39,6 @@ public class RequestMapper {
         List<Request> list = new ArrayList<>();
         for (Map<String, Object> row : rows) {
             Request req = new Request();
-System.out.println("tp");
             req.setId(((Number) row.get("id")).longValue());
     	    req.setUsername((String) row.get("username"));
     	    req.setPassword((String) row.get("password"));
@@ -57,7 +56,6 @@ System.out.println("tp");
     	    req.setBranchId(((Number) row.get("branchId")).longValue());
     	    req.setStatus(RequestStatus.valueOf((String) row.get("status")));
     	    req.setRequestTimestamp(System.currentTimeMillis());
-    	   System.out.println("in bot");
             list.add(req);
         }
         return list;

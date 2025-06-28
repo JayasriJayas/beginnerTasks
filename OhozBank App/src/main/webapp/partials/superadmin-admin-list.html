@@ -1,0 +1,41 @@
+<!-- admin-list.html -->
+<div class="admin-table-container">
+  <div class="admin-table-header">
+    <h2>Admin List</h2>
+  </div>
+
+  <table class="admin-table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Admin ID</th>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Branch ID</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody id="adminTableBody">
+      <tr><td colspan="6">Loading...</td></tr>
+    </tbody>
+  </table>
+
+  <div class="admin-page-controls" style="margin-top: 0.5rem;">
+    <label for="adminEntriesPerPage">Entries per page:</label>
+    <select id="adminEntriesPerPage">
+      <option value="5">5</option>
+      <option value="10" selected>10</option>
+      <option value="20">20</option>
+    </select>
+  </div>
+
+  <div class="admin-pagination">
+    <button id="adminPrevBtn" class="page-btn">Previous</button>
+    <div class="page-numbers" id="adminPageNumbers"></div>
+    <button id="adminNextBtn" class="page-btn">Next</button>
+
+    <div>
+      Showing <span id="adminShowingRange">0 to 0</span> of <span id="adminTotalEntries">0</span>
+    </div>
+  </div>
+</div>

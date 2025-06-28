@@ -100,7 +100,7 @@ function initTransactionPage() {
     });
   }
 
-  // 6️⃣ Load with current filters
+  // Load with current filters
   function loadFilteredTransactions() {
     const accountId = accountSelect.value;
     const fromDate = fromDateInput.value;
@@ -122,7 +122,7 @@ function initTransactionPage() {
     loadTransactions(payload);
   }
 
-  // 7️⃣ Fetch transactions with dynamic endpoint
+  //  Fetch transactions with dynamic endpoint
   async function loadTransactions(payload) {
     tbody.innerHTML = "";
 

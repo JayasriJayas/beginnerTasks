@@ -21,34 +21,68 @@ import exception.QueryException;
 
 public class AccountRequestDAOImpl implements AccountRequestDAO {
 
-    @Override
-    public List<AccountRequest> fetchAllRequests() throws SQLException,QueryException {
-        QueryBuilder qb = new QueryBuilder(new MySQLDialect());
-        qb.select("*").from("accountRequest");
+	@Override
+	public List<AccountRequest> fetchAllRequests(long fromTimestamp, long toTimestamp, int limit, int offset) throws SQLException, QueryException {
+	    QueryBuilder qb = new QueryBuilder(new MySQLDialect());
+	    qb.select("*")
+	      .from("accountRequest")
+	      .andBetween("createdAt", fromTimestamp, toTimestamp)  // Use your actual timestamp column
+	      .orderBy("createdAt").orderDirection("DESC")
+	      .limit(limit)
+	      .offset(offset);
 
-        try (Connection conn = DBConnectionPool.getInstance().getConnection()) {
-            QueryExecutor qe = new QueryExecutor(conn);
-            List<Map<String, Object>> rs = qe.executeQuery(qb.build());
-            
-            return AccountRequestMapper.mapToRequests(rs);
-        }
-    }
+	    try (Connection conn = DBConnectionPool.getInstance().getConnection()) {
+	        QueryExecutor qe = new QueryExecutor(conn);
+	        List<Map<String, Object>> rs = qe.executeQuery(qb.build(), qb.getParameters());
+	        return AccountRequestMapper.mapToRequests(rs);
+	    }
+	}
+	@Override
+	public int countRequests(long fromTimestamp, long toTimestamp) throws SQLException, QueryException {
+	    QueryBuilder qb = new QueryBuilder(new MySQLDialect());
+	    qb.select().aggregate("COUNT", "*").as("total")
+	      .from("accountRequest")
+	      .andBetween("createdAt", fromTimestamp, toTimestamp);  // Use your timestamp column
 
-    @Override
-    public List<AccountRequest> fetchRequestsByAdminBranch(long adminId)throws SQLException,QueryException {
-        QueryBuilder qb = new QueryBuilder(new MySQLDialect());
-        qb.select("ar.*")
-          .from("accountRequest ar")
-          .innerJoin("admin a", "a.branchId = ar.branchId")
-          .where("a.adminId = ?", adminId);
+	    try (Connection conn = DBConnectionPool.getInstance().getConnection()) {
+	        QueryExecutor qe = new QueryExecutor(conn);
+	        List<Map<String, Object>> rs = qe.executeQuery(qb.build(), qb.getParameters());
+	        return rs.isEmpty() ? 0 : ((Number) rs.get(0).get("total")).intValue();
+	    }
+	}
+	@Override
+	public List<AccountRequest> fetchRequestsByAdminBranch(long adminId, long fromTimestamp, long toTimestamp, int limit, int offset) throws SQLException, QueryException {
+	    QueryBuilder qb = new QueryBuilder(new MySQLDialect());
+	    qb.select("ar.*")
+	      .from("accountRequest ar")
+	      .innerJoin("admin a", "a.branchId = ar.branchId")
+	      .where("a.adminId = ?", adminId)
+	      .andBetween("ar.createdAt", fromTimestamp, toTimestamp)
+	      .orderBy("ar.createdAt").orderDirection("DESC")
+	      .limit(limit)
+	      .offset(offset);
 
-        try (Connection conn = DBConnectionPool.getInstance().getConnection()) {
-            QueryExecutor qe = new QueryExecutor(conn);
-            List<Map<String, Object>> rs = qe.executeQuery(qb.build(), qb.getParameters());
-           
-            return AccountRequestMapper.mapToRequests(rs);
-        }
-    }
+	    try (Connection conn = DBConnectionPool.getInstance().getConnection()) {
+	        QueryExecutor qe = new QueryExecutor(conn);
+	        List<Map<String, Object>> rs = qe.executeQuery(qb.build(), qb.getParameters());
+	        return AccountRequestMapper.mapToRequests(rs);
+	    }
+	}
+	@Override
+	public int countRequestsByBranch(long adminId, long fromTimestamp, long toTimestamp) throws SQLException, QueryException {
+	    QueryBuilder qb = new QueryBuilder(new MySQLDialect());
+	    qb.select().aggregate("COUNT", "*").as("total")
+	      .from("accountRequest ar")
+	      .innerJoin("admin a", "a.branchId = ar.branchId")
+	      .where("a.adminId = ?", adminId)
+	      .andBetween("ar.createdAt", fromTimestamp, toTimestamp);
+
+	    try (Connection conn = DBConnectionPool.getInstance().getConnection()) {
+	        QueryExecutor qe = new QueryExecutor(conn);
+	        List<Map<String, Object>> rs = qe.executeQuery(qb.build(), qb.getParameters());
+	        return rs.isEmpty() ? 0 : ((Number) rs.get(0).get("total")).intValue();
+	    }
+	}
     @Override
     public boolean save(AccountRequest request) throws SQLException,QueryException {
     	QueryBuilder qb = new QueryBuilder(new MySQLDialect());

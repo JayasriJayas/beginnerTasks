@@ -70,7 +70,7 @@ public class ApiAccessFilter implements Filter {
         String contextPath = httpReq.getContextPath();
         String path = fullPath.substring(contextPath.length());
         String method = httpReq.getMethod().toUpperCase();
-
+       
         HttpSession session = httpReq.getSession(false);
 
         if (path.endsWith(".jsp") || path.endsWith(".css") || path.endsWith(".js") || path.endsWith(".png") || path.endsWith(".html"))  {
@@ -97,13 +97,15 @@ public class ApiAccessFilter implements Filter {
         System.out.println(userRole);
 
         if (allowedRole == null || !isRoleAllowed(userRole, allowedRole)) {
+    
             logger.warning("Access denied for user with role: " + userRole + " to path: " + method + " " + path);
             ResponseUtil.sendError(httpRes, HttpServletResponse.SC_FORBIDDEN, "Access Denied");
             return;
         }
-
+  
         logger.fine("Access granted to role: " + userRole + " for path: " + method + " " + path);
         chain.doFilter(req, res);
+      
     }
 
     @Override

@@ -59,35 +59,51 @@
   });
 
   // Render Profile View (Read-only)
-  function renderProfileView(user, customer) {
-    return `
+  function renderProfileView(user, customer, admin) {
+    let info = `
       <div class="modal-profile-header">
         <h2>${user.name}</h2>
       </div>
-
       <div class="modal-profile-info">
         <div class="profile-info-item"><strong>Name:</strong> <span>${user.name}</span></div>
         <div class="profile-info-item"><strong>Username:</strong> <span>${user.username}</span></div>
         <div class="profile-info-item"><strong>Email:</strong> <span>${user.email}</span></div>
         <div class="profile-info-item"><strong>Phone:</strong> <span>${user.phone}</span></div>
-        <div class="profile-info-item"><strong>Gender:</strong> <span>${user.gender}</span></div>
-        <div class="profile-info-item"><strong>DOB:</strong> <span>${customer.dob}</span></div>
-        <div class="profile-info-item"><strong>Occupation:</strong> <span>${customer.occupation}</span></div>
-        <div class="profile-info-item"><strong>Annual Income:</strong> <span>₹${(customer.annualIncome || 0).toLocaleString()}</span></div>
-        <div class="profile-info-item"><strong>Aadhar:</strong> <span>${customer.aadharNo}</span></div>
-        <div class="profile-info-item"><strong>PAN:</strong> <span>${customer.panNo}</span></div>
-        <div class="profile-info-item"><strong>Address:</strong> <span>${customer.address}</span></div>
-        <div class="profile-info-item"><strong>Marital Status:</strong> <span>${customer.maritalStatus}</span></div>
-      </div>
+    `;
 
+    if (user.roleId === 1) {
+      info += `</div>`; // Superadmin: no more fields
+    } else if (user.roleId === 2) {
+      info += `
+        <div class="profile-info-item"><strong>Gender:</strong> <span>${user.gender || "-"}</span></div>
+        </div>
+      `;
+    } else {
+      info += `
+        <div class="profile-info-item"><strong>Gender:</strong> <span>${user.gender || "-"}</span></div>
+        <div class="profile-info-item"><strong>DOB:</strong> <span>${customer?.dob || "-"}</span></div>
+        <div class="profile-info-item"><strong>Occupation:</strong> <span>${customer?.occupation || "-"}</span></div>
+        <div class="profile-info-item"><strong>Annual Income:</strong> <span>₹${(customer?.annualIncome || 0).toLocaleString()}</span></div>
+        <div class="profile-info-item"><strong>Aadhar:</strong> <span>${customer?.aadharNo || "-"}</span></div>
+        <div class="profile-info-item"><strong>PAN:</strong> <span>${customer?.panNo || "-"}</span></div>
+        <div class="profile-info-item"><strong>Address:</strong> <span>${customer?.address || "-"}</span></div>
+        <div class="profile-info-item"><strong>Marital Status:</strong> <span>${customer?.maritalStatus || "-"}</span></div>
+        </div>
+      `;
+    }
+
+    info += `
       <div class="modal-profile-footer">
-        <button class="profile-btn" onclick="switchToEditProfile(${user.id}, ${customer.id})">
+        <button class="profile-btn" onclick="switchToEditProfile(${user.userId})">
           <i class="bx bx-edit"></i> Edit
         </button>
         <button class="profile-btn logout-btn" onclick="closeModal()"><i class='bx bx-x'></i> Cancel</button>
       </div>
     `;
+
+    return info;
   }
+
 
   // Switch to Edit Profile (This is the key function that switches to edit mode)
   async function switchToEditProfile(userId, customerId) {
@@ -213,44 +229,48 @@ window.submitProfileUpdate=  async function submitProfileUpdate(event) {
 // 🔄 Fetch Profile Image + Name
 // Fetch Profile Image + User Details
 async function fetchProfileData(panel) {
-  try {
-    const res = await fetch(BASE_URL + "/api/profile/user", {
-      method: "POST",
-      credentials: "include", // Assuming you are using session/cookies for authentication
-    });
+	 try {
+	    const res = await fetch(BASE_URL + "/api/profile/user", {
+	      method: "POST",
+	      credentials: "include",
+	    });
 
-    if (!res.ok) throw new Error("Failed to load profile");
+	    if (!res.ok) throw new Error("Failed to load profile");
 
-    const data = await res.json();
-    console.log("Profile data:", data);
+	    const data = await res.json();
+	    const user = data.user || {};
+	    const gender = (user.gender || "MALE").toUpperCase();
 
-    const user = data.user || {};
-    const gender = (user.gender || "MALE").toUpperCase();
+	    const imageUrl = gender === "FEMALE"
+	      ? `${BASE_URL}/assets/girl.png`
+	      : `${BASE_URL}/assets/male.png`;
 
-    const imageUrl = gender === "FEMALE"
-      ? `${BASE_URL}/assets/girl.png`
-      : `${BASE_URL}/assets/male.png`;
+	    const image = panel.querySelector("#userImage");
+	    const name = panel.querySelector("#userName");
 
-    const image = panel.querySelector("#userImage");
-    const name = panel.querySelector("#userName");
+	    if (image) image.src = imageUrl;
+	    if (name) name.innerText = user.name || "User";
 
-    // Set the profile image and name dynamically
-    if (image) image.src = imageUrl;
-    if (name) name.innerText = user.name || "User";
+	    document.getElementById("userNameValue").innerText = user.name || "-";
+	    document.getElementById("userEmail").innerText = user.email || "-";
+	    document.getElementById("userPhone").innerText = user.phone || "-";
 
-    // Update profile info dynamically
-    document.getElementById("userNameValue").innerText = user.name ;
-    document.getElementById("userEmail").innerText = user.email ;
-    document.getElementById("userPhone").innerText = user.phone ;
-    document.getElementById("userGender").innerText = user.gender ;
-    document.getElementById("userDOB").innerText = data.customer.dob ;
-
-
-  } catch (err) {
-    console.error("⚠️ Error loading profile:", err);
-    panel.innerHTML = `<p style="padding: 1rem;">⚠️ Unable to load profile info.</p>`;
-  }
-}
+	    const roleId = user.roleId;
+	    if (roleId === 1) {
+	      document.getElementById("userGender").innerText = "-";
+	      document.getElementById("userDOB").innerText = "-";
+	    } else if (roleId === 2) {
+	      document.getElementById("userGender").innerText = user.gender || "-";
+	      document.getElementById("userDOB").innerText = "-";
+	    } else {
+	      document.getElementById("userGender").innerText = user.gender || "-";
+	      document.getElementById("userDOB").innerText = data.customer?.dob || "-";
+	    }
+	  } catch (err) {
+	    console.error("⚠️ Error loading profile:", err);
+	    panel.innerHTML = `<p style="padding: 1rem;">⚠️ Unable to load profile info.</p>`;
+	  }
+	}
 
 //  Fetch full profile for view
 async function fetchUserProfileInfo() {

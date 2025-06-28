@@ -19,79 +19,128 @@ window.initDashboardContent = async function initDashboardContent() {
   loadAccountCards();
   loadInsights();
 
-  async function loadInsights() {
+    async function loadInsights() {
       const insightsContainer = document.getElementById("insightsContainer");
-      
-      if (!insightsContainer) {
-        console.error("insightsContainer not found.");
-        showToast("Insights container not found.", "error");
+      const accountSelect = document.getElementById("accountSelect");
+
+      if (!insightsContainer || !accountSelect) {
+        console.error("Insights container or account select not found.");
+        showToast("Insights container or account select not found.", "error");
         return;
       }
 
+      // Load user accounts for dropdown
       try {
-        const totalBalanceRes = await fetch(`${BASE_URL}/api/total-balance/account`, {
+        const res = await fetch(`${BASE_URL}/api/get-accounts/account`, {
           method: "POST",
           credentials: "include"
         });
-        const totalBalanceData = await totalBalanceRes.json();
+        const accounts = await res.json();
 
-        const totalCreditsRes = await fetch(`${BASE_URL}/api/total-income/transaction`, {
-          method: "POST",
-          credentials: "include"
+        accountSelect.innerHTML = `<option value="ALL">All Accounts</option>`;
+        accounts.forEach(acc => {
+          const option = document.createElement("option");
+          option.value = acc.accountId;
+          option.text = `A/C ${acc.accountId}`;
+          accountSelect.appendChild(option);
         });
-        const totalCreditsData = await totalCreditsRes.json();
-
-        const totalDebitsRes = await fetch(`${BASE_URL}/api/total-expense/transaction`, {
-          method: "POST",
-          credentials: "include"
-        });
-        const totalDebitsData = await totalDebitsRes.json();
-		console.log(totalCreditsData); // Check what this returns
-		console.log(totalDebitsData);  // Check what this returns
-        if (!totalBalanceRes.ok || !totalCreditsRes.ok || !totalDebitsRes.ok) {
-          throw new Error("Failed to fetch insights");
-        }
-
-		insightsContainer.innerHTML = `
-		     <p>Total Balance: ₹${totalBalanceData.totalBalance || "N/A"}</p>
-		     <p>This Month's Credits: ₹${totalCreditsData.totalIncome || "N/A"}</p>
-		     <p>This Month's Debits: ₹${totalDebitsData.totalExpense || "N/A"}</p>
-		     <canvas id="insightChart"></canvas>
-		   `;
-
-        // Call the chart rendering function
-        renderChart(totalCreditsData.totalIncome, totalDebitsData.totalExpense);
-        
       } catch (err) {
-        console.error("Error fetching insights:", err);
-        showToast("Error fetching insights", "error");
+        console.error("Failed to load accounts:", err);
+        showToast("Failed to load accounts", "error");
       }
-    
 
-    // Render the pie chart for insights
-    function renderChart(credits, debits) {
-      const ctx = document.getElementById('insightChart').getContext('2d');
-      const chart = new Chart(ctx, {
-        type: 'pie',
-        data: {
-          labels: ['Credits', 'Debits'],
-          datasets: [{
-            data: [credits, debits],
-            backgroundColor: ['#d4edda', '#fff3cd']
-          }]
-        },
-        options: {
-          responsive: true,
-          plugins: {
-            legend: {
-              position: 'top',
-            },
-          }
-        }
+      // Fetch and display insights for ALL accounts initially
+      fetchAndDisplayInsights("ALL");
+
+      // When an account is selected, update the insights
+      accountSelect.addEventListener("change", (e) => {
+        const selectedAccountId = e.target.value;
+        fetchAndDisplayInsights(selectedAccountId);
       });
-    }
 
-  }
+      // Fetch the insights data and update the UI
+      async function fetchAndDisplayInsights(accountId) {
+        try {
+          const isAll = accountId === "ALL";
+
+          const balanceRes = await fetch(`${BASE_URL}/api/total-balance/account`, {
+            method: "POST",
+            credentials: "include"
+          });
+          const balanceData = await balanceRes.json();
+
+          const creditRes = await fetch(`${BASE_URL}/api/total-income/transaction`, {
+            method: "POST",
+            credentials: "include",
+            headers: { "Content-Type": "application/json" },
+            body: isAll ? null : JSON.stringify({ accountId: parseInt(accountId) })
+          });
+          const creditData = await creditRes.json();
+
+          const debitRes = await fetch(`${BASE_URL}/api/total-expense/transaction`, {
+            method: "POST",
+            credentials: "include",
+            headers: { "Content-Type": "application/json" },
+            body: isAll ? null : JSON.stringify({ accountId: parseInt(accountId) })
+          });
+          const debitData = await debitRes.json();
+
+          const totalCredits = creditData.totalIncome || 0;
+          const totalDebits = debitData.totalExpense || 0;
+
+          // Update the DOM with fetched data
+          document.getElementById("totalBalance").innerHTML =
+            `<p><strong>Total Balance:</strong> ₹${balanceData.totalBalance ?? "N/A"}</p>`;
+          document.getElementById("thisMonthCredits").innerHTML =
+            `<p><strong>This Month's Credits:</strong> ₹${totalCredits}</p>`;
+          document.getElementById("thisMonthDebits").innerHTML =
+            `<p><strong>This Month's Debits:</strong> ₹${totalDebits}</p>`;
+
+          // Render the pie chart with the updated data
+          renderChart(totalCredits, totalDebits);
+        } catch (err) {
+          console.error("Error fetching insights:", err);
+          showToast("Failed to fetch insights", "error");
+        }
+      }
+
+      // Function to render the pie chart
+      let chartInstance = null;
+	  function renderChart(credits, debits) {
+	    const ctx = document.getElementById('insightChart').getContext('2d');
+
+	    if (chartInstance) chartInstance.destroy(); // Destroy previous chart if it exists
+
+	    chartInstance = new Chart(ctx, {
+	      type: 'pie',
+	      data: {
+	        labels: ['Credits', 'Debits'],
+	        datasets: [{
+	          data: [credits, debits],
+	          backgroundColor: ['#d4edda', '#fff3cd'],
+	          borderColor: '#fff',
+	          borderWidth: 1
+	        }]
+	      },
+	      options: {
+	        responsive: true,
+	        plugins: {
+	          tooltip: {
+	            callbacks: {
+	              label: (ctx) => `${ctx.label}: ₹${ctx.parsed.toLocaleString("en-IN")}`
+	            }
+	          },
+	          legend: {
+	            position: "top"
+	          }
+	        }
+	      }
+	    });
+	  }
+
+    }
+ 
+
 
   async function loadAccountCards() {
     const container = document.getElementById("accountCardContainer");

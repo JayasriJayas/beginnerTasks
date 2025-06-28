@@ -1,6 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%
   String ctx = request.getContextPath();
+ 
 %>
 <!DOCTYPE html>
 <html>
@@ -18,16 +19,15 @@
   <link rel="stylesheet" href="<%= ctx %>/css/transaction.css">
   <link rel="stylesheet" href="<%= ctx %>/css/sidebar.css">
   <link rel="stylesheet" href="<%= ctx %>/css/form.css">
-   <link rel="stylesheet" href="css/toast.css" />
-   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="css/toast.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body>
 
   <!-- Includes -->
-  <%@ include file="includes/header.jsp" %>
+  <%@ include file="includes/header.jsp" %>	  
   <%@ include file="includes/sidebar.jsp" %>
- 
 
   <!-- Modal HTML -->
   <div id="modalOverlay" class="modal-overlay hidden">
@@ -44,32 +44,31 @@
   <main class="dashboard-container" id="main">
     <div id="dashboardContent" class="dashboard-content-box"></div>
   </main>
-  <!-- Toast Container (For multiple stacked toasts) -->
-<div id="toast-container" class="toast-container"></div>
+
+  <!-- Toast Container -->
+  <div id="toast-container" class="toast-container"></div>
+
   <footer>
- 
-  <div style="text-align: center; padding: 10px;">
-    <p>&copy; 2025 Your Company Name. All rights reserved.</p>
-   
-  </div>
-</footer>
-
-
-    
-
-
-  
-
-  <!-- Scripts -->
-  <script>
-    const BASE_URL = "<%= ctx %>";
-  </script>
-  <script src="<%= ctx %>/js/dashboard.js"></script>
-  <!-- Include the Toast JS file -->
-<script src="<%= ctx %>/js/toast.js"></script>
-  
- 
-  
-
-</body>
-</html>
+    <div style="text-align: center; padding: 10px;">
+      <p>&copy; 2025 Your Company Name. All rights reserved.</p>
+    </div>
+  </footer>
+	
+	    
+	
+	
+	  
+	
+	  <!-- Scripts -->
+	  <script>
+	    const BASE_URL = "<%= ctx %>";
+	  </script>
+	  <script src="<%= ctx %>/js/dashboard.js"></script>
+	  <!-- Include the Toast JS file -->
+	<script src="<%= ctx %>/js/toast.js"></script>
+	  
+	 
+	  
+	
+	</body>
+	</html>

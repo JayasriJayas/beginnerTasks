@@ -1,0 +1,54 @@
+<!-- admin-accountrequest-list.html -->
+<div class="table-container">
+  <div class="table-header">
+    <h2>Account Requests</h2>
+  </div>
+
+  <!-- Filters -->
+  <div class="transaction-nav">
+    <div class="transaction-filters">
+      <input type="date" id="fromDate" />
+      <input type="date" id="toDate" />
+      <button id="filterBtn">Filter</button>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <table>
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>RequestId</th>
+        <th>UserId</th>
+        <th>Branch ID</th>
+        <th>Status</th>
+        <th>Request Date</th>
+      </tr>
+    </thead>
+    <tbody id="accountRequestTableBody">
+      <tr><td colspan="8">Loading...</td></tr>
+    </tbody>
+  </table>
+
+  <!-- Pagination -->
+  <div class="pagination-bar">
+    <div class="pagination-left">
+      Show 
+      <select id="entriesPerPage">
+        <option value="10" selected>10</option>
+        <option value="25">25</option>
+        <option value="50">50</option>
+      </select> entries
+    </div>
+
+    <div class="pagination-center">
+      <button class="page-btn" id="prevBtn">&laquo; Previous</button>
+      <div class="page-numbers" id="pageNumbers"></div>
+      <button class="page-btn" id="nextBtn">Next &raquo;</button>
+    </div>
+
+    <div class="pagination-right">
+      Showing <span id="showingRange">0 to 0</span> of <span id="totalEntries">0</span> entries
+    </div>
+  </div>
+</div>

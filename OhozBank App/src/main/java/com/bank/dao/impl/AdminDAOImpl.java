@@ -138,21 +138,36 @@ public class AdminDAOImpl implements AdminDAO {
     }
 
     @Override
-    public List<Map<String, Object>> fetchAllAdmins() throws SQLException, QueryException {
+    public List<Map<String, Object>> fetchAllAdmins(int limit, int offset) throws SQLException, QueryException {
         QueryBuilder qb = new QueryBuilder(new MySQLDialect());
-        qb.select("a.adminId", "a.branchId","u.username", 
-                "u.name", "u.email", "u.phone", "u.status","u.createdAt","u.modifiedAt","u.modifiedBy")
-        .from("admin a")
-        .innerJoin("user u", "a.adminId = u.userId");
+        qb.select("a.adminId", "a.branchId", "u.username", 
+                  "u.name", "u.email", "u.phone", "u.status", 
+                  "u.createdAt", "u.modifiedAt", "u.modifiedBy")
+          .from("admin a")
+          .innerJoin("user u", "a.adminId = u.userId")
+          .limit(limit)
+          .offset(offset);
 
         try (Connection conn = DBConnectionPool.getInstance().getConnection()) {
             QueryExecutor qe = new QueryExecutor(conn);
             List<Map<String, Object>> rs = qe.executeQuery(qb.build());
-            System.out.println("in dao");
-            return AdminMapper. mapToAdminMaps(rs);
-        
+            return AdminMapper.mapToAdminMaps(rs); // still returning List<Map<String, Object>>
+        }
     }
+    @Override
+    public int countAllAdmins() throws SQLException, QueryException {
+        QueryBuilder qb = new QueryBuilder(new MySQLDialect());
+        qb.select("COUNT(*) AS total").from("admin");
+
+        try (Connection conn = DBConnectionPool.getInstance().getConnection()) {
+            QueryExecutor qe = new QueryExecutor(conn);
+          List<Map<String, Object>> result = qe.executeQuery(qb.build());
+
+  	    return result.isEmpty() ? 0 : ((Number) result.get(0).get("total")).intValue();
+        }
     }
+
+
 
 
 
