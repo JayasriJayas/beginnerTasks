@@ -53,72 +53,81 @@ public class RequestDAOImpl implements RequestDAO {
 	 
 
 	 @Override
-	 public List<Request> getPendingRequestsWithDateRange(long fromTimestamp, long toTimestamp, int limit, int offset) throws SQLException, QueryException {
+	 public List<Request> getRequestsByDateAndStatus(long from, long to, int limit, int offset, RequestStatus status) throws SQLException, QueryException {
 	     QueryBuilder qb = new QueryBuilder(new MySQLDialect());
 	     qb.select("*")
 	       .from("request")
-	       .where("status = ?", RequestStatus.PENDING)  // Filter by status
-	       .andBetween("requestDate", fromTimestamp, toTimestamp)  // Updated column name
-	       .orderBy("requestDate")  // Order by the updated column name
-	       .limit(limit)  // Apply pagination limit
-	       .offset(offset);  // Apply pagination offset
-	     
+	       .whereBetween("requestDate", from, to);
+
+	     if (status != null ) {
+	         qb.andWhere("status = ?", status);
+	     }
+
+	     qb.orderBy("requestDate").limit(limit).offset(offset);
 	     String query = qb.build();
-	     System.out.println(query);  // Print the query for debugging
-	     System.out.println(qb.getParameters());  // Print query parameters
 
 	     try (Connection conn = DBConnectionPool.getInstance().getConnection()) {
-	         QueryExecutor qe = new QueryExecutor(conn);
-	         List<Map<String, Object>> rows = qe.executeQuery(query, qb.getParameters());
-	         return RequestMapper.toMapResult(rows);  // Assuming you have a mapper to convert rows to Request objects
+	         List<Map<String, Object>> rows = new QueryExecutor(conn).executeQuery(query, qb.getParameters());
+	         return RequestMapper.toMapResult(rows);
 	     }
 	 }
-
 	 @Override
-	 public int countRequestsWithDateRange(long fromTimestamp, long toTimestamp) throws SQLException, QueryException {
+	 public int countRequestsByDateAndStatus(long from, long to, RequestStatus status) throws SQLException, QueryException {
 	     QueryBuilder qb = new QueryBuilder(new MySQLDialect());
 	     qb.select().aggregate("COUNT", "*").as("total")
 	       .from("request")
-	       .where("status = ?", RequestStatus.PENDING)  // Assuming "PENDING" is the status you're filtering by
-	       .andBetween("requestDate", fromTimestamp, toTimestamp);  // Filter by date range
+	       .whereBetween("requestDate", from, to);
+
+	     if (status != null ) {
+	         qb.andWhere("status =?", status);
+	     }
 
 	     try (Connection conn = DBConnectionPool.getInstance().getConnection()) {
 	         List<Map<String, Object>> result = new QueryExecutor(conn).executeQuery(qb.build(), qb.getParameters());
-	         return result.isEmpty() ? 0 : ((Number) result.get(0).get("total")).intValue();  // Return the count
+	         return result.isEmpty() ? 0 : ((Number) result.get(0).get("total")).intValue();
 	     }
 	 }
 	 @Override
-	 public List<Request> getPendingRequestsByBranchWithDateRange(long branchId, long fromTimestamp, long toTimestamp, int limit, int offset) throws SQLException, QueryException {
+	 public List<Request> getRequestsByBranchDateAndStatus(long branchId, long from, long to, int limit, int offset, RequestStatus status) throws SQLException, QueryException {
 	     QueryBuilder qb = new QueryBuilder(new MySQLDialect());
 	     qb.select("*")
 	       .from("request")
-	       .where("branchId = ?", branchId)  	       .
-	       andWhere("status = ?", RequestStatus.PENDING) 
-	       .andBetween("requestDate", fromTimestamp, toTimestamp)  
-	       .orderBy("requestDate")  
-	       .limit(limit)
-	       .offset(offset);  
+	       .where("branchId =?", branchId)
+	       .andBetween("requestDate", from, to);
+
+	     if (status != null) {
+	         qb.andWhere("status=?", status);
+	     }
+
+	     qb.orderBy("requestDate").limit(limit).offset(offset);
+	     String query = qb.build();
 
 	     try (Connection conn = DBConnectionPool.getInstance().getConnection()) {
-	         QueryExecutor qe = new QueryExecutor(conn);
-	         List<Map<String, Object>> rows = qe.executeQuery(qb.build(), qb.getParameters());
-	         return RequestMapper.toMapResult(rows);  // Assuming you have a mapper that converts rows into Request objects
+	         List<Map<String, Object>> rows = new QueryExecutor(conn).executeQuery(query, qb.getParameters());
+	         return RequestMapper.toMapResult(rows);
 	     }
 	 }
 	 @Override
-	 public int countRequestsByBranchWithDateRange(long branchId, long fromTimestamp, long toTimestamp) throws SQLException, QueryException {
+	 public int countRequestsByBranchDateAndStatus(long branchId, long from, long to, RequestStatus status) throws SQLException, QueryException {
 	     QueryBuilder qb = new QueryBuilder(new MySQLDialect());
 	     qb.select().aggregate("COUNT", "*").as("total")
 	       .from("request")
-	       .where("branchId = ?", branchId)  // Filter by branch
-	       .andWhere("status = ?", RequestStatus.PENDING)  // Filter by status
-	       .andBetween("requestDate", fromTimestamp, toTimestamp);  // Filter by date range
+	       .where("branchId=?", branchId)
+	       .andBetween("requestDate", from, to);
+
+	     if (status != null ) {
+	         qb.andWhere("status=?", status);
+	     }
 
 	     try (Connection conn = DBConnectionPool.getInstance().getConnection()) {
 	         List<Map<String, Object>> result = new QueryExecutor(conn).executeQuery(qb.build(), qb.getParameters());
-	         return result.isEmpty() ? 0 : ((Number) result.get(0).get("total")).intValue();  // Return the count
+	         return result.isEmpty() ? 0 : ((Number) result.get(0).get("total")).intValue();
 	     }
 	 }
+
+
+
+
 	 @Override
 	 public boolean rejectRequest(long requestId, long adminId, String reason) throws SQLException, QueryException {
 	     QueryBuilder qb = new QueryBuilder(new MySQLDialect());

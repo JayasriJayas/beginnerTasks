@@ -31,6 +31,17 @@ public class TransactionMapper {
             txn.setTimestamp((Long) row.get("timestamp"));
             txn.setDescription((String) row.get("description"));
             txn.setStatus(TransactionStatus.valueOf((String) row.get("status")));
+            txn.setTransactionMode((String) row.get("transactionMode"));
+
+            Object receiverBank = row.get("receiverBank");
+            if (receiverBank != null) {
+                txn.setReceiverBank((String) receiverBank);
+            }
+
+            Object receiverIFSC = row.get("receiverIFSC");
+            if (receiverIFSC != null) {
+                txn.setReceiverIFSC((String) receiverIFSC);
+            }
 
             list.add(txn);
         }

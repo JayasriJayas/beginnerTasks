@@ -7,7 +7,7 @@
 	
 	public class Transaction {
 		private long transactionId;
-	    private long accountId;
+	    private Long accountId;
 	    private long userId;
 	    private Long transactionAccountId;
 	    private BigDecimal amount;
@@ -16,16 +16,38 @@
 	    private long timestamp;
 	    private TransactionStatus status;
 	    private String description;
+	    private String transactionMode;  
+	    public String getTransactionMode() {
+			return transactionMode;
+		}
+		public void setTransactionMode(String transactionMode) {
+			this.transactionMode = transactionMode;
+		}
+		public String getReceiverBank() {
+			return receiverBank;
+		}
+		public void setReceiverBank(String receiverBank) {
+			this.receiverBank = receiverBank;
+		}
+		public String getReceiverIFSC() {
+			return receiverIFSC;
+		}
+		public void setReceiverIFSC(String receiverIFSC) {
+			this.receiverIFSC = receiverIFSC;
+		}
+		private String receiverBank;
+	    private String receiverIFSC;
+	    
 	    public long getTransactionId() {
 			return transactionId;
 		}
 		public void setTransactionId(long transactionId) {
 			this.transactionId = transactionId;
 		}
-		public long getAccountId() {
+		public Long getAccountId() {
 			return accountId;
 		}
-		public void setAccountId(long accountId) {
+		public void setAccountId(Long accountId) {
 			this.accountId = accountId;
 		}
 		public long getUserId() {

@@ -67,7 +67,6 @@ public class RequestHandler {
         }
     }
     public void list(HttpServletRequest req, HttpServletResponse res) throws IOException {
-    	
         HttpSession session = req.getSession(false);
         if (!SessionUtil.isAdminOrSuperAdmin(session, res)) return;
 
@@ -75,34 +74,28 @@ public class RequestHandler {
         Long adminId = (Long) session.getAttribute("adminId");
         Pagination payload = RequestParser.parseRequest(req, Pagination.class);
 
-
         String fromDateStr = payload.getFromDate();
         String toDateStr = payload.getToDate();
-        
+        RequestStatus status = payload.getStatus(); // <- New
+
         try {
-        
-        long fromTimestamp = Instant.parse(fromDateStr.trim() + "T00:00:00Z").toEpochMilli();
-        long toTimestamp = Instant.parse(toDateStr.trim() + "T23:59:59Z").toEpochMilli();
+            long fromTimestamp = Instant.parse(fromDateStr.trim() + "T00:00:00Z").toEpochMilli();
+            long toTimestamp = Instant.parse(toDateStr.trim() + "T23:59:59Z").toEpochMilli();
+            int page = PaginationUtil.validatePageNumber(payload.getPageNumber());
+            int size = PaginationUtil.validatePageSize(payload.getPageSize());
 
-  
-        int page = PaginationUtil.validatePageNumber(payload.getPageNumber());
-        int size = PaginationUtil.validatePageSize(payload.getPageSize());
-
-       
             PaginatedResponse<Request> paginatedResponse = requestService.getRequestList(
-                role, adminId, fromTimestamp, toTimestamp, page, size);	
+                role, adminId, fromTimestamp, toTimestamp, page, size, status);
 
-            //JSONArray jsonArray = new JSONArray(gson.toJson(paginatedResponse));
             String response = gson.toJson(paginatedResponse);
             logger.info("Request list fetched by role: " + role + ", adminId: " + adminId);
-
-         
             ResponseUtil.sendJson(res, HttpServletResponse.SC_OK, response);
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error fetching request list", e);
             ResponseUtil.sendError(res, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error fetching request list.");
         }
     }
+
   
 
     public void approve(HttpServletRequest req, HttpServletResponse res) {

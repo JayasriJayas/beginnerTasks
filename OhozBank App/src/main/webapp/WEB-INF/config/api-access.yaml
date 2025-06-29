@@ -115,41 +115,45 @@ routes:
     method: POST
     role: USER,ADMIN,SUPERADMIN
 
+  - path: /api/external-transfer/transaction
+    method: POST
+    role: USER,ADMIN,SUPERADMIN
+
   - path: /api/statement/transaction
     method: POST
     role: USER,ADMIN,SUPERADMIN
 
   - path: /api/received-all/transaction
     method: POST
-    role: USER
+    role: USER,ADMIN,SUPERADMIN
 
   - path: /api/received-account/transaction
     method: POST
-    role: USER
+    role: USER,ADMIN,SUPERADMIN
 
   - path: /api/deposit-all/transaction
     method: POST
-    role: USER
+    role: USER,ADMIN,SUPERADMIN
 
   - path: /api/deposit-account/transaction
     method: POST
-    role: USER
+    role: USER,ADMIN,SUPERADMIN
 
   - path: /api/withdraw-all/transaction
     method: POST
-    role: USER
+    role: USER,ADMIN,SUPERADMIN
 
   - path: /api/withdraw-account/transaction
     method: POST
-    role: USER
+    role: USER,ADMIN,SUPERADMIN
 
   - path: /api/transfer-all/transaction
     method: POST
-    role: USER
+    role: USER,ADMIN,SUPERADMIN
 
   - path: /api/transfer-account/transaction
     method: POST
-    role: USER  
+    role: USER,ADMIN,SUPERADMIN 
 
   - path: /api/recent-transactions/transaction
     method: POST

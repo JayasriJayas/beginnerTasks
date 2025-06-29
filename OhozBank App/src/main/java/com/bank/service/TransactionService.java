@@ -26,8 +26,25 @@ public interface TransactionService {
 	List<Transaction> getRecentTransactionsForUser(long userId, int limit) throws SQLException, QueryException;
 	BigDecimal getTotalIncomeByUser(long userId) throws SQLException, QueryException;
 	BigDecimal getTotalExpenseByUser(long userId) throws SQLException, QueryException;
-	 BigDecimal getTotalIncomeByAccount(long accountId) throws SQLException, QueryException;
-	    BigDecimal getTotalExpenseByAccount(long accountId) throws SQLException, QueryException;
+	BigDecimal getTotalIncomeByAccount(long accountId) throws SQLException, QueryException;
+    BigDecimal getTotalExpenseByAccount(long accountId) throws SQLException, QueryException;
+    PaginatedResponse<Transaction> getDepositTransactionsByBranch(long branchId, long fromTimestamp, long toTimestamp, int pageNumber, int pageSize) throws SQLException, QueryException;
+    PaginatedResponse<Transaction> getDepositTransactionsForAll(long fromTimestamp, long toTimestamp, int pageNumber, int pageSize) throws SQLException, QueryException;
+    PaginatedResponse<Transaction> getTransferTransactionsForAll(long fromTimestamp, long toTimestamp, int pageNumber, int pageSize)
+            throws SQLException, QueryException;
+    PaginatedResponse<Transaction> getWithdrawTransactionsForAll(long fromTimestamp, long toTimestamp, int pageNumber, int pageSize)
+            throws SQLException, QueryException;
+    boolean externalTransfer(long fromAccountId, Long externalAccountNumber,
+            String receiverBank, String receiverIFSC,
+            BigDecimal amount, long performedBy)
+throws SQLException, QueryException, BankingException ;
+    PaginatedResponse<Transaction> getTransferTransactionsByBranch(long branchId, long fromTimestamp, long toTimestamp, int pageNumber, int pageSize)
+            throws SQLException, QueryException ;
+    PaginatedResponse<Transaction> getWithdrawTransactionsByBranch(long branchId, long fromTimestamp, long toTimestamp, int pageNumber, int pageSize)
+            throws SQLException, QueryException ;
+    
+   
+	   
 
 	
 //	boolean transfer(long fromAccountId, long toAccountId, BigDecimal amount, String performedBy);

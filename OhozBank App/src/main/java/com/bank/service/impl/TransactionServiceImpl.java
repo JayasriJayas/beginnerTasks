@@ -58,7 +58,8 @@ public class TransactionServiceImpl implements TransactionService {
                     newBalance,
                     TransactionType.DEPOSIT,
                     "Deposited by user ID: " + performedBy,
-                    TransactionStatus.SUCCESS
+                    TransactionStatus.SUCCESS,
+                    "INTERNAL"
             );
 
             logger.info("Deposit successful: Account ID " + accountId + ", Amount " + amount);
@@ -101,7 +102,8 @@ public class TransactionServiceImpl implements TransactionService {
                     newBalance,
                     TransactionType.WITHDRAWAL,
                     "Withdrawn by user ID: " + performedBy,
-                    TransactionStatus.SUCCESS
+                    TransactionStatus.SUCCESS,
+                    "INTERNAL"
             );
 
             logger.info("Withdrawal successful: Account ID " + accountId + ", Amount " + amount);
@@ -159,7 +161,8 @@ public class TransactionServiceImpl implements TransactionService {
                     fromAccount.getBalance(),
                     TransactionType.TRANSFER,
                     "Transfer from account " + fromAccountId + " to " + toAccountId + " by " + performedBy,
-                    TransactionStatus.SUCCESS
+                    TransactionStatus.SUCCESS,
+                    "INTERNAL"
             );
 
             logger.info("Transfer successful: From " + fromAccountId + " to " + toAccountId + ", Amount " + amount);
@@ -169,6 +172,62 @@ public class TransactionServiceImpl implements TransactionService {
             lock1.unlock();
         }
     }
+    @Override
+    public boolean externalTransfer(long fromAccountId, Long externalAccountNumber,
+                                    String receiverBank, String receiverIFSC,
+                                    BigDecimal amount, long performedBy)
+            throws SQLException, QueryException, BankingException {
+
+        if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new BankingException("Amount must be positive");
+        }
+
+        if (externalAccountNumber == null || receiverBank == null || receiverIFSC == null) {
+            throw new BankingException("Receiver account, bank name, and IFSC code are required.");
+        }
+
+        ReentrantLock lock = accountLocks.computeIfAbsent(fromAccountId, k -> new ReentrantLock());
+        lock.lock();
+
+        try {
+            Account fromAccount = accountDAO.getAccountById(fromAccountId);
+            if (fromAccount == null) {
+                throw new BankingException("Sender account not found");
+            }
+
+
+            BigDecimal currentBalance = fromAccount.getBalance();
+            if (currentBalance.compareTo(amount) < 0) {
+                throw new BankingException("Insufficient balance");
+            }
+
+            fromAccount.setBalance(currentBalance.subtract(amount));
+            fromAccount.setModifiedBy(performedBy);
+            accountDAO.updateAccount(fromAccount);
+
+            Transaction transaction = createTransaction(
+                    fromAccountId,
+                    fromAccount.getUserId(),
+                    externalAccountNumber,
+                    amount,
+                    fromAccount.getBalance(),
+                    TransactionType.TRANSFER,
+                    "External transfer to account " + externalAccountNumber + " at " + receiverBank + " (IFSC: " + receiverIFSC + ")",
+                    TransactionStatus.SUCCESS,
+                    "External"
+            );
+
+            transaction.setTransactionMode("EXTERNAL");
+            transaction.setReceiverBank(receiverBank);
+            transaction.setReceiverIFSC(receiverIFSC);
+
+            return transactionDAO.saveTransaction(transaction);
+
+        } finally {
+            lock.unlock();
+        }
+    }
+
 
     @Override
     public PaginatedResponse<Transaction> getStatementByDateRange(
@@ -226,6 +285,8 @@ public class TransactionServiceImpl implements TransactionService {
 
         return new PaginatedResponse<>(transactions, pageNumber, pageSize, total);
     }
+   
+
     @Override
     public PaginatedResponse<Transaction> getDepositTransactionsForUser(long userId, long fromTimestamp, long toTimestamp, int pageNumber, int pageSize)
             throws SQLException, QueryException {
@@ -332,7 +393,7 @@ public class TransactionServiceImpl implements TransactionService {
 
     private Transaction createTransaction(long accountId, long userId, Long transactionAccountId,
                                           BigDecimal amount, BigDecimal closingBalance,
-                                          TransactionType type, String description, TransactionStatus status) {
+                                          TransactionType type, String description, TransactionStatus status,String mode) {
         Transaction t = new Transaction();
         t.setAccountId(accountId);
         t.setUserId(userId);
@@ -343,6 +404,7 @@ public class TransactionServiceImpl implements TransactionService {
         t.setTimestamp(System.currentTimeMillis());
         t.setDescription(description);
         t.setStatus(status);
+        t.setTransactionMode(mode);
         return t;
     }
     @Override
@@ -354,4 +416,84 @@ public class TransactionServiceImpl implements TransactionService {
     public BigDecimal getTotalExpenseByAccount(long accountId) throws SQLException, QueryException {
         return transactionDAO.getTotalExpenseByAccount(accountId);
     }
+    @Override
+    public PaginatedResponse<Transaction> getDepositTransactionsByBranch(long branchId, long fromTimestamp, long toTimestamp, int pageNumber, int pageSize) throws SQLException, QueryException {
+        pageNumber = PaginationUtil.validatePageNumber(pageNumber);
+        pageSize = PaginationUtil.validatePageSize(pageSize);
+        int offset = PaginationUtil.calculateOffset(pageNumber, pageSize);
+
+        List<Transaction> list = transactionDAO.getDepositTransactionsByBranch(branchId, fromTimestamp, toTimestamp, pageSize, offset);
+        int total = transactionDAO.countDepositTransactionsByBranch(branchId, fromTimestamp, toTimestamp);
+
+        return new PaginatedResponse<>(list, pageNumber, pageSize, total);
+    }
+    @Override
+    public PaginatedResponse<Transaction> getDepositTransactionsForAll(long fromTimestamp, long toTimestamp, int pageNumber, int pageSize) throws SQLException, QueryException {
+        pageNumber = PaginationUtil.validatePageNumber(pageNumber);
+        pageSize = PaginationUtil.validatePageSize(pageSize);
+        int offset = PaginationUtil.calculateOffset(pageNumber, pageSize);
+
+        List<Transaction> list = transactionDAO.getDepositTransactionsForAll(fromTimestamp, toTimestamp, pageSize, offset);
+        int total = transactionDAO.countDepositTransactionsForAll(fromTimestamp, toTimestamp);
+
+        return new PaginatedResponse<>(list, pageNumber, pageSize, total);
+    }
+    @Override
+    public PaginatedResponse<Transaction> getTransferTransactionsForAll(long fromTimestamp, long toTimestamp, int pageNumber, int pageSize)
+            throws SQLException, QueryException {
+
+        pageNumber = PaginationUtil.validatePageNumber(pageNumber);
+        pageSize = PaginationUtil.validatePageSize(pageSize);
+        int offset = PaginationUtil.calculateOffset(pageNumber, pageSize);
+
+        List<Transaction> transactions = transactionDAO.getTransferTransactionsForAll(fromTimestamp, toTimestamp, pageSize, offset);
+        int total = transactionDAO.countTransferTransactionsForAll(fromTimestamp, toTimestamp);
+
+        return new PaginatedResponse<>(transactions, pageNumber, pageSize, total);
+    }
+    @Override
+    public PaginatedResponse<Transaction> getTransferTransactionsByBranch(long branchId, long fromTimestamp, long toTimestamp, int pageNumber, int pageSize)
+            throws SQLException, QueryException {
+
+        pageNumber = PaginationUtil.validatePageNumber(pageNumber);
+        pageSize = PaginationUtil.validatePageSize(pageSize);
+        int offset = PaginationUtil.calculateOffset(pageNumber, pageSize);
+
+        List<Transaction> transactions = transactionDAO.getTransferTransactionsByBranch(branchId, fromTimestamp, toTimestamp, pageSize, offset);
+        int total = transactionDAO.countTransferTransactionsByBranch(branchId, fromTimestamp, toTimestamp);
+
+        return new PaginatedResponse<>(transactions, pageNumber, pageSize, total);
+    }
+
+    @Override
+    public PaginatedResponse<Transaction> getWithdrawTransactionsForAll(long fromTimestamp, long toTimestamp, int pageNumber, int pageSize)
+            throws SQLException, QueryException {
+
+        pageNumber = PaginationUtil.validatePageNumber(pageNumber);
+        pageSize = PaginationUtil.validatePageSize(pageSize);
+        int offset = PaginationUtil.calculateOffset(pageNumber, pageSize);
+
+        List<Transaction> list = transactionDAO.getWithdrawTransactionsForAll(fromTimestamp, toTimestamp, pageSize, offset);
+        int total = transactionDAO.countWithdrawTransactionsForAll(fromTimestamp, toTimestamp);
+
+        return new PaginatedResponse<>(list, pageNumber, pageSize, total);
+    }
+    @Override
+    public PaginatedResponse<Transaction> getWithdrawTransactionsByBranch(long branchId, long fromTimestamp, long toTimestamp, int pageNumber, int pageSize)
+            throws SQLException, QueryException {
+
+        pageNumber = PaginationUtil.validatePageNumber(pageNumber);
+        pageSize = PaginationUtil.validatePageSize(pageSize);
+        int offset = PaginationUtil.calculateOffset(pageNumber, pageSize);
+
+        List<Transaction> list = transactionDAO.getWithdrawTransactionsByBranch(branchId, fromTimestamp, toTimestamp, pageSize, offset);
+        int total = transactionDAO.countWithdrawTransactionsByBranch(branchId, fromTimestamp, toTimestamp);
+
+        return new PaginatedResponse<>(list, pageNumber, pageSize, total);
+    }
+
+
+
+
+
 }

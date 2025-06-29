@@ -137,14 +137,7 @@ function loadContentByAction(action) {
 	 		        () => initSuperAdminBranchList()
 	 		      );
 	  break;
-	  case "superadmin-transactions":
-	  		      loadPartial(
-	  		        `${BASE_URL}/partials/superadmin-transactions.html`,
-	  		        `${BASE_URL}/css/superadmin-transactions.css`,
-	  		        `${BASE_URL}/js/superadmin-transactions.js`,
-	  		        () => initSuperAdminTransactions()
-	  		      );
-	   break;
+	 
 	   case "admin-accountrequest-list":
 	         loadPartial(
 	           `${BASE_URL}/partials/admin-accountrequest-list.html`,
@@ -155,10 +148,10 @@ function loadContentByAction(action) {
 	     break;
 		 case "admin-request-list":
 		       loadPartial(
-		         `${BASE_URL}/partials/admin-request-list.html`,
-		         `${BASE_URL}/css/admin-request-list.css`,
-		         `${BASE_URL}/js/admin-request-list.js`,
-		         () => initAdminRequestList()
+		         `${BASE_URL}/partials/superadmin-request-list.html`,
+		         `${BASE_URL}/css/superadmin-request-list.css`,
+		         `${BASE_URL}/js/superadmin-request-list.js`,
+		          () => initSuperAdminRequestList()
 		       );
 		   break;
 	 
@@ -179,6 +172,22 @@ function loadContentByAction(action) {
         () => initPayform()
       );
       break;
+	  case "admin-payment":
+	        loadPartial(
+	          `${BASE_URL}/partials/superadmin-payform.html`,
+	          `${BASE_URL}/css/superadmin-payform.css`,
+	          `${BASE_URL}/js/superadmin-payform.js`,
+	          () => initAdminPayform()
+	        );
+	        break;
+	  case "superadmin-payment":
+	      loadPartial(
+		  `${BASE_URL}/partials/superadmin-payform.html`,
+          `${BASE_URL}/css/superadmin-payform.css`,
+	       `${BASE_URL}/js/superadmin-payform.js`,
+		   () => initAdminPayform()
+	       );
+	       break;
 
     case "transaction":
       loadPartial(
@@ -188,6 +197,23 @@ function loadContentByAction(action) {
         () => initTransactionPage()
       );
       break;
+	  case "admin-transactions":
+	          loadPartial(
+	            `${BASE_URL}/partials/superadmin-transaction.html`,
+	            `${BASE_URL}/css/transaction.css`,
+	            `${BASE_URL}/js/superadmin-transaction.js`,
+	            () => initAdminTransactionPage()
+	          );
+	          break;
+	    case "superadmin-transactions":
+	        loadPartial(
+	  	  `${BASE_URL}/partials/superadmin-transaction.html`,
+	           `${BASE_URL}/css/transaction.css`,
+	         `${BASE_URL}/js/superadmin-transaction.js`,
+	  	   () => initAdminTransactionPage()
+	         );
+	         break;
+
 
     case "account":
       loadPartial(

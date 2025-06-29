@@ -9,8 +9,7 @@ import java.util.Map;
 
 public class AccountRequestMapper {
 
-        public static AccountRequest fromResultSet(List<Map<String, Object>> rows) {
-    
+    public static AccountRequest fromResultSet(List<Map<String, Object>> rows) {
         if (rows == null || rows.isEmpty()) {
             return null;
         }
@@ -22,37 +21,44 @@ public class AccountRequestMapper {
         accountRequest.setBranchId(((Number) row.get("branchId")).longValue());
         accountRequest.setStatus(RequestStatus.valueOf((String) row.get("status")));
         accountRequest.setCreatedAt(((Number) row.get("createdAt")).longValue());
+
         Object approvedByObj = row.get("approvedBy");
-        if (approvedByObj != null) {
-            accountRequest.setApprovedBy(((Number) approvedByObj).longValue());
-        } else {
-            accountRequest.setApprovedBy(null);
-        }
+        accountRequest.setApprovedBy(approvedByObj != null ? ((Number) approvedByObj).longValue() : null);
 
         Object approvedAtObj = row.get("approvedAt");
-        if (approvedAtObj != null) {
-            accountRequest.setApprovedAt(((Number) approvedAtObj).longValue());
-        } else {
-            accountRequest.setApprovedAt(null); 
-        }
+        accountRequest.setApprovedAt(approvedAtObj != null ? ((Number) approvedAtObj).longValue() : null);
+
+        Object rejectionReasonObj = row.get("rejectionReason");
+        accountRequest.setRejectionReason(rejectionReasonObj != null ? rejectionReasonObj.toString() : null);
+
         return accountRequest;
     }
-        public static List<AccountRequest> mapToRequests(List<Map<String, Object>> rows) {
-            List<AccountRequest> requests = new ArrayList<>();
-            if (rows == null) return requests;
 
-            for (Map<String, Object> row : rows) {
-                AccountRequest req = new AccountRequest();
+    public static List<AccountRequest> mapToRequests(List<Map<String, Object>> rows) {
+        List<AccountRequest> requests = new ArrayList<>();
+        if (rows == null) return requests;
 
-                req.setRequestId(((Number) row.get("requestId")).longValue());
-                req.setUserId(((Number) row.get("userId")).longValue());
-                req.setBranchId(((Number) row.get("branchId")).longValue());
-                req.setStatus(RequestStatus.valueOf((String) row.get("status")));
-                req.setCreatedAt(((Number) row.get("createdAt")).longValue());
-             
-                requests.add(req);
-            }
+        for (Map<String, Object> row : rows) {
+            AccountRequest req = new AccountRequest();
 
-            return requests;
+            req.setRequestId(((Number) row.get("requestId")).longValue());
+            req.setUserId(((Number) row.get("userId")).longValue());
+            req.setBranchId(((Number) row.get("branchId")).longValue());
+            req.setStatus(RequestStatus.valueOf((String) row.get("status")));
+            req.setCreatedAt(((Number) row.get("createdAt")).longValue());
+
+            Object approvedByObj = row.get("approvedBy");
+            req.setApprovedBy(approvedByObj != null ? ((Number) approvedByObj).longValue() : null);
+
+            Object approvedAtObj = row.get("approvedAt");
+            req.setApprovedAt(approvedAtObj != null ? ((Number) approvedAtObj).longValue() : null);
+
+            Object rejectionReasonObj = row.get("rejectionReason");
+            req.setRejectionReason(rejectionReasonObj != null ? rejectionReasonObj.toString() : null);
+
+            requests.add(req);
         }
+
+        return requests;
+    }
 }

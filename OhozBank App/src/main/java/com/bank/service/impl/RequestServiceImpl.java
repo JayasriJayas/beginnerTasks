@@ -79,39 +79,7 @@ public class RequestServiceImpl implements RequestService {
         }
     }
 
-    @Override
-    public PaginatedResponse<Request> getRequestList(String adminRole, long id, long fromTimestamp, long toTimestamp, int pageNumber, int pageSize) throws SQLException, QueryException {
-        try {
 
-            pageNumber = PaginationUtil.validatePageNumber(pageNumber);
-            pageSize = PaginationUtil.validatePageSize(pageSize);
-            int offset = PaginationUtil.calculateOffset(pageNumber, pageSize);
-
-            List<Request> requestList;
-            long totalRequests;
-
-            if (UserRole.SUPERADMIN.name().equalsIgnoreCase(adminRole)) {
-               
-                requestList = requestDAO.getPendingRequestsWithDateRange(fromTimestamp, toTimestamp, pageSize, offset);
-                totalRequests = requestDAO.countRequestsWithDateRange(fromTimestamp, toTimestamp); // Total for all branches
-            } else if (UserRole.ADMIN.name().equalsIgnoreCase(adminRole)) {
-               
-                long branchId = branchDAO.getBranchIdByAdminId(id);
-                requestList = requestDAO.getPendingRequestsByBranchWithDateRange(branchId, fromTimestamp, toTimestamp, pageSize, offset);
-                totalRequests = requestDAO.countRequestsByBranchWithDateRange(branchId, fromTimestamp, toTimestamp); // Total for the branch
-            } else {
-                logger.warning("Unauthorized role for viewing requests: " + adminRole);
-                return new PaginatedResponse<>(Collections.emptyList(), pageNumber, pageSize, 0);
-            }
-
-          
-            return new PaginatedResponse<>(requestList, pageNumber, pageSize, totalRequests);
-
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, "Error fetching request list", e);
-            return new PaginatedResponse<>(Collections.emptyList(), pageNumber, pageSize, 0);
-        }
-    }
     @Override
     public List<Long> approveMultipleRequests(List<Long> requestIds, long adminId, String role)throws SQLException, QueryException {
         List<Long> failedIds = new ArrayList<>();
@@ -198,6 +166,32 @@ public class RequestServiceImpl implements RequestService {
             throw e;
         }
     }
+    @Override
+    public PaginatedResponse<Request> getRequestList(String adminRole, long id, long fromTimestamp, long toTimestamp, int pageNumber, int pageSize, RequestStatus status)
+            throws SQLException, QueryException {
+
+        pageNumber = PaginationUtil.validatePageNumber(pageNumber);
+        pageSize = PaginationUtil.validatePageSize(pageSize);
+        int offset = PaginationUtil.calculateOffset(pageNumber, pageSize);
+
+        List<Request> requestList;
+        long totalRequests;
+
+        if (UserRole.SUPERADMIN.name().equalsIgnoreCase(adminRole)) {
+            requestList = requestDAO.getRequestsByDateAndStatus(fromTimestamp, toTimestamp, pageSize, offset, status);
+            totalRequests = requestDAO.countRequestsByDateAndStatus(fromTimestamp, toTimestamp, status);
+        } else if (UserRole.ADMIN.name().equalsIgnoreCase(adminRole)) {
+            long branchId = branchDAO.getBranchIdByAdminId(id);
+            requestList = requestDAO.getRequestsByBranchDateAndStatus(branchId, fromTimestamp, toTimestamp, pageSize, offset, status);
+            totalRequests = requestDAO.countRequestsByBranchDateAndStatus(branchId, fromTimestamp, toTimestamp, status);
+        } else {
+            logger.warning("Unauthorized role for viewing requests: " + adminRole);
+            return new PaginatedResponse<>(Collections.emptyList(), pageNumber, pageSize, 0);
+        }
+
+        return new PaginatedResponse<>(requestList, pageNumber, pageSize, totalRequests);
+    }
+
 
     @Override
     public Map<String, Long> getRequestStatusCounts(String role, long adminId) {

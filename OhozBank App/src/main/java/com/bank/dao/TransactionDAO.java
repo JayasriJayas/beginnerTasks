@@ -37,7 +37,32 @@ public interface TransactionDAO {
 	 List<Transaction> getRecentTransactionsForUser(long userId, int limit) throws SQLException, QueryException;
 	 BigDecimal getTotalIncomeByUser(long userId) throws SQLException, QueryException;
 	 BigDecimal getTotalExpenseByUser(long userId) throws SQLException, QueryException;
-	  BigDecimal getTotalIncomeByAccount(long accountId) throws SQLException, QueryException;
-	    BigDecimal getTotalExpenseByAccount(long accountId) throws SQLException, QueryException;
+	 BigDecimal getTotalIncomeByAccount(long accountId) throws SQLException, QueryException;
+	 BigDecimal getTotalExpenseByAccount(long accountId) throws SQLException, QueryException;
+	 
+	 List<Transaction> getDepositTransactionsForAll(long fromTimestamp, long toTimestamp, int limit, int offset) throws SQLException, QueryException;
+	 int countDepositTransactionsForAll(long fromTimestamp, long toTimestamp) throws SQLException, QueryException ;
+	 
+	 List<Transaction> getTransferTransactionsForAll(long fromTimestamp, long toTimestamp, int limit, int offset)
+	            throws SQLException, QueryException;
+	 int countTransferTransactionsForAll(long fromTimestamp, long toTimestamp)
+	            throws SQLException, QueryException;
+	 
+	 List<Transaction> getWithdrawTransactionsForAll(long fromTimestamp, long toTimestamp, int limit, int offset)
+	            throws SQLException, QueryException ;
+	 int countWithdrawTransactionsForAll(long fromTimestamp, long toTimestamp)
+	            throws SQLException, QueryException;
+	 List<Transaction> getDepositTransactionsByBranch(long branchId, long fromTimestamp, long toTimestamp, int limit, int offset)
+	            throws SQLException, QueryException;
+	 int countDepositTransactionsByBranch(long branchId, long fromTimestamp, long toTimestamp)
+	            throws SQLException, QueryException;
+	 List<Transaction> getTransferTransactionsByBranch(long branchId, long fromTimestamp, long toTimestamp, int limit, int offset)
+             throws SQLException, QueryException;
+	 int countTransferTransactionsByBranch(long branchId, long fromTimestamp, long toTimestamp)
+	            throws SQLException, QueryException;
+	 List<Transaction> getWithdrawTransactionsByBranch(long branchId, long fromTimestamp, long toTimestamp, int limit, int offset)
+	            throws SQLException, QueryException ;
+	 int countWithdrawTransactionsByBranch(long branchId, long fromTimestamp, long toTimestamp)
+	            throws SQLException, QueryException;
 }
 

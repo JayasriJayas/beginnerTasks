@@ -32,7 +32,7 @@ public class RequestMapper {
 	    request.setAnnualIncome(((Number) row.get("annualIncome")).doubleValue());
 	    request.setBranchId(((Number) row.get("branchId")).longValue());
 	    request.setStatus(RequestStatus.valueOf((String) row.get("status")));
-	    request.setRequestTimestamp(System.currentTimeMillis());
+	    request.setRequestTimestamp(((Number) row.get("requestDate")).longValue());
 	    return request;
 	}
 	public static List<Request> toMapResult(List<Map<String,Object>> rows) {
@@ -55,7 +55,7 @@ public class RequestMapper {
     	    req.setAnnualIncome(((Number) row.get("annualIncome")).doubleValue());
     	    req.setBranchId(((Number) row.get("branchId")).longValue());
     	    req.setStatus(RequestStatus.valueOf((String) row.get("status")));
-    	    req.setRequestTimestamp(System.currentTimeMillis());
+    	    req.setRequestTimestamp(((Number) row.get("requestDate")).longValue());
             list.add(req);
         }
         return list;

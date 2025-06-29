@@ -3,6 +3,7 @@ package com.bank.dao.impl;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -22,11 +23,15 @@ import exception.QueryException;
 public class AccountRequestDAOImpl implements AccountRequestDAO {
 
 	@Override
-	public List<AccountRequest> fetchAllRequests(long fromTimestamp, long toTimestamp, int limit, int offset) throws SQLException, QueryException {
+	public List<AccountRequest> fetchAllRequests(long fromTimestamp, long toTimestamp, int limit, int offset,RequestStatus status) throws SQLException, QueryException {
 	    QueryBuilder qb = new QueryBuilder(new MySQLDialect());
 	    qb.select("*")
-	      .from("accountRequest")
-	      .andBetween("createdAt", fromTimestamp, toTimestamp)  // Use your actual timestamp column
+	      .from("accountRequest");
+	      if (status != null) {
+	          qb.where("ar.status = ?", status.name());
+	      }
+
+	      qb.andBetween("createdAt", fromTimestamp, toTimestamp)
 	      .orderBy("createdAt").orderDirection("DESC")
 	      .limit(limit)
 	      .offset(offset);
@@ -38,11 +43,15 @@ public class AccountRequestDAOImpl implements AccountRequestDAO {
 	    }
 	}
 	@Override
-	public int countRequests(long fromTimestamp, long toTimestamp) throws SQLException, QueryException {
+	public int countRequests(long fromTimestamp, long toTimestamp,RequestStatus status) throws SQLException, QueryException {
 	    QueryBuilder qb = new QueryBuilder(new MySQLDialect());
 	    qb.select().aggregate("COUNT", "*").as("total")
-	      .from("accountRequest")
-	      .andBetween("createdAt", fromTimestamp, toTimestamp);  // Use your timestamp column
+	      .from("accountRequest");
+	      if (status != null) {
+	          qb.where("ar.status = ?", status.name());
+	      }
+
+	      qb.andBetween("createdAt", fromTimestamp, toTimestamp);  // Use your timestamp column
 
 	    try (Connection conn = DBConnectionPool.getInstance().getConnection()) {
 	        QueryExecutor qe = new QueryExecutor(conn);
@@ -51,13 +60,17 @@ public class AccountRequestDAOImpl implements AccountRequestDAO {
 	    }
 	}
 	@Override
-	public List<AccountRequest> fetchRequestsByAdminBranch(long adminId, long fromTimestamp, long toTimestamp, int limit, int offset) throws SQLException, QueryException {
+	public List<AccountRequest> fetchRequestsByAdminBranch(long adminId, long fromTimestamp, long toTimestamp, int limit, int offset,RequestStatus status) throws SQLException, QueryException {
 	    QueryBuilder qb = new QueryBuilder(new MySQLDialect());
 	    qb.select("ar.*")
 	      .from("accountRequest ar")
 	      .innerJoin("admin a", "a.branchId = ar.branchId")
-	      .where("a.adminId = ?", adminId)
-	      .andBetween("ar.createdAt", fromTimestamp, toTimestamp)
+	      .where("a.adminId = ?", adminId);
+	      if (status != null) {
+	          qb.andWhere("ar.status = ?", status.name());
+	      }
+
+	      qb.andBetween("ar.createdAt", fromTimestamp, toTimestamp)
 	      .orderBy("ar.createdAt").orderDirection("DESC")
 	      .limit(limit)
 	      .offset(offset);
@@ -69,13 +82,17 @@ public class AccountRequestDAOImpl implements AccountRequestDAO {
 	    }
 	}
 	@Override
-	public int countRequestsByBranch(long adminId, long fromTimestamp, long toTimestamp) throws SQLException, QueryException {
+	public int countRequestsByBranch(long adminId, long fromTimestamp, long toTimestamp,RequestStatus status) throws SQLException, QueryException {
 	    QueryBuilder qb = new QueryBuilder(new MySQLDialect());
 	    qb.select().aggregate("COUNT", "*").as("total")
 	      .from("accountRequest ar")
 	      .innerJoin("admin a", "a.branchId = ar.branchId")
-	      .where("a.adminId = ?", adminId)
-	      .andBetween("ar.createdAt", fromTimestamp, toTimestamp);
+	      .where("a.adminId = ?", adminId);
+	      if (status != null) {
+	          qb.andWhere("ar.status = ?", status.name());
+	      }
+
+	      qb.andBetween("ar.createdAt", fromTimestamp, toTimestamp);
 
 	    try (Connection conn = DBConnectionPool.getInstance().getConnection()) {
 	        QueryExecutor qe = new QueryExecutor(conn);
@@ -98,7 +115,7 @@ public class AccountRequestDAOImpl implements AccountRequestDAO {
     	try (Connection conn = DBConnectionPool.getInstance().getConnection()) {
 	        conn.setAutoCommit(false);
 	        
-	       System.out.println("i am hers");
+	      
 	        AccountRequest req = getAccountRequest(requestId);
 	        if (req == null) {
 	            conn.rollback();
@@ -120,7 +137,7 @@ public class AccountRequestDAOImpl implements AccountRequestDAO {
 	        insertAccount(conn, account); 
 
 	   
-	         deleteAccountRequest(conn, requestId); 
+	         updateAccountRequest(conn, requestId,adminId); 
 	   
 	        conn.commit();
 	        return true;
@@ -132,7 +149,7 @@ public class AccountRequestDAOImpl implements AccountRequestDAO {
         }
     }
 
-    private AccountRequest getAccountRequest(long requestId) throws SQLException, QueryException {
+    public AccountRequest getAccountRequest(long requestId) throws SQLException, QueryException {
         QueryBuilder qb = new QueryBuilder(new MySQLDialect());
         qb.select().from("accountRequest").where("requestId = ?", requestId);
         try (Connection conn = DBConnectionPool.getInstance().getConnection()) {
@@ -155,19 +172,19 @@ public class AccountRequestDAOImpl implements AccountRequestDAO {
     }
 
   
-    private boolean deleteAccountRequest(Connection conn, long requestId) throws SQLException, QueryException {
+    private boolean updateAccountRequest(Connection conn, long requestId,long adminId) throws SQLException, QueryException {
         QueryBuilder qb = new QueryBuilder(new MySQLDialect());
-        qb.deleteFrom("accountRequest").where("requestId = ?", requestId);
+        qb.update("accountRequest").set("status", RequestStatus.APPROVED).set("approvedBy", adminId).set("approvedAt", System.currentTimeMillis()).where("requestId = ?", requestId);
         QueryExecutor qe = new QueryExecutor(conn);
         return qe.executeUpdate(qb.build(), qb.getParameters()) > 0;
     }
     @Override
-    public List<AccountRequest> findPendingRequestsByUserId(long userId) throws SQLException, QueryException {
+    public List<AccountRequest> findPendingRequestsByUserId(long userId,RequestStatus status) throws SQLException, QueryException {
         QueryBuilder qb = new QueryBuilder(new MySQLDialect());
         qb.select("*")
           .from("accountRequest")
           .where("userId = ?", userId)
-          .andWhere("status = ?", RequestStatus.PENDING);  // status column expected to hold 'PENDING'
+          .andWhere("status = ?", status); 
 
         try (Connection conn = DBConnectionPool.getInstance().getConnection()) {
             QueryExecutor qe = new QueryExecutor(conn);
@@ -175,6 +192,44 @@ public class AccountRequestDAOImpl implements AccountRequestDAO {
             return AccountRequestMapper.mapToRequests(rows);
         }
     }
+    @Override
+    public boolean rejectRequest(long requestId, long adminId, String reason) throws SQLException, QueryException {
+        QueryBuilder qb = new QueryBuilder(new MySQLDialect());
+        qb.update("accounRequest")
+          .set("status", RequestStatus.REJECTED.name())
+          .set("rejectionReason", reason)
+          .set("approvedBy", adminId)
+          .set("approvedAt", System.currentTimeMillis())
+          .where("requestId = ?", requestId);
+
+        try (Connection conn = DBConnectionPool.getInstance().getConnection()) {
+            return new QueryExecutor(conn).executeUpdate(qb.build(), qb.getParameters()) > 0;
+        }
+    }
+    @Override
+    public Map<String, Long> getStatusCounts(Long branchId) throws SQLException, QueryException {
+        Map<String, Long> resultMap = new HashMap<>();
+        QueryBuilder qb = new QueryBuilder(new MySQLDialect());
+        qb.select("status", "COUNT(*) AS count").from("accountRequest");
+
+        if (branchId != null) {
+            qb.where("branchId = ?", branchId);
+        }
+
+        qb.groupBy("status");
+
+        try (Connection conn = DBConnectionPool.getInstance().getConnection()) {
+            List<Map<String, Object>> result = new QueryExecutor(conn).executeQuery(qb.build(), qb.getParameters());
+
+            for (Map<String, Object> row : result) {
+                String status = String.valueOf(row.get("status"));
+                Long count = ((Number) row.get("count")).longValue();
+                resultMap.put(status, count);
+            }
+            return resultMap;
+        }
+    }
+   
 
 
     

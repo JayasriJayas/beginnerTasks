@@ -145,6 +145,62 @@ public class TransactionHandler {
             ResponseUtil.sendError(res, HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
         }
     }
+    public void externalTransfer(HttpServletRequest req, HttpServletResponse res) throws IOException {
+        try {
+            HttpSession session = req.getSession(false);
+            if (!SessionUtil.isSessionAvailable(session, res)) return;
+
+            Transaction transaction = RequestParser.parseRequest(req, Transaction.class);
+
+            if (transaction.getAccountId() == null || transaction.getAmount() == null ||
+                transaction.getReceiverBank() == null || transaction.getReceiverIFSC() == null ||
+                transaction.getTransactionAccountId() == null) {  // external account number
+            	System.out.println(transaction.getAccountId());
+            	System.out.println(transaction.getAmount());
+            	System.out.println(transaction.getReceiverBank());
+            	System.out.println(transaction.getReceiverIFSC());
+            	System.out.println(transaction.getTransactionAccountId());
+                ResponseUtil.sendError(res, HttpServletResponse.SC_BAD_REQUEST, "Missing fields for external transfer.");
+                return;
+            }
+
+            long performedBy = (long) session.getAttribute("userId");
+            String role = (String) session.getAttribute("role");
+            Long branchId = (Long) session.getAttribute("branchId");
+
+            long fromAccountId = transaction.getAccountId();
+
+            // ADMIN: Restrict to only their branch
+            if (UserRole.ADMIN.name().equals(role)) {
+                if (!transactionService.isAccountInBranch(fromAccountId, branchId)) {
+                    logger.warning("Unauthorized external transfer attempt by admin " + performedBy + " from account " + fromAccountId);
+                    ResponseUtil.sendError(res, HttpServletResponse.SC_FORBIDDEN,
+                            "You are not allowed to transfer from accounts outside your branch.");
+                    return;
+                }
+            }
+
+            transactionService.externalTransfer(
+                    fromAccountId,
+                    transaction.getTransactionAccountId(), // external account number
+                    transaction.getReceiverBank(),
+                    transaction.getReceiverIFSC(),
+                    transaction.getAmount(),
+                    performedBy
+            );
+
+            logger.info("External transfer by " + performedBy + " from account " + fromAccountId +
+                    " to external account " + transaction.getTransactionAccountId() +
+                    " (" + transaction.getReceiverBank() + ", IFSC: " + transaction.getReceiverIFSC() + ")");
+
+            ResponseUtil.sendSuccess(res, HttpServletResponse.SC_OK, "External transfer successful.");
+
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "External transfer failed", e);
+            ResponseUtil.sendError(res, HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
+        }
+    }
+
 
     public void statement(HttpServletRequest req, HttpServletResponse res) throws IOException {
         try {
@@ -175,12 +231,9 @@ public class TransactionHandler {
             long fromTimestamp = Instant.parse(fromDateStr + "T00:00:00Z").toEpochMilli();
             long toTimestamp = Instant.parse(toDateStr + "T23:59:59Z").toEpochMilli();
 
-            // Extract pagination info
             int pageNumber = payload.getPageNumber();
             int pageSize = payload.getPageSize();
 
-
-            // Get paginated results from the service
             PaginatedResponse<Transaction> paginatedResponse =
                     transactionService.getStatementByDateRange(accountId, fromTimestamp, toTimestamp, pageNumber, pageSize);
 
@@ -264,9 +317,11 @@ public class TransactionHandler {
             HttpSession session = req.getSession(false);
             if (!SessionUtil.isSessionAvailable(session, res)) return;
 
-            long userId = (long) session.getAttribute("userId");
-            StatementRequest payload = RequestParser.parseRequest(req, StatementRequest.class);
+            String role = (String) session.getAttribute("role");
+            Long userId = (Long) session.getAttribute("userId");
+            Long branchId = (Long) session.getAttribute("branchId");
 
+            StatementRequest payload = RequestParser.parseRequest(req, StatementRequest.class);
             if (payload == null || payload.getFromDate() == null || payload.getToDate() == null) {
                 ResponseUtil.sendError(res, HttpServletResponse.SC_BAD_REQUEST, "Missing required date fields.");
                 return;
@@ -275,19 +330,27 @@ public class TransactionHandler {
             long fromTimestamp = Instant.parse(payload.getFromDate().trim() + "T00:00:00Z").toEpochMilli();
             long toTimestamp = Instant.parse(payload.getToDate().trim() + "T23:59:59Z").toEpochMilli();
 
-            int page = PaginationUtil.validatePageNumber((payload.getPageNumber()));    
-            int size = PaginationUtil.validatePageSize(payload.getPageSize()); 
+            int page = PaginationUtil.validatePageNumber(payload.getPageNumber());
+            int size = PaginationUtil.validatePageSize(payload.getPageSize());
 
-            PaginatedResponse<Transaction> paginated = transactionService
-                .getDepositTransactionsForUser(userId, fromTimestamp, toTimestamp, page, size);
+            PaginatedResponse<Transaction> paginated;
+
+            if (UserRole.SUPERADMIN.name().equals(role)) {
+                paginated = transactionService.getDepositTransactionsForAll(fromTimestamp, toTimestamp, page, size);
+            } else if (UserRole.ADMIN.name().equals(role)) {
+                paginated = transactionService.getDepositTransactionsByBranch(branchId, fromTimestamp, toTimestamp, page, size);
+            } else {
+                paginated = transactionService.getDepositTransactionsForUser(userId, fromTimestamp, toTimestamp, page, size);
+            }
 
             ResponseUtil.sendJson(res, HttpServletResponse.SC_OK, new JSONObject(gson.toJson(paginated)));
 
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "Error retrieving received transactions for user", e);
+            logger.log(Level.SEVERE, "Error retrieving deposit transactions (all)", e);
             ResponseUtil.sendError(res, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Server error.");
         }
     }
+
     public void depositAccount(HttpServletRequest req, HttpServletResponse res) throws IOException {
         try {
             HttpSession session = req.getSession(false);
@@ -325,9 +388,11 @@ public class TransactionHandler {
             HttpSession session = req.getSession(false);
             if (!SessionUtil.isSessionAvailable(session, res)) return;
 
-            long userId = (long) session.getAttribute("userId");
-            StatementRequest payload = RequestParser.parseRequest(req, StatementRequest.class);
+            String role = (String) session.getAttribute("role");
+            Long userId = (Long) session.getAttribute("userId");
+            Long branchId = (Long) session.getAttribute("branchId");
 
+            StatementRequest payload = RequestParser.parseRequest(req, StatementRequest.class);
             if (payload == null || payload.getFromDate() == null || payload.getToDate() == null) {
                 ResponseUtil.sendError(res, HttpServletResponse.SC_BAD_REQUEST, "Missing required date fields.");
                 return;
@@ -336,19 +401,27 @@ public class TransactionHandler {
             long fromTimestamp = Instant.parse(payload.getFromDate().trim() + "T00:00:00Z").toEpochMilli();
             long toTimestamp = Instant.parse(payload.getToDate().trim() + "T23:59:59Z").toEpochMilli();
 
-            int page = PaginationUtil.validatePageNumber((payload.getPageNumber()));    
-            int size = PaginationUtil.validatePageSize(payload.getPageSize()); 
+            int page = PaginationUtil.validatePageNumber(payload.getPageNumber());
+            int size = PaginationUtil.validatePageSize(payload.getPageSize());
 
-            PaginatedResponse<Transaction> paginated = transactionService
-                .getWithdrawTransactionsForUser(userId, fromTimestamp, toTimestamp, page, size);
+            PaginatedResponse<Transaction> paginated;
+
+            if (UserRole.SUPERADMIN.name().equals(role)) {
+                paginated = transactionService.getWithdrawTransactionsForAll(fromTimestamp, toTimestamp, page, size);
+            } else if (UserRole.ADMIN.name().equals(role)) {
+                paginated = transactionService.getWithdrawTransactionsByBranch(branchId, fromTimestamp, toTimestamp, page, size);
+            } else {
+                paginated = transactionService.getWithdrawTransactionsForUser(userId, fromTimestamp, toTimestamp, page, size);
+            }
 
             ResponseUtil.sendJson(res, HttpServletResponse.SC_OK, new JSONObject(gson.toJson(paginated)));
 
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "Error retrieving received transactions for user", e);
+            logger.log(Level.SEVERE, "Error retrieving withdraw transactions (all)", e);
             ResponseUtil.sendError(res, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Server error.");
         }
     }
+
     public void withdrawAccount(HttpServletRequest req, HttpServletResponse res) throws IOException {
         try {
             HttpSession session = req.getSession(false);
@@ -386,30 +459,40 @@ public class TransactionHandler {
             HttpSession session = req.getSession(false);
             if (!SessionUtil.isSessionAvailable(session, res)) return;
 
-            long userId = (long) session.getAttribute("userId");
-            StatementRequest payload = RequestParser.parseRequest(req, StatementRequest.class);
+            String role = (String) session.getAttribute("role");
+            Long userId = (Long) session.getAttribute("userId");
+            Long branchId = (Long) session.getAttribute("branchId");
 
+            StatementRequest payload = RequestParser.parseRequest(req, StatementRequest.class);
             if (payload == null || payload.getFromDate() == null || payload.getToDate() == null) {
                 ResponseUtil.sendError(res, HttpServletResponse.SC_BAD_REQUEST, "Missing required date fields.");
                 return;
             }
 
             long fromTimestamp = Instant.parse(payload.getFromDate().trim() + "T00:00:00Z").toEpochMilli();
-            long toTimestamp = Instant.parse(payload.getToDate().trim()+ "T23:59:59Z").toEpochMilli();
+            long toTimestamp = Instant.parse(payload.getToDate().trim() + "T23:59:59Z").toEpochMilli();
 
-            int page = PaginationUtil.validatePageNumber((payload.getPageNumber()));    
-            int size = PaginationUtil.validatePageSize(payload.getPageSize()); 
+            int page = PaginationUtil.validatePageNumber(payload.getPageNumber());
+            int size = PaginationUtil.validatePageSize(payload.getPageSize());
 
-            PaginatedResponse<Transaction> paginated = transactionService
-                .getTransferTransactionsForUser(userId, fromTimestamp, toTimestamp, page, size);
+            PaginatedResponse<Transaction> paginated;
+
+            if (UserRole.SUPERADMIN.name().equals(role)) {
+                paginated = transactionService.getTransferTransactionsForAll(fromTimestamp, toTimestamp, page, size);
+            } else if (UserRole.ADMIN.name().equals(role)) {
+                paginated = transactionService.getTransferTransactionsByBranch(branchId, fromTimestamp, toTimestamp, page, size);
+            } else {
+                paginated = transactionService.getTransferTransactionsForUser(userId, fromTimestamp, toTimestamp, page, size);
+            }
 
             ResponseUtil.sendJson(res, HttpServletResponse.SC_OK, new JSONObject(gson.toJson(paginated)));
 
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "Error retrieving received transactions for user", e);
+            logger.log(Level.SEVERE, "Error retrieving transfer transactions (all)", e);
             ResponseUtil.sendError(res, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Server error.");
         }
     }
+
     public void transferAccount(HttpServletRequest req, HttpServletResponse res) throws IOException {
         try {
             HttpSession session = req.getSession(false);

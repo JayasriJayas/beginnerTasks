@@ -19,9 +19,13 @@
     <a href="#" class="menu-item" data-action="admin-accountrequest-list" data-tooltip="AccountRequests">
       <i class='bx bx-user'></i><span>User List</span>
     </a>
-    <a href="#" class="menu-item" data-action="transactions" data-tooltip="Transactions">
+     <a href="#" class="menu-item" data-action="admin-payment" data-tooltip="Transactions">
       <i class='bx bx-credit-card'></i><span>Payment</span>
     </a>
+    <a href="#" class="menu-item" data-action="admin-transactions" data-tooltip="Transactions">
+      <i class='bx bx-credit-card'></i><span>Transaction</span>
+    </a>
+    
   <% } else if ("SUPERADMIN".equals(userRole)) { %>
     <!-- Superadmin Sidebar -->
     <a href="#" class="menu-item" data-action="dashboard-superadmin" data-tooltip="Dashboard">
@@ -34,14 +38,19 @@
       <i class='bx bx-building-house'></i><span>Accounts</span>
     </a>
     <a href="#" class="menu-item" data-action="admin-list" data-tooltip="Admins">
-      <i class='bx bx-user-circle'></i><span>Transaction</span>
+      <i class='bx bx-user-circle'></i><span>Admin</span>
     </a>
     <a href="#" class="menu-item" data-action="branch-list" data-tooltip="Branch">
-      <i class='bx bx-map'></i><span>Payment</span>
+      <i class='bx bx-map'></i><span>Branch</span>
     </a>
-    <a href="#" class="menu-item" data-action="transactions" data-tooltip="Transactions">
+       </a>
+        <a href="#" class="menu-item" data-action="superadmin-payment" data-tooltip="Payment">
       <i class='bx bx-credit-card'></i><span>Payment</span>
     </a>
+    <a href="#" class="menu-item" data-action="superadmin-transactions" data-tooltip="Transactions">
+      <i class='bx bx-credit-card'></i><span>Transaction</span>
+    </a>
+       
   <% } else { %>
     <!-- User Sidebar -->
     <a href="#" class="menu-item" data-action="dashboard" data-tooltip="Dashboard">

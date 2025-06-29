@@ -10,6 +10,13 @@ public class AccountRequest {
     private long createdAt;
     private Long approvedBy;
     private Long approvedAt;
+    private String rejectionReason;
+	public String getRejectionReason() {
+		return rejectionReason;
+	}
+	public void setRejectionReason(String rejectionReason) {
+		this.rejectionReason = rejectionReason;
+	}
 	public Long getApprovedBy() {
 		return approvedBy;
 	}

@@ -1,5 +1,7 @@
 package com.bank.models;
 
+import com.bank.enums.RequestStatus;
+
 public class Pagination {
 
 	private String fromDate;
@@ -7,6 +9,13 @@ public class Pagination {
 	private int pageNumber;
 	private int pageSize;
 	private int limit;
+	private RequestStatus status;
+	public RequestStatus getStatus() {
+		return status;
+	}
+	public void setStatus(RequestStatus status) {
+		this.status = status;
+	}
 	public int getLimit() {
 		return limit;
 	}

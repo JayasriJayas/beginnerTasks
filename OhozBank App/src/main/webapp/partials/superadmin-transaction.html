@@ -1,0 +1,72 @@
+<!-- transaction-admin.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Transaction Statement</title>
+  <link rel="stylesheet" href="transaction.css" />
+</head>
+<body>
+  <div class="table-container">
+    <div class="table-header">
+      <h2>Admin Transaction Statement</h2>
+    </div>
+
+    <!-- Tabs & Filters -->
+    <div class="transaction-nav">
+      <div class="transaction-tabs">
+        <button class="active">Account Statement</button>
+        <button>Transfer</button>
+        <button>Deposit</button>
+        <button>Withdraw</button>
+      </div>
+
+      <div class="transaction-filters">
+        <input type="number" id="accountInput" placeholder="Enter Account ID" />
+        <input type="date" id="fromDate" />
+        <input type="date" id="toDate" />
+        <button id="applyFilter">Filter</button>
+      </div>
+    </div>
+
+    <!-- Table -->
+    <table>
+      <thead>
+        <tr>
+          <th>Account ID</th>
+          <th>Date</th>
+          <th>Transaction Account ID</th>
+          <th>Amount</th>
+          <th>Type</th>
+          <th>Closing Balance</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody id="transactionBody"></tbody>
+    </table>
+
+    <!-- Pagination -->
+    <div class="pagination-bar">
+      <div class="pagination-left">
+        Show 
+        <select id="entriesPerPage">
+          <option value="10" selected>10</option>
+          <option value="25">25</option>
+          <option value="50">50</option>
+        </select> entries
+      </div>
+      <div class="pagination-center">
+        <button class="page-btn" id="prevBtn">&laquo; Previous</button>
+        <div id="pageNumbers"></div>
+        <button class="page-btn" id="nextBtn">Next &raquo;</button>
+      </div>
+      <div class="pagination-right">
+        Showing <span id="showingRange">0 to 0</span> of <span id="totalEntries">0</span> entries
+      </div>
+    </div>
+  </div>
+
+  <script src="transaction-admin.js"></script>
+</body>
+</html>
