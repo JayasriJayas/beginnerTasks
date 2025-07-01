@@ -781,6 +781,110 @@ System.out.println(qb.build());
             return result.isEmpty() ? 0 : ((Number) result.get(0).get("total")).intValue();
         }
     }
+    @Override
+    public List<Map<String, Object>> getCurrentMonthOutgoingPerBranch() throws SQLException, QueryException {
+        QueryBuilder qb = new QueryBuilder(new MySQLDialect());
+
+        qb.select("a.branchId")
+          .aggregate("SUM", "t.amount").as("totalOutgoing")
+          .from("transaction t")
+          .innerJoin("account a", "a.accountId = t.accountId")
+          .where("t.transactionMode = ?", "INTERNAL")
+          .andWhere("t.type = ?", "TRANSFER")
+          .andWhere("MONTH(FROM_UNIXTIME(t.timestamp / 1000)) = MONTH(CURRENT_DATE())")
+          .andWhere("YEAR(FROM_UNIXTIME(t.timestamp / 1000)) = YEAR(CURRENT_DATE())")
+          .groupBy("a.branchId");
+
+        try (Connection conn = DBConnectionPool.getInstance().getConnection()) {
+            QueryExecutor executor = new QueryExecutor(conn);
+            return executor.executeQuery(qb.build(), qb.getParameters());
+        }
+    }
+    @Override
+    public List<Map<String, Object>> getCurrentMonthIncomingPerBranch() throws SQLException, QueryException {
+        QueryBuilder qb = new QueryBuilder(new MySQLDialect());
+
+        qb.select("a.branchId")
+          .aggregate("SUM", "t.amount").as("totalIncoming")
+          .from("transaction t")
+          .innerJoin("account a", "a.accountId = t.transactionAccountId")
+          .where("t.transactionMode = ?", "INTERNAL")
+          .andWhere("MONTH(FROM_UNIXTIME(t.timestamp / 1000)) = MONTH(CURRENT_DATE())")
+          .andWhere("YEAR(FROM_UNIXTIME(t.timestamp / 1000)) = YEAR(CURRENT_DATE())")
+          .groupBy("a.branchId");
+
+        try (Connection conn = DBConnectionPool.getInstance().getConnection()) {
+            QueryExecutor executor = new QueryExecutor(conn);
+            return executor.executeQuery(qb.build(), qb.getParameters());
+        }
+    }
+    @Override
+    public BigDecimal getTotalAmountByTypeAndBranch(String type, long branchId) throws SQLException, QueryException {
+        QueryBuilder qb = new QueryBuilder(new MySQLDialect());
+        qb.select()
+        .aggregate("SUM", "t.amount").as("total")
+        .from("transaction t")
+        .innerJoin("account a", "t.accountId = a.accountId")
+        .where("a.branchId = ?", branchId)
+        .andWhere("t.type =?",type);
+
+
+        try (Connection conn = DBConnectionPool.getInstance().getConnection()) {
+            QueryExecutor qe = new QueryExecutor(conn);
+            List<Map<String, Object>> result = qe.executeQuery(qb.build(), qb.getParameters());
+          
+            if (result.isEmpty() || result.get(0).get("total") == null) {
+                return BigDecimal.ZERO;
+            }
+            BigDecimal amount =new BigDecimal(result.get(0).get("total").toString());
+            return amount;
+        }
+    }
+    @Override
+    public BigDecimal getTotalAmountByType(String type) throws SQLException, QueryException {
+        QueryBuilder qb = new QueryBuilder(new MySQLDialect());
+        qb.select()
+          .aggregate("SUM", "amount").as("total")
+          .from("transaction")
+          .where("type = ?", type);
+
+        try (Connection conn = DBConnectionPool.getInstance().getConnection()) {
+            QueryExecutor qe = new QueryExecutor(conn);
+            List<Map<String, Object>> result = qe.executeQuery(qb.build(), qb.getParameters());
+
+            if (result.isEmpty() || result.get(0).get("total") == null) {
+                return BigDecimal.ZERO;
+            }
+            return new BigDecimal(result.get(0).get("total").toString());
+        }
+    }
+    @Override
+    public List<Map<String, Object>> getTopBranchesByTransactionCount(int limit) throws SQLException, QueryException {
+        QueryBuilder qb = new QueryBuilder(new MySQLDialect());
+        qb.select("b.branchId", "b.branchName", "COUNT(t.transactionId) AS transactionCount")
+          .from("transaction t")
+          .innerJoin("account a", "t.accountId = a.accountId")
+          .innerJoin("branch b", "a.branchId = b.branchId")
+          .groupBy("b.branchId", "b.branchName")
+          .orderBy("transactionCount").orderDirection("DESC") 
+          .limit(limit);
+        String query = qb.build();
+        System.out.println(query);
+
+        try (Connection conn = DBConnectionPool.getInstance().getConnection()) {
+            QueryExecutor qe = new QueryExecutor(conn);
+            return qe.executeQuery(query);
+        }
+    }
+
+   
+
+
+
+
+
+
+
 
 
     

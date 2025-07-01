@@ -3,6 +3,7 @@ package com.bank.dao.impl;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,7 +29,7 @@ public class AccountRequestDAOImpl implements AccountRequestDAO {
 	    qb.select("*")
 	      .from("accountRequest");
 	      if (status != null) {
-	          qb.where("ar.status = ?", status.name());
+	          qb.where("status = ?", status.name());
 	      }
 
 	      qb.andBetween("createdAt", fromTimestamp, toTimestamp)
@@ -48,7 +49,7 @@ public class AccountRequestDAOImpl implements AccountRequestDAO {
 	    qb.select().aggregate("COUNT", "*").as("total")
 	      .from("accountRequest");
 	      if (status != null) {
-	          qb.where("ar.status = ?", status.name());
+	          qb.where("status = ?", status.name());
 	      }
 
 	      qb.andBetween("createdAt", fromTimestamp, toTimestamp);  // Use your timestamp column
@@ -117,6 +118,7 @@ public class AccountRequestDAOImpl implements AccountRequestDAO {
 	        
 	      
 	        AccountRequest req = getAccountRequest(requestId);
+	        System.out.println(req);
 	        if (req == null) {
 	            conn.rollback();
 	            return false; 
@@ -195,7 +197,7 @@ public class AccountRequestDAOImpl implements AccountRequestDAO {
     @Override
     public boolean rejectRequest(long requestId, long adminId, String reason) throws SQLException, QueryException {
         QueryBuilder qb = new QueryBuilder(new MySQLDialect());
-        qb.update("accounRequest")
+        qb.update("accountRequest")
           .set("status", RequestStatus.REJECTED.name())
           .set("rejectionReason", reason)
           .set("approvedBy", adminId)
@@ -207,28 +209,36 @@ public class AccountRequestDAOImpl implements AccountRequestDAO {
         }
     }
     @Override
-    public Map<String, Long> getStatusCounts(Long branchId) throws SQLException, QueryException {
-        Map<String, Long> resultMap = new HashMap<>();
-        QueryBuilder qb = new QueryBuilder(new MySQLDialect());
-        qb.select("status", "COUNT(*) AS count").from("accountRequest");
+	 public Map<String, Long> getRequestStatusCounts(Long branchId) throws SQLException, QueryException {
+	     Map<String, Long> resultMap = new HashMap<>();
 
-        if (branchId != null) {
-            qb.where("branchId = ?", branchId);
-        }
+	     QueryBuilder qb = new QueryBuilder(new MySQLDialect());
+	     qb.select("status", "COUNT(*) AS count").from("accountRequest");
 
-        qb.groupBy("status");
+	     if (branchId != null) {
+	         qb.where("branchId = ?", branchId);
+	     }
 
-        try (Connection conn = DBConnectionPool.getInstance().getConnection()) {
-            List<Map<String, Object>> result = new QueryExecutor(conn).executeQuery(qb.build(), qb.getParameters());
+	     qb.groupBy("status");
+	     List<Object> params = qb.getParameters();
+	     if (params == null) {
+	         params = new ArrayList<>();
+	     }
 
-            for (Map<String, Object> row : result) {
-                String status = String.valueOf(row.get("status"));
-                Long count = ((Number) row.get("count")).longValue();
-                resultMap.put(status, count);
-            }
-            return resultMap;
-        }
-    }
+
+	     try (Connection conn = DBConnectionPool.getInstance().getConnection()) {
+	         QueryExecutor qe = new QueryExecutor(conn);
+	         List<Map<String, Object>> rows = qe.executeQuery(qb.build(), params);
+
+	         for (Map<String, Object> row : rows) {
+	             String status = (String) row.get("status");
+	             Long count = ((Number) row.get("count")).longValue();
+	             resultMap.put(status, count);
+	         }
+
+	         return resultMap;
+	     }
+	 }
    
 
 

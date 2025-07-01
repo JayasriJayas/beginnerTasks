@@ -3,6 +3,7 @@ package com.bank.dao;
 import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 
 import com.bank.models.Transaction;
 
@@ -64,5 +65,12 @@ public interface TransactionDAO {
 	            throws SQLException, QueryException ;
 	 int countWithdrawTransactionsByBranch(long branchId, long fromTimestamp, long toTimestamp)
 	            throws SQLException, QueryException;
+	 List<Map<String, Object>> getCurrentMonthOutgoingPerBranch() throws SQLException, QueryException;
+	 List<Map<String, Object>> getCurrentMonthIncomingPerBranch() throws SQLException, QueryException;
+	 BigDecimal getTotalAmountByTypeAndBranch(String type, long branchId)throws SQLException, QueryException;
+	 BigDecimal getTotalAmountByType(String type) throws SQLException, QueryException;
+	 List<Map<String, Object>> getTopBranchesByTransactionCount(int limit) throws SQLException, QueryException;
+
+
 }
 

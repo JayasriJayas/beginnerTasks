@@ -1,6 +1,7 @@
 package com.bank.handler;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -151,6 +152,37 @@ public class BranchHandler {
             ResponseUtil.sendError(res, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Server error");
         }
     }
+    public void totalBranches(HttpServletRequest req, HttpServletResponse res) throws IOException {
+        try {
+            HttpSession session = req.getSession(false);
+            if (!SessionUtil.isSuperAdmin(session, res)) return;
+
+            int totalBranches = branchService.getTotalBranchCount();
+
+            JSONObject response = new JSONObject();
+            response.put("totalBranches", totalBranches);
+
+            ResponseUtil.sendJson(res, HttpServletResponse.SC_OK, response);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error fetching total branch count", e);
+            ResponseUtil.sendError(res, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Unable to fetch branch count.");
+        }
+    }
+    public void branchFunds(HttpServletRequest req, HttpServletResponse res) throws IOException {
+        try {
+            HttpSession session = req.getSession(false);
+            if (!SessionUtil.isAdminOrSuperAdmin(session, res)) return;
+
+            List<Branch> fundSummaries = branchService.getBranchFunds();
+            ResponseUtil.sendJson(res, HttpServletResponse.SC_OK, new JSONArray(gson.toJson(fundSummaries)));
+
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error fetching branch fund summary", e);
+            ResponseUtil.sendError(res, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Unable to fetch fund summary.");
+        }
+    }
+
+
 
    
 }

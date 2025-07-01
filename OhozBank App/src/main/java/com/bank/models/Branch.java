@@ -1,5 +1,7 @@
 package com.bank.models;
 
+import java.math.BigDecimal;
+
 public class Branch {
     private Long branchId;
     private String branchName;
@@ -10,9 +12,37 @@ public class Branch {
     private long createdAt;
     private long modifiedAt;
     private long modifiedBy;
+    private BigDecimal totalOutgoing;
+    private BigDecimal totalIncoming;
+    private BigDecimal totalFunds;
+    
 
     
-    public Long getBranchId() {
+    public BigDecimal getTotalFunds() {
+		return totalFunds;
+	}
+
+	public void setTotalFunds(BigDecimal totalFunds) {
+		this.totalFunds = totalFunds;
+	}
+
+	public BigDecimal getTotalIncoming() {
+		return totalIncoming;
+	}
+
+	public void setTotalIncoming(BigDecimal totalIncoming) {
+		this.totalIncoming = totalIncoming;
+	}
+
+	public BigDecimal getTotalOutgoing() {
+		return totalOutgoing;
+	}
+
+	public void setTotalOutgoing(BigDecimal totalOutgoing) {
+		this.totalOutgoing = totalOutgoing;
+	}
+
+	public Long getBranchId() {
         return branchId;
     }
 

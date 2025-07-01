@@ -69,7 +69,7 @@ function loadDashboardContent(role) {
         `${BASE_URL}/partials/superadmin-dashboard.html`,
         `${BASE_URL}/css/superadmin-dashboard.css`,
         `${BASE_URL}/js/superadmin-dashboard.js`,
-        () => initSuperAdminDashboard()
+        () => initSuperadminDashboard()
       );
 	 
       break;
@@ -77,7 +77,7 @@ function loadDashboardContent(role) {
     default:
       loadPartial(
         `${BASE_URL}/partials/dashboard-content.html`,
-        `${BASE_URL}/css/dashboard.css`,
+        `${BASE_URL}/css/dashboard-content.css`,
         `${BASE_URL}/js/dashboard-content.js`,
         () => initDashboardContent()
       );
@@ -101,7 +101,7 @@ function loadContentByAction(action) {
         `${BASE_URL}/partials/superadmin-dashboard.html`,
         `${BASE_URL}/css/superadmin-dashboard.css`,
         `${BASE_URL}/js/superadmin-dashboard.js`,
-        () => initSuperAdminDashboard()
+        () => initSuperadminDashboard()
       );
       break;
 	  
@@ -158,7 +158,7 @@ function loadContentByAction(action) {
     case "dashboard":
       loadPartial(
         `${BASE_URL}/partials/dashboard-content.html`,
-        `${BASE_URL}/css/dashboard.css`,
+        `${BASE_URL}/css/dashboard-content.css`,
         `${BASE_URL}/js/dashboard-content.js`,
         () => initDashboardContent()
       );
@@ -208,11 +208,12 @@ function loadContentByAction(action) {
 	    case "superadmin-transactions":
 	        loadPartial(
 	  	  `${BASE_URL}/partials/superadmin-transaction.html`,
-	           `${BASE_URL}/css/transaction.css`,
+	           `${BASE_URL}/css/superadmin-transaction.css`,
 	         `${BASE_URL}/js/superadmin-transaction.js`,
 	  	   () => initAdminTransactionPage()
 	         );
 	         break;
+	
 
 
     case "account":
@@ -284,6 +285,8 @@ function removeAllCSS() {
 	  "admin-dashboard.css",
 	  "superadmin-dashboard.css",
 	  "superadmin-request-list.css",
+	  "superadmin-accountrequest-list.css",
+	  "superadmin-transaction.css",
 	  "superadmin-user-list.css",
 	  "admin-list.css",
 	  "superadmin-branch-list.css",

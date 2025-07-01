@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.format.DateTimeParseException;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -17,6 +18,7 @@ import org.json.JSONObject;
 
 import com.bank.enums.UserRole;
 import com.bank.factory.ServiceFactory;
+import com.bank.models.Branch;
 import com.bank.models.PaginatedResponse;
 import com.bank.models.StatementRequest;
 import com.bank.models.Transaction;
@@ -618,6 +620,82 @@ public class TransactionHandler {
             ResponseUtil.sendError(res, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error fetching expense");
         }
     }
+    public void monthOutgoing(HttpServletRequest req, HttpServletResponse res) throws IOException {
+        try {
+            HttpSession session = req.getSession(false);
+            if (!SessionUtil.isSuperAdmin(session, res)) return;
+
+            List<Branch> outgoingList = transactionService.getCurrentMonthOutgoingPerBranch();
+            ResponseUtil.sendJson(res, HttpServletResponse.SC_OK, new JSONArray(gson.toJson(outgoingList)));
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Failed to fetch current month outgoing", e);
+            ResponseUtil.sendError(res, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Unable to fetch current month outgoing data.");
+        }
+    }
+    public void monthIncoming(HttpServletRequest req, HttpServletResponse res) throws IOException {
+        try {
+            HttpSession session = req.getSession(false);
+            if (!SessionUtil.isSuperAdmin(session, res)) return;
+
+            List<Branch> incomingList = transactionService.getCurrentMonthIncomingPerBranch();
+            ResponseUtil.sendJson(res, HttpServletResponse.SC_OK, new JSONArray(gson.toJson(incomingList)));
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Failed to fetch current month incoming", e);
+            ResponseUtil.sendError(res, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Unable to fetch current month incoming data.");
+        }
+    }
+    public void totalType(HttpServletRequest req, HttpServletResponse res) throws IOException {
+        try {
+            HttpSession session = req.getSession(false);
+            if (!SessionUtil.isAdminOrSuperAdmin(session, res)) return;
+
+            String role = (String) session.getAttribute("role");
+            Map<String, BigDecimal> summary;
+
+            if ("ADMIN".equals(role)) {
+                Long branchId = (Long) session.getAttribute("branchId");
+                if (branchId == null) {
+                    ResponseUtil.sendError(res, HttpServletResponse.SC_BAD_REQUEST, "Branch not assigned.");
+                    return;
+                }
+                summary = transactionService.getTransactionTypeSummaryByBranch(branchId);
+            } else if ("SUPERADMIN".equals(role)) {
+                summary = transactionService.getTransactionTypeSummaryAllBranches();
+            } else {
+                ResponseUtil.sendError(res, HttpServletResponse.SC_FORBIDDEN, "Invalid role.");
+                return;
+            }
+
+            JSONObject json = new JSONObject(summary);
+            ResponseUtil.sendJson(res, HttpServletResponse.SC_OK, json);
+
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error fetching transaction type summary", e);
+            ResponseUtil.sendError(res, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Failed to get summary.");
+        }
+    }
+    public void transactionCount(HttpServletRequest req, HttpServletResponse res) throws IOException {
+        try {
+            HttpSession session = req.getSession(false);
+            if (!SessionUtil.isSuperAdmin(session, res)) return;
+
+            int limit = 10; // default top 10
+            List<Map<String, Object>> result = transactionService.getTopBranchesByTransactionCount(limit);
+
+            JSONArray jsonArray = new JSONArray(result);
+            ResponseUtil.sendJson(res, HttpServletResponse.SC_OK, jsonArray);
+
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error fetching top branch transaction count", e);
+            ResponseUtil.sendError(res, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Failed to fetch data.");
+        }
+    }
+    
+
+
+
+
+
 
 
     

@@ -9,7 +9,6 @@
   --sidebar-collapsed-width: 72px;
 }
 
-/* General Reset */
 * {
   margin: 0;
   padding: 0;
@@ -17,17 +16,14 @@
   font-family: "Poppins", sans-serif;
 }
 
-/* Body */
 body {
   display: flex;
   flex-direction: column;
-  background-color: var(--background-color);
   color: var(--text-color);
   height: 100vh;
- /* Make room for the sticky header */
+
 }
 
-/* Header */
 .header {
      position: sticky;
     top: 0;
@@ -42,14 +38,21 @@ body {
     box-sizing: border-box;
 }
 
-/* Profile Icon */
-.header .profile-icon {
-  font-size: 1.8rem;
+.header #profile-icon {
+  font-size: 1.5rem;
+  color: var(--text-color);
+  cursor: pointer;
+}
+/* Make profile icon larger and styled */
+#profileIcon i {
+  font-size: 2.5rem;
   color: var(--text-color);
   cursor: pointer;
 }
 
-/* Modal Overlay */
+
+
+
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -63,7 +66,6 @@ body {
   z-index: 9999;
 }
 
-/* Logo */
 .nav__logo {
   display: flex;
   align-items: center;
@@ -77,12 +79,11 @@ body {
 }
 
 .nav__logo-img {
-  height: 71px;
+  height: 54px;
   width: auto;
   object-fit: contain;
 }
 
-/* Modal Box */
 .modal-overlay.hidden {
   display: none !important;
 }
@@ -96,10 +97,16 @@ body {
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
 }
 
-/* Media Query for Smaller Screens */
 @media screen and (max-width: 768px) {
   .nav__logo-img {
-    height: 158px;
+    height: 64px;
   }
+  #profileIcon i {
+    font-size: 2.0rem;
+    color: var(--text-color);
+    cursor: pointer;
+}
+
+  
 }
 

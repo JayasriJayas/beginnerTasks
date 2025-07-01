@@ -166,6 +166,7 @@ public class AdminDAOImpl implements AdminDAO {
   	    return result.isEmpty() ? 0 : ((Number) result.get(0).get("total")).intValue();
         }
     }
+    
 
 
 

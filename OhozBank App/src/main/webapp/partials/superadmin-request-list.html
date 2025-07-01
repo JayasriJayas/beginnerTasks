@@ -9,32 +9,26 @@
   <span>Total Approved: <strong id="approvedCount">0</strong></span>
   <span>Total Rejected: <strong id="rejectedCount">0</strong></span>
 </div>
-
-<!-- 🔍 Filters + Search -->
-<div class="transaction-nav">
+<div class="top-controls">
+<div class="status-filter-group">
+    <label for="statusFilter"></label>
+    <select id="statusFilter">
+      <option value="PENDING" selected>PENDING</option>
+      <option value="APPROVED">APPROVED</option>
+      <option value="REJECTED">REJECTED</option>
+      <option value="">All</option>
+    </select>
+  </div>
   <div class="transaction-filters">
     <input type="date" id="fromDate" />
     <input type="date" id="toDate" />
     <button id="filterBtn">Filter</button>
   </div>
-</div>
-<!-- Status Filter Dropdown -->
-<div class="status-filter-group">
-  <label for="statusFilter">Filter by Status:</label>
-  <select id="statusFilter">
-    <option value="PENDING" selected>PENDING</option>
-    <option value="APPROVED">APPROVED</option>
-    <option value="REJECTED">REJECTED</option>
-    <option value="">All</option> <!-- for all status -->
-  </select>
+  
 </div>
 
 
-  <!-- Bulk Action Buttons -->
-  <div class="bulk-actions" style="margin: 10px 0;">
-    <button id="approveBtn">Accept Selected</button>
-    <button id="rejectBtn">Reject Selected</button>
-  </div>
+
 
   <!-- Request Table -->
   <table>
@@ -55,6 +49,11 @@
       <!-- Filled by JS -->
     </tbody>
   </table>
+  <!-- Bulk Action Buttons -->
+  <div class="bulk-actions" style="margin: 10px 0;">
+    <button id="approveBtn">Accept Selected</button>
+    <button id="rejectBtn">Reject Selected</button>
+  </div>
 
   <!-- Pagination Bar -->
   <div class="pagination-bar">
@@ -79,12 +78,12 @@
     </div>
   </div>
 </div>
-<!-- 🔍 View Request Modal -->
+
 <div id="requestModalOverlay" class="modal-overlay hidden">
   <div class="modal-box">
     <h3 class="modal-title">Account Request Details</h3>
     <div class="modal-body" id="requestDetailsContent">
-      <!-- Content loaded dynamically -->
+
     </div>
     <div class="modal-footer">
       <button class="profile-btn logout-btn" onclick="closeRequestModal()">

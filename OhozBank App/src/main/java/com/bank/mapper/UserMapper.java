@@ -25,9 +25,10 @@ public class UserMapper {
             user.setPhone((long) req.getPhone());
             user.setGender(req.getGender());
             user.setRoleId(3);              
-            user.setStatus(UserStatus.ACTIVE);   
+            user.setStatus(UserStatus.ACTIVE);
+            user.setBranchId(req.getBranchId());
             user.setCreatedDate(System.currentTimeMillis());
-            user.setModifiedBy(req.getId());
+            
             return user;
         }
         

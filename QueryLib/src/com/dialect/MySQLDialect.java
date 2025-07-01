@@ -156,20 +156,7 @@ public class MySQLDialect implements DatabaseDialect {
         }
      
 
-        if (orderByColumns != null) {
-            sql.append("ORDER BY ").append(String.join(", ", orderByColumns)).append(" ");
-            if (orderByDirection != null) {
-                sql.append(orderByDirection).append(" ");
-            }
-        }
-
-        if (limit > 0) {
-            sql.append("LIMIT ").append(limit).append(" ");
-        }
-        if (offset > 0) {
-            sql.append("OFFSET ").append(offset).append(" ");
-        }
-
+        
         if (groupByColumns != null) {
             sql.append("GROUP BY ").append(String.join(", ", groupByColumns)).append(" ");
         }
@@ -178,8 +165,21 @@ public class MySQLDialect implements DatabaseDialect {
         	String conditionClause = qb.buildConditionClause(havingConditions, havingOperators);
             sql.append("HAVING ").append(conditionClause).append(" ");
         }
+        if (orderByColumns != null) {
+            sql.append("ORDER BY ").append(String.join(", ", orderByColumns)).append(" ");
+            if (orderByDirection != null) {
+                sql.append(orderByDirection).append(" ");
+            }
+        }
+
         if (unionClause != null) {
             sql.append(" ").append(unionClause);
+        }
+        if (limit > 0) {
+            sql.append("LIMIT ").append(limit).append(" ");
+        }
+        if (offset > 0) {
+            sql.append("OFFSET ").append(offset).append(" ");
         }
 
 

@@ -153,6 +153,16 @@ public class UserServiceImpl implements UserService {
             return false;
         }
     }
+    @Override
+    public int getTotalUsersOnlyCount() throws SQLException, QueryException {
+        return userDAO.countAllUsersOnly();
+    }
+    @Override
+    public int getTotalUsersOnlyByBranch(Long branchId) throws SQLException, QueryException {
+        return userDAO.countUsersOnlyByBranch(branchId);
+    }
+
+
 
 
 

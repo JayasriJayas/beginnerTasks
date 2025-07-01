@@ -138,6 +138,32 @@ public class AccountDAOImpl implements AccountDAO {
             return BigDecimal.ZERO;
         }
     }
+    @Override
+    public int countAccountsByBranch(Long branchId) throws SQLException, QueryException {
+        QueryBuilder qb = new QueryBuilder(new MySQLDialect());
+        qb.select().aggregate("COUNT", "*").as("total")
+          .from("account")
+          .where("branchId = ?", branchId);
+
+        try (Connection conn = DBConnectionPool.getInstance().getConnection()) {
+            QueryExecutor executor = new QueryExecutor(conn);
+            List<Map<String, Object>> result = executor.executeQuery(qb.build(), qb.getParameters());
+            return result.isEmpty() ? 0 : ((Number) result.get(0).get("total")).intValue();
+        }
+    }
+    @Override
+    public int countAllAccounts() throws SQLException, QueryException {
+        QueryBuilder qb = new QueryBuilder(new MySQLDialect());
+        qb.select().aggregate("COUNT", "*").as("total").from("account");
+
+        try (Connection conn = DBConnectionPool.getInstance().getConnection()) {
+            QueryExecutor executor = new QueryExecutor(conn);
+            List<Map<String, Object>> result = executor.executeQuery(qb.build());
+            return result.isEmpty() ? 0 : ((Number) result.get(0).get("total")).intValue();
+        }
+    }
+
+
 
 
 

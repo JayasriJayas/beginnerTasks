@@ -109,11 +109,13 @@ public class AccountRequestHandler {
         if (!SessionUtil.isAdminOrSuperAdmin(session, res)) return;
 
         try {
+        	System.out.println("ia m here");
             String role = session.getAttribute("role").toString();
-            long branchId = (Long) session.getAttribute("branchId");
+            Long branchId = null;
             long adminId = (Long) session.getAttribute("userId");
 
             if (UserRole.ADMIN.name().equals(role)) {
+            	 branchId = (Long) session.getAttribute("branchId");
                 boolean sameBranch = requestService.isAdminInSameBranch(adminId, branchId);
                 if (!sameBranch) {
                     logger.warning("Admin from different branch attempted approval. Admin ID: " + adminId);
@@ -125,7 +127,7 @@ public class AccountRequestHandler {
 
             Request request = RequestParser.parseRequest(req, Request.class);
             long requestId = request.getId();
-       
+            System.out.println("here");
 
             boolean success = accountService.approveAccountRequest(requestId, adminId);
             if (success) {
@@ -194,7 +196,15 @@ public class AccountRequestHandler {
         try {
             long adminId = (long) session.getAttribute("adminId");
             String role = session.getAttribute("role").toString();
-            long branchId =  (long)session.getAttribute("branchId");
+            Long branchId = null;
+
+            if ("ADMIN".equalsIgnoreCase(role)) {
+                Object branchObj = session.getAttribute("branchId");
+                if (branchObj != null) {
+                    branchId = (Long) branchObj;
+                }
+            }
+
             try (BufferedReader reader = req.getReader()) {
                 String body = reader.lines().collect(Collectors.joining(System.lineSeparator()));
                 JSONArray jsonArray = new JSONArray(body);
@@ -237,9 +247,8 @@ public class AccountRequestHandler {
         try {
             long adminId = (long) session.getAttribute("adminId");
             String role = (String) session.getAttribute("role");
-            long branchId =  (long)session.getAttribute("branchId");
 
-            Map<String, Long> counts = accountService.getRequestStatusCounts(role, adminId,branchId);
+            Map<String, Long> counts = accountService.getRequestStatusCounts(role, adminId);
             String json = gson.toJson(counts);
 
             ResponseUtil.sendJson(res, HttpServletResponse.SC_OK, json);
@@ -248,6 +257,7 @@ public class AccountRequestHandler {
             ResponseUtil.sendError(res, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Failed to fetch request status counts");
         }
     }
+
     public void reject(HttpServletRequest req, HttpServletResponse res) throws IOException {
         HttpSession session = req.getSession(false);
         if (!SessionUtil.isAdminOrSuperAdmin(session, res)) return;
@@ -257,8 +267,16 @@ public class AccountRequestHandler {
             long requestId = rejectPayload.getId();
             String reason = rejectPayload.getRejectionReason();
             long adminId = (long) session.getAttribute("adminId");
-            long branchId =  (long)session.getAttribute("branchId");
+           
             String role = session.getAttribute("role").toString();
+            Long branchId = null;
+
+            if ("ADMIN".equalsIgnoreCase(role)) {
+                Object branchObj = session.getAttribute("branchId");
+                if (branchObj != null) {
+                    branchId = (Long) branchObj;
+                }
+            }
  
             boolean success = accountService.rejectUserRequest(requestId, adminId, reason,role,branchId);
 
@@ -279,7 +297,14 @@ public class AccountRequestHandler {
         try {
             long adminId = (long) session.getAttribute("adminId");
             String role = session.getAttribute("role").toString();
-            long branchId =  (long)session.getAttribute("branchId");
+            Long branchId = null;
+
+            if ("ADMIN".equalsIgnoreCase(role)) {
+                Object branchObj = session.getAttribute("branchId");
+                if (branchObj != null) {
+                    branchId = (Long) branchObj;
+                }
+            }
             try (BufferedReader reader = req.getReader()) {
                 String body = reader.lines().collect(Collectors.joining(System.lineSeparator()));
                 JSONArray jsonArray = new JSONArray(body); 

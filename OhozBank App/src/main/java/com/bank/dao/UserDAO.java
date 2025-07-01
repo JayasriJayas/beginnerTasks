@@ -13,5 +13,7 @@ public interface UserDAO {
 	 User getUserById(long userId) throws SQLException,QueryException;
 	 boolean updateUserProfile(User user) throws SQLException,QueryException;
 	 boolean updatePassword(long userId, String newPassword) throws SQLException, QueryException;
+	 int countAllUsersOnly() throws SQLException, QueryException;
+	 int countUsersOnlyByBranch(Long branchId) throws SQLException, QueryException;
 
 }

@@ -1,23 +1,63 @@
 window.initDashboardContent = async function initDashboardContent() {
   console.log(" Dashboard content initialized");
 
-  const userNameEl = document.getElementById("userName");
-  if (userNameEl) userNameEl.innerText = "Jayasri"; // or fetch dynamically
 
-  const today = new Date();
-  const dateEl = document.getElementById("welcomeDate");
-  if (dateEl) {
-    dateEl.innerText = today.toLocaleDateString("en-IN", {
-      weekday: "short",
-      day: "numeric",
-      month: "short",
-      year: "numeric"
-    });
-  }
 
-  // Load account cards
+   loadTopBar();
   loadAccountCards();
   loadInsights();
+  
+  async function loadTopBar() {
+    try {
+      const res = await fetch(`${BASE_URL}/api/profile/user`, {
+        method: "POST",
+        credentials: "include"
+      });
+
+      const { user } = await res.json();
+      const { name, roleId } = user;
+
+      const roleMap = {
+        1: "Super Admin",
+        2: "Admin",
+        3: "Customer"
+      };
+
+
+  	document.getElementById("userName").textContent = name;
+
+
+
+      document.getElementById("userRole").innerHTML = `
+        <i class='bx bx-user'></i> ${roleMap[roleId] || "Unknown"}
+      `;
+
+      const now = new Date();
+
+      const formattedDate = now.toLocaleDateString("en-IN", {
+        weekday: "short",  
+        day: "numeric",    
+        month: "short",   
+        year: "numeric"    
+      });
+
+      const formattedTime = now.toLocaleTimeString("en-IN", {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true       
+      });
+
+      document.getElementById("welcomeDate").innerHTML = `
+        <i class='bx bx-time'></i> ${formattedDate} · ${formattedTime}
+      `;
+
+    } catch (err) {
+      console.error("Failed to load user profile:", err);
+      document.getElementById("welcomeText").innerText = "Welcome, User!";
+      document.getElementById("userRole").innerText = "Unknown Role";
+      document.getElementById("currentDateTime").innerText = "--";
+    }
+	}
 
     async function loadInsights() {
       const insightsContainer = document.getElementById("insightsContainer");

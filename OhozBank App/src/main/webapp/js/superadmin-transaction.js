@@ -1,7 +1,6 @@
 function initAdminTransactionPage() {
-  console.log("✅ Admin Transaction page initialized");
+  console.log("Admin Transaction page initialized");
 
-  // DOM References
   const pageNumbersContainer = document.getElementById("pageNumbers");
   const accountInput = document.getElementById("accountInput");
   const fromDateInput = document.getElementById("fromDate");
@@ -22,7 +21,6 @@ function initAdminTransactionPage() {
   setDefaultFilters();
   attachFilterListeners();
 
-  // Tab Navigation
   document.querySelectorAll(".transaction-tabs button").forEach((btn) => {
     btn.addEventListener("click", () => {
       document.querySelectorAll(".transaction-tabs button").forEach(b => b.classList.remove("active"));
@@ -183,8 +181,8 @@ function initAdminTransactionPage() {
     showingRange.textContent = `${start} to ${end}`;
     totalEntriesEl.textContent = totalEntries;
 
-    prevBtn.disabled = currentPage === 1;
-    nextBtn.disabled = currentPage === totalPages;
+	prevBtn.disabled = currentPage === 1;
+	 nextBtn.disabled = currentPage === totalPages || totalPages === 0;
   }
 
   function formatTimestamp(ms) {

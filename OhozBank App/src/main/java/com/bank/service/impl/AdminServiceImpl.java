@@ -1,7 +1,6 @@
 package com.bank.service.impl;
 
 import java.sql.SQLException;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -120,6 +119,10 @@ public class AdminServiceImpl implements AdminService {
         int total = adminDAO.countAllAdmins();
         List<Map<String, Object>> admins = adminDAO.fetchAllAdmins(size, offset);
         return new PaginatedResponse<>(admins, page, size, total);
+    }
+    @Override
+    public int getTotalAdminCount() throws SQLException, QueryException {
+        return adminDAO.countAllAdmins();
     }
 
 }

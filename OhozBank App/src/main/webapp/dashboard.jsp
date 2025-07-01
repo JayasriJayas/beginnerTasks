@@ -19,33 +19,35 @@
   <link rel="stylesheet" href="<%= ctx %>/css/transaction.css">
   <link rel="stylesheet" href="<%= ctx %>/css/sidebar.css">
   <link rel="stylesheet" href="<%= ctx %>/css/form.css">
+  <link rel="stylesheet" href="<%= ctx %>/css/modal.css" />
+
   <link rel="stylesheet" href="css/toast.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body>
 
-  <!-- Includes -->
   <%@ include file="includes/header.jsp" %>	  
   <%@ include file="includes/sidebar.jsp" %>
 
-  <!-- Modal HTML -->
   <div id="modalOverlay" class="modal-overlay hidden">
     <div class="modal-box">
+    <div class="modal-close" onclick="closeModal()">
+  <i class='bx bx-x'></i>
+</div>
+    
       <h3 id="modalTitle"></h3>
       <div id="modalBody"></div>
-      <div style="text-align: right; margin-top: 1rem;">
-        <button class="profile-btn logout-btn" onclick="closeModal()">Close</button>
-      </div>
+     
     </div>
   </div>
 
-  <!-- Main Content -->
+
   <main class="dashboard-container" id="main">
     <div id="dashboardContent" class="dashboard-content-box"></div>
   </main>
 
-  <!-- Toast Container -->
+
   <div id="toast-container" class="toast-container"></div>
 
   <footer>

@@ -31,9 +31,17 @@ routes:
     method: PUT
     role: USER,ADMIN,SUPERADMIN
 
-  - path: /api/add-admin/user
+  - path: /api/add-admin/admin
     method: POST
     role: SUPERADMIN
+
+  - path: /api/total-users/user
+    method: GET
+    role: ADMIN,SUPERADMIN
+
+  - path: /api/total-accounts/account
+    method: GET
+    role: ADMIN,SUPERADMIN
 
   - path: /api/approve/request
     method: POST
@@ -71,6 +79,26 @@ routes:
     method: POST
     role: ADMIN,SUPERADMIN
 
+  - path: /api/view-details/account-request
+    method: POST
+    role: ADMIN,SUPERADMIN
+
+  - path: /api/mutiple-reject/account-request
+    method: POST
+    role: ADMIN,SUPERADMIN
+
+  - path: /api/reject/account-request
+    method: POST
+    role: ADMIN,SUPERADMIN
+
+  - path: /api/multiple-approve/account-request
+    method: POST
+    role: ADMIN,SUPERADMIN
+
+  - path: /api/status-counts/account-request
+    method: GET
+    role: ADMIN,SUPERADMIN
+
   - path: /api/status-counts/request
     method: GET
     role: ADMIN,SUPERADMIN
@@ -78,8 +106,12 @@ routes:
   - path: /api/multiple-reject/request
     method: POST
     role: ADMIN,SUPERADMIN
+
+  - path: /api/multiple-reject/account-request
+    method: POST
+    role: ADMIN,SUPERADMIN
  
-  - path: /api/approve-account/admin
+  - path: /api/approve-account/account-request
     method: POST
     role: ADMIN,SUPERADMIN
 
@@ -175,6 +207,22 @@ routes:
     method: POST
     role: USER
 
+  - path: /api/month-outgoing/transaction
+    method: GET
+    role: SUPERADMIN
+
+  - path: /api/month-incoming/transaction
+    method: GET
+    role: SUPERADMIN
+
+  - path: /api/total-type/transaction
+    method: GET
+    role: ADMIN,SUPERADMIN
+
+  - path: /api/transaction-count/transaction
+    method: GET
+    role: SUPERADMIN
+
   - path: /api/get/branch
     method: POST
     role: SUPERADMIN
@@ -183,8 +231,20 @@ routes:
     method: POST
     role: SUPERADMIN
 
+  - path: /api/total-branches/branch
+    method: GET
+    role: SUPERADMIN
+
+  - path: /api/branch-funds/branch
+    method: GET
+    role: SUPERADMIN
+
   - path: /api/get/admin
     method: POST
+    role: SUPERADMIN
+
+  - path: /api/total-admins/admin
+    method: GET
     role: SUPERADMIN
 
   - path: /api/get-all/admin

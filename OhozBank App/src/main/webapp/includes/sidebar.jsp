@@ -28,28 +28,28 @@
     
   <% } else if ("SUPERADMIN".equals(userRole)) { %>
     <!-- Superadmin Sidebar -->
-    <a href="#" class="menu-item" data-action="dashboard-superadmin" data-tooltip="Dashboard">
-      <i class='bx bx-grid-alt'></i><span>Dashboard</span>
-    </a>
-    <a href="#" class="menu-item" data-action="superadmin-request-list" data-tooltip="Requests">
-      <i class='bx bx-git-branch'></i><span>Branches</span>
-    </a>
-    <a href="#" class="menu-item" data-action="superadmin-accountrequest-list" data-tooltip="AccountRequests">
-      <i class='bx bx-building-house'></i><span>Accounts</span>
-    </a>
-    <a href="#" class="menu-item" data-action="admin-list" data-tooltip="Admins">
-      <i class='bx bx-user-circle'></i><span>Admin</span>
-    </a>
-    <a href="#" class="menu-item" data-action="branch-list" data-tooltip="Branch">
-      <i class='bx bx-map'></i><span>Branch</span>
-    </a>
-       </a>
-        <a href="#" class="menu-item" data-action="superadmin-payment" data-tooltip="Payment">
-      <i class='bx bx-credit-card'></i><span>Payment</span>
-    </a>
-    <a href="#" class="menu-item" data-action="superadmin-transactions" data-tooltip="Transactions">
-      <i class='bx bx-credit-card'></i><span>Transaction</span>
-    </a>
+ <a href="#" class="menu-item" data-action="dashboard-superadmin" data-tooltip="Dashboard">
+   <i class='bx bx-grid-alt'></i><span>Dashboard</span>
+</a>
+<a href="#" class="menu-item" data-action="superadmin-request-list" data-tooltip="Requests">
+    <i class='bx bx-git-branch'></i><span>Request</span>
+</a>
+<a href="#" class="menu-item" data-action="superadmin-accountrequest-list" data-tooltip="AccountRequests">
+  <i class='bx bx-archive'></i><span>Accounts</span>
+</a>
+<a href="#" class="menu-item" data-action="admin-list" data-tooltip="Admins">
+  <i class='bx bx-user'></i><span>Admin</span>
+</a>
+<a href="#" class="menu-item" data-action="branch-list" data-tooltip="Branch">
+  <i class='bx bx-map-pin'></i><span>Branch</span>
+</a>
+<a href="#" class="menu-item" data-action="superadmin-payment" data-tooltip="Payment">
+  <i class='bx bx-money'></i><span>Payment</span>
+</a>
+<a href="#" class="menu-item" data-action="superadmin-transactions" data-tooltip="Transactions">
+  <i class='bx bx-credit-card-front'></i><span>Transaction</span>
+</a>
+
        
   <% } else { %>
     <!-- User Sidebar -->

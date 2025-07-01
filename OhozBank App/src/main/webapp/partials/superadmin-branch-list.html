@@ -1,7 +1,12 @@
 <div class="branch-table-container">
   <div class="branch-table-header">
     <h2>Branch List</h2>
+    <div class="add-branch-icon" onclick="openAddBranchModal()" data-tooltip="Add Branch">
+  <i class="bx bx-plus-circle"></i>
+</div>
+    
   </div>
+  
 
   <!-- Table -->
   <table class="branch-table">
@@ -10,34 +15,63 @@
         <th>#</th>
         <th>Branch ID</th>
         <th>Branch Name</th>
-          <th>Location</th>
+        <th>Location</th>
         <th>IFSC</th>
         <th>Contact</th>
       </tr>
     </thead>
     <tbody id="branchTableBody">
-      <tr><td colspan="5">Loading...</td></tr>
+      <tr><td colspan="6">Loading...</td></tr>
     </tbody>
   </table>
 
-  <!-- Entries per page now BELOW the table -->
-  <div class="branch-page-controls" style="margin-top: 0.5rem;">
-    <label for="branchEntriesPerPage">Entries per page:</label>
-    <select id="branchEntriesPerPage">
-      <option value="5">5</option>
-      <option value="10" selected>10</option>
-      <option value="20">20</option>
-    </select>
-  </div>
 
   <!-- Pagination -->
   <div class="branch-pagination">
-    <button id="branchPrevBtn" class="page-btn">Previous</button>
-    <div class="page-numbers" id="branchPageNumbers"></div>
-    <button id="branchNextBtn" class="page-btn">Next</button>
-
-    <div>
+    <!-- Showing Entries per page, Previous, Page Numbers, Next in a single row -->
+    <div class="branch-pagination-left">
+      <label for="branchEntriesPerPage">Entries per page:</label>
+      <select id="branchEntriesPerPage">
+        <option value="5">5</option>
+        <option value="10" selected>10</option>
+        <option value="20">20</option>
+      </select>
+    </div>
+    
+    <div class="branch-pagination">
+      <button id="branchPrevBtn" class="page-btn">Previous</button>
+      <div class="page-numbers" id="branchPageNumbers"></div>
+      <button id="branchNextBtn" class="page-btn">Next</button>
+    </div>
+    
+    <div class="branch-pagination-right">
       Showing <span id="branchShowingRange">0 to 0</span> of <span id="branchTotalEntries">0</span>
     </div>
   </div>
+  <div id="addBranchModal" class="modal-overlay hidden">
+  <div class="modal-box">
+    <h3>Add Branch</h3>
+    <i class="bx bx-x close-icon" onclick="closeAddBranchModal()" data-tooltip="Close"></i>
+
+    <form id="addBranchForm">
+      <div class="form-group">
+        <input type="text" id="branchName" required />
+        <label for="branchName">Branch Name</label>
+      </div>
+      <div class="form-group">
+        <input type="text" id="ifscCode" required />
+        <label for="ifscCode">IFSC Code</label>
+      </div>
+      <div class="form-group">
+        <input type="text" id="location" required />
+        <label for="location">Location</label>
+      </div>
+      <div class="form-group">
+        <input type="tel" id="contact" required />
+        <label for="contact">Contact Number</label>
+      </div>
+      <button type="submit" class="form-submit-btn">Add Branch</button>
+    </form>
+  </div>
+</div>
 </div>

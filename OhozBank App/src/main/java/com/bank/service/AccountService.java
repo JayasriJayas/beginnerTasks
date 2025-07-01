@@ -19,5 +19,6 @@ public interface AccountService {
     List<Account> getAllAccounts() throws SQLException;
     List<Account> getAccountsByUserId(long userId) throws SQLException;
 	BigDecimal getTotalBalanceByUser(long userId) throws SQLException, QueryException;
-	
+	int getTotalAccountsByBranch(Long branchId) throws SQLException, QueryException;
+	int getTotalAccountCount() throws SQLException, QueryException;
 }

@@ -63,10 +63,10 @@ public class UserDAOImpl implements UserDAO{
 	}
 	public long insertUser(Connection conn, User user) throws SQLException,QueryException {
 	    QueryBuilder qb = new QueryBuilder(new MySQLDialect());
-	    qb.insertInto("user", "username", "password","name", "email", "phone", "gender", "roleId", "status","createdAt", "modifiedBy")
+	    qb.insertInto("user", "username", "password","name", "email", "phone", "gender", "roleId","branchId", "status","createdAt","modifiedAt")
 	      .values(user.getUsername(), user.getPassword(),user.getName() ,user.getEmail(), user.getPhone(),
-	              user.getGender(), user.getRoleId(), user.getStatus().name(),user.getCreatedDate(),
-	              user.getModifiedBy());
+	              user.getGender(), user.getRoleId(),user.getBranchId(), user.getStatus().name(),user.getCreatedDate(),System.currentTimeMillis()
+	              );
 	
 	    QueryExecutor executor = new QueryExecutor(conn);
 	    List<Object> rs =  executor.executeUpdateWithGeneratedKeys(qb.build(), qb.getParameters());
@@ -217,6 +217,36 @@ public class UserDAOImpl implements UserDAO{
 		    return rowsAffected >0;
 	    }
 	}
+	@Override
+	public int countAllUsersOnly() throws SQLException, QueryException {
+	    QueryBuilder qb = new QueryBuilder(new MySQLDialect());
+	    qb.select().aggregate("COUNT", "*").as("total")
+	      .from("user")
+	      .where("roleId = ?", 3); // Only end-users
+
+	    try (Connection conn = DBConnectionPool.getInstance().getConnection()) {
+	        QueryExecutor qe = new QueryExecutor(conn);
+	        List<Map<String, Object>> result = qe.executeQuery(qb.build(), qb.getParameters());
+	        return result.isEmpty() ? 0 : ((Number) result.get(0).get("total")).intValue();
+	    }
+	}
+	@Override
+	public int countUsersOnlyByBranch(Long branchId) throws SQLException, QueryException {
+	    QueryBuilder qb = new QueryBuilder(new MySQLDialect());
+	    qb.select().aggregate("COUNT", "*").as("total")
+	      .from("user")
+	      .where("roleId = ?", 3)
+	      .andWhere("branchId = ?", branchId);
+
+	    try (Connection conn = DBConnectionPool.getInstance().getConnection()) {
+	        QueryExecutor executor = new QueryExecutor(conn);
+	        List<Map<String, Object>> result = executor.executeQuery(qb.build(), qb.getParameters());
+	        return result.isEmpty() ? 0 : ((Number) result.get(0).get("total")).intValue();
+	    }
+	}
+
+
+	
 
 }
 

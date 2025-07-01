@@ -47,7 +47,7 @@ function loadAdmins() {
       tbody.innerHTML = "";
 
       if (!data.data || data.data.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="6">No admins found.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="9">No admins found.</td></tr>`;
         return;
       }
 
@@ -59,7 +59,10 @@ function loadAdmins() {
           <td>${admin.name}</td>
           <td>${admin.email}</td>
           <td>${admin.branchId}</td>
-          <td>${admin.status || "-"}</td>
+          <td>${admin.phone || "-"}</td>
+          <td>${formatDateTime(admin.createdAt)}</td>
+          <td>${admin.modifiedBy}</td>
+          <td>${formatDateTime(admin.modifiedAt)}</td>
         `;
         tbody.appendChild(tr);
       });
@@ -70,6 +73,14 @@ function loadAdmins() {
     .catch((err) => {
       console.error("Error fetching admins:", err);
     });
+}
+
+function formatDateTime(ts) {
+  if (!ts || isNaN(ts)) return "-";
+  const date = new Date(Number(ts));
+  const dateStr = date.toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" });
+  const timeStr = date.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", hour12: true });
+  return `${dateStr}<br><span style="font-size: 12px; color: #555;">${timeStr}</span>`;
 }
 
 function updateAdminPagination() {
@@ -97,6 +108,61 @@ function updateAdminPagination() {
   document.getElementById("adminPrevBtn").disabled = adminCurrentPage === 1;
   document.getElementById("adminNextBtn").disabled = adminCurrentPage === totalPages;
 }
+// Open Modal
+function openAddAdminModal() {
+  const modal = document.getElementById("addAdminModal");
+  modal.classList.remove("hidden");
+}
 
-// Expose globally
+// Close Modal
+function closeAddAdminModal() {
+  const modal = document.getElementById("addAdminModal");
+  modal.classList.add("hidden");
+}
+
+document.getElementById("addAdminForm").addEventListener("submit", function (e) {
+  e.preventDefault();
+
+  const username = document.getElementById("username").value;
+  const password = document.getElementById("password").value;
+  const name = document.getElementById("name").value;
+  const email = document.getElementById("email").value;
+  const phone = document.getElementById("phone").value;
+  const gender = document.getElementById("gender").value;
+  const branchId = document.getElementById("branchId").value;
+
+  const adminData = {
+    username,
+    password,
+    name,
+    email,
+    phone,
+    gender,
+    branchId
+  };
+
+  fetch(`${BASE_URL}/api/add-admin/admin`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    credentials: "include",
+    body: JSON.stringify(adminData)
+  })
+    .then((res) => res.json())
+    .then((data) => {
+      if (data.status === "SUCCESS") {
+        alert("Admin added successfully");
+        closeAddAdminModal();
+        loadAdmins(); 
+      } else {
+        alert("Failed to add admin");
+      }
+    })
+    .catch((err) => {
+      console.error("Error adding admin:", err);
+      alert("An error occurred while adding the admin");
+    });
+});
+
 window.initSuperAdminAdminList = initSuperAdminAdminList;

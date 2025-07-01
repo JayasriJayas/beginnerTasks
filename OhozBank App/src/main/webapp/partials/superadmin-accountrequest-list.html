@@ -1,35 +1,61 @@
-
 <div class="table-container">
   <div class="table-header">
     <h2>All Account Requests</h2>
   </div>
 
-  <div class="transaction-nav">
-    <div class="transaction-filters">
-      <input type="date" id="fromDate" />
-      <input type="date" id="toDate" />
-      <button id="filterBtn">Filter</button>
-    </div>
+  <!-- 🔢 Status Summary -->
+  <div class="status-summary">
+    <span>Total Pending: <strong id="pendingCount">0</strong></span>
+    <span>Total Approved: <strong id="approvedCount">0</strong></span>
+    <span>Total Rejected: <strong id="rejectedCount">0</strong></span>
   </div>
+  <div class="top-controls">
+  <div class="status-filter-group">
+    <label for="statusFilter"></label>
+    <select id="statusFilter">
+      <option value="PENDING" selected>PENDING</option>
+      <option value="APPROVED">APPROVED</option>
+      <option value="REJECTED">REJECTED</option>
+      <option value="">All</option>
+    </select>
+  </div>
+  <div class="transaction-filters">
+    <input type="date" id="fromDate" />
+    <input type="date" id="toDate" />
+    <button id="filterBtn">Filter</button>
+  </div>
+  
+</div>
+  
 
-  <!-- Table -->
+
+
+
+
+  <!-- Request Table -->
   <table>
     <thead>
       <tr>
+        <th><input type="checkbox" id="selectAll" /></th>
         <th>#</th>
-        <th>RequestId</th>
-        <th>UserId</th>
+        <th>User ID</th>
         <th>Branch ID</th>
         <th>Status</th>
         <th>Requested At</th>
+        <th>Action</th>
       </tr>
     </thead>
     <tbody id="accountRequestTableBody">
       <tr><td colspan="8">Loading...</td></tr>
     </tbody>
   </table>
+    <!-- Bulk Actions -->
+  <div class="bulk-actions">
+    <button id="approveBtn">Accept Selected</button>
+    <button id="rejectBtn">Reject Selected</button>
+  </div>
 
-  <!-- Pagination -->
+  <!-- Pagination Bar -->
   <div class="pagination-bar">
     <div class="pagination-left">
       Show 
@@ -48,6 +74,21 @@
 
     <div class="pagination-right">
       Showing <span id="showingRange">0 to 0</span> of <span id="totalEntries">0</span> entries
+    </div>
+  </div>
+</div>
+
+<!-- 🔍 View Request Modal -->
+<div id="requestModalOverlay" class="modal-overlay hidden">
+  <div class="modal-box">
+    <h3 class="modal-title">Account Request Details</h3>
+    <div class="modal-body" id="requestDetailsContent">
+      <!-- Details filled by JS -->
+    </div>
+    <div class="modal-footer">
+      <button class="profile-btn logout-btn" onclick="closeRequestModal()">
+        <i class='bx bx-x'></i> Close
+      </button>
     </div>
   </div>
 </div>

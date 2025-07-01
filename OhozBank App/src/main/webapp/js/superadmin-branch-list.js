@@ -98,5 +98,55 @@ function updateBranchPagination() {
   document.getElementById("branchNextBtn").disabled = branchCurrentPage === totalPages;
 }
 
-// ✅ Make available globally
+function openAddBranchModal() {
+  document.getElementById("addBranchModal").classList.remove("hidden");
+}
+
+
+function closeAddBranchModal() {
+  document.getElementById("addBranchModal").classList.add("hidden");
+}
+
+document.getElementById("addBranchForm").addEventListener("submit", function (e) {
+  e.preventDefault();
+
+  const branchName = document.getElementById("branchName").value;
+  const ifscCode = document.getElementById("ifscCode").value;
+  const location = document.getElementById("location").value;
+  const contact = document.getElementById("contact").value;
+
+  const branchData = {
+    branchName,
+    ifscCode,
+    location,
+    contact,
+  };
+
+  
+  fetch(`${BASE_URL}/api/add/branch`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(branchData),
+  })
+   .then((response) => response.json())
+      .then((data) => {
+        
+        if (data.status === "SUCCESS") {
+          alert("Branch added successfully!");
+          closeAddBranchModal();
+          loadBranches();
+        } else {
+          alert("Failed to add branch! " + data.message);
+        }
+      })
+      .catch((error) => {
+        console.error("Error adding branch:", error);
+        alert("An error occurred while adding the branch.");
+      });
+  });
+
+
+
 window.initSuperAdminBranchList = initSuperAdminBranchList;

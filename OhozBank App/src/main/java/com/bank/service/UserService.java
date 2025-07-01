@@ -15,6 +15,8 @@ public interface UserService  {
     boolean updateEditableProfileFields(long userId, Map<String, Object> updates) throws SQLException,QueryException;
     boolean verifyPassword(long userId, String password) throws SQLException, QueryException;
     boolean changePassword(long userId, String currentPassword, String newPassword) throws SQLException, QueryException;
+    int getTotalUsersOnlyCount() throws SQLException, QueryException;
+    int getTotalUsersOnlyByBranch(Long branchId) throws SQLException, QueryException;
 
 
 }

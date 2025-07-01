@@ -1,0 +1,100 @@
+
+<div id="topBar" class="top-bar">
+  <div class="top-bar-left">
+    <span id="welcomeText">
+      <i class='bx bx-smile'></i> Welcome, 
+      <span id="userName">User</span>!
+    </span>
+    <span id="userRole" class="role-badge">
+      <i class='bx bx-user'></i> Role
+    </span>
+  </div>
+  <div class="top-bar-right">
+    <button class="btn-add" id="addAdminBtn">
+      <i class='bx bx-user-plus'></i> Add Admin
+    </button>
+    <button class="btn-add" id="addBranchBtn">
+      <i class='bx bx-building-house'></i> Add Branch
+    </button>
+    <span id="currentDateTime">
+      <i class='bx bx-time'></i> Loading...
+    </span>
+  </div>
+</div>
+
+
+<section class="dashboard-upper">
+
+  <div class="metrics-wrapper">
+    <h3 class="section-title"><i class='bx bx-bar-chart'></i> System Overview</h3>
+    <div class="metrics-grid">
+      <div class="metric-card clickable" data-action="branch-list" id="metricBranches">
+        <i class='bx bx-git-branch'></i>
+        <div>
+          <h2 id="branchCount">--</h2>
+          <p>Total Branches</p>
+        </div>
+      </div>
+      <div class="metric-card clickable" data-action="admin" id="metricAdmins">
+        <i class='bx bx-user-voice'></i>
+        <div>
+          <h2 id="adminCount">--</h2>
+          <p>Total Admins</p>
+        </div>
+      </div>
+      <div class="metric-card clickable" data-action="superadmin-accountrequest-list" id="metricAccountReqs">
+        <i class='bx bx-envelope'></i>
+        <div>
+          <h2 id="accountRequestCount">--</h2>
+          <p>Pending Account Requests</p>
+        </div>
+      </div>
+      <div class="metric-card clickable" data-action="superadmin-request-list" id="metricUserReqs">
+        <i class='bx bx-user-check'></i>
+        <div>
+          <h2 id="userRequestCount">--</h2>
+          <p>Pending User Requests</p>
+        </div>
+      </div>
+      <div class="metric-card" id="metricUsers">
+        <i class='bx bx-group'></i>
+        <div>
+          <h2 id="userCount">--</h2>
+          <p>Total Users</p>
+        </div>
+      </div>
+      <div class="metric-card" id="metricAccounts">
+        <i class='bx bx-wallet'></i>
+        <div>
+          <h2 id="accountCount">--</h2>
+          <p>Total Accounts</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT SIDE: Pie Chart -->
+  <div class="pie-chart-wrapper">
+    <h3 class="section-title"><i class='bx bx-pie-chart-alt-2'></i> Transaction Breakdown</h3>
+    <div class="chart-container">
+      <canvas id="superadminPieChart"></canvas>
+    </div>
+  </div>
+</section>
+
+
+<section class="dashboard-lower">
+<div class="bar-chart-wrapper">
+
+  <div class="bar-chart-box">
+    <h3 class="section-title"><i class='bx bx-bar-chart-alt'></i> Top Branches by Funds</h3>
+    <canvas id="branchFundsChart"></canvas>
+  </div>
+
+  <div class="bar-chart-box">
+    <h3 class="section-title"><i class='bx bx-transfer-alt'></i> Branch-wise Transaction Count</h3>
+    <canvas id="branchTransactionChart"></canvas>
+  </div>
+</div>
+
+</section>

@@ -14,4 +14,7 @@ public interface BranchService {
     boolean updateBranchDetails(long userId,Branch updates) throws SQLException, QueryException;
     Branch getBranchByIfscCode(String ifscCode) throws SQLException, QueryException;
     PaginatedResponse<Branch> getAllBranches(int pageNumber, int pageSize) throws SQLException, QueryException;
+    int getTotalBranchCount() throws SQLException, QueryException;
+    public List<Branch> getBranchFunds() throws SQLException, QueryException;
+
 } 

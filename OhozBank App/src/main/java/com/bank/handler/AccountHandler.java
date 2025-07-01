@@ -190,6 +190,31 @@ public class AccountHandler {
             ResponseUtil.sendError(res, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Server error.");
         }
     }
+    public void totalAccounts(HttpServletRequest req, HttpServletResponse res) throws IOException {
+        try {
+            HttpSession session = req.getSession(false);
+            if (!SessionUtil.isAdminOrSuperAdmin(session, res)) return;
+
+            String role = (String) session.getAttribute("role");
+            int totalAccounts;
+
+            if ("ADMIN".equalsIgnoreCase(role)) {
+                Long branchId = (Long) session.getAttribute("branchId");
+                totalAccounts = accountService.getTotalAccountsByBranch(branchId);
+            } else {
+                totalAccounts = accountService.getTotalAccountCount();
+            }
+
+            JSONObject response = new JSONObject();
+            response.put("totalAccounts", totalAccounts);
+
+            ResponseUtil.sendJson(res, HttpServletResponse.SC_OK, response);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error fetching total account count", e);
+            ResponseUtil.sendError(res, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Unable to fetch account count.");
+        }
+    }
+
   
 }
 

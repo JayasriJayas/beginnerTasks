@@ -2,7 +2,6 @@ package com.bank.handler;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -11,7 +10,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.bank.factory.ServiceFactory;
@@ -72,7 +70,7 @@ public class AdminHandler {
             return;
         }
 
-        userRequest.setRoleId(2); // Role ID for Admin
+        userRequest.setRoleId(2);
         long adminId = (long) session.getAttribute("adminId");
 
         boolean success = adminService.addAdmin(userRequest, adminId);
@@ -133,4 +131,21 @@ public class AdminHandler {
             ResponseUtil.sendError(res, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Server error");
         }
     }
+    public void totalAdmins(HttpServletRequest req, HttpServletResponse res) throws IOException {
+        try {
+            HttpSession session = req.getSession(false);
+            if (!SessionUtil.isSuperAdmin(session, res)) return;
+
+            int totalAdmins = adminService.getTotalAdminCount();
+
+            JSONObject response = new JSONObject();
+            response.put("totalAdmins", totalAdmins);
+
+            ResponseUtil.sendJson(res, HttpServletResponse.SC_OK, response);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error fetching total admin count", e);
+            ResponseUtil.sendError(res, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Unable to fetch admin count.");
+        }
+    }
+
 }

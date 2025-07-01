@@ -2,6 +2,7 @@ package com.bank.dao;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 
 import com.bank.models.Branch;
 
@@ -16,7 +17,10 @@ public interface BranchDAO {
 	   List<Branch> getAllBranches(int limit, int offset) throws SQLException, QueryException;
 	   Branch findByIfscCode(String ifscCode)throws SQLException, QueryException;
 	   int countGetAllBranch() throws SQLException, QueryException ;
-	   
+	   int countAllBranches() throws SQLException, QueryException;
+	   List<Map<String, Object>> getBranchFunds() throws SQLException, QueryException;
+
+
 
 
 }

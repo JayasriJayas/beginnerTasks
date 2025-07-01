@@ -9,6 +9,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.bank.dao.AccountRequestDAO;
+import com.bank.dao.BranchDAO;
 import com.bank.enums.RequestStatus;
 import com.bank.enums.UserRole;
 import com.bank.factory.DaoFactory;
@@ -23,6 +24,7 @@ public class AccountRequestServiceImpl implements AccountRequestService {
 
     private static final Logger logger = Logger.getLogger(AccountRequestServiceImpl.class.getName());
     private final AccountRequestDAO accountReqDAO = DaoFactory.getAccountRequestDAO();
+    private final BranchDAO branchDAO = DaoFactory.getBranchDAO();
 
     @Override
     public PaginatedResponse<AccountRequest> getAllRequests(long fromTimestamp, long toTimestamp, int pageNumber, int pageSize,RequestStatus status) throws SQLException, QueryException {
@@ -77,6 +79,7 @@ public class AccountRequestServiceImpl implements AccountRequestService {
     @Override
     public boolean approveAccountRequest(long requestId, long adminId) throws SQLException, QueryException {
         try {
+        	System.out.println("i am here");
             return accountReqDAO.approveRequest(requestId, adminId);
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error approving account request ID: " + requestId, e);
@@ -92,18 +95,20 @@ public class AccountRequestServiceImpl implements AccountRequestService {
             return Collections.emptyList();
         }
     }
+
     @Override
-    public Map<String, Long> getRequestStatusCounts(String role, long adminId, long branchId) throws SQLException, QueryException {
+    public Map<String, Long> getRequestStatusCounts(String role, long adminId) throws SQLException, QueryException{
         try {
-            if (UserRole.SUPERADMIN.name().equalsIgnoreCase(role)) {
-                return accountReqDAO.getStatusCounts(null);
-            } else if (UserRole.ADMIN.name().equalsIgnoreCase(role)) {
-                return accountReqDAO.getStatusCounts(branchId);
+            if ("ADMIN".equalsIgnoreCase(role)) {
+                long branchId = branchDAO.getBranchIdByAdminId(adminId);
+                return accountReqDAO.getRequestStatusCounts(branchId);
+            } else if ("SUPERADMIN".equalsIgnoreCase(role)) {
+                return accountReqDAO.getRequestStatusCounts(null); 
             } else {
-                return Collections.emptyMap();
+                return Collections.emptyMap(); 
             }
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "Failed to fetch status counts", e);
+            logger.log(Level.SEVERE, "Error fetching request status counts", e);
             return Collections.emptyMap();
         }
     }
@@ -117,7 +122,7 @@ public class AccountRequestServiceImpl implements AccountRequestService {
         }
     }
     @Override
-    public List<Long> rejectMultipleRequests(List<Long> requestIds, long adminId, String reason, String role, long branchId) throws SQLException, QueryException {
+    public List<Long> rejectMultipleRequests(List<Long> requestIds, long adminId, String reason, String role, Long branchId) throws SQLException, QueryException {
         List<Long> failed = new ArrayList<>();
         for (Long id : requestIds) {
             try {
@@ -126,10 +131,13 @@ public class AccountRequestServiceImpl implements AccountRequestService {
                     failed.add(id);
                     continue;
                 }
-                if (UserRole.ADMIN.name().equalsIgnoreCase(role) && request.getBranchId() != branchId) {
-                    failed.add(id);
-                    continue;
+                if (UserRole.ADMIN.name().equalsIgnoreCase(role)) {
+                    if (branchId == null || !branchId.equals(request.getBranchId())) {
+                        failed.add(id);
+                        continue;
+                    }
                 }
+
 
                 boolean success = accountReqDAO.rejectRequest(id, adminId, reason);
                 if (!success) failed.add(id);
@@ -142,13 +150,15 @@ public class AccountRequestServiceImpl implements AccountRequestService {
         return failed;
     }
     @Override
-    public boolean rejectUserRequest(long requestId, long adminId, String reason, String role, long branchId) {
+    public boolean rejectUserRequest(long requestId, long adminId, String reason, String role, Long branchId) {
         try {
             AccountRequest request = accountReqDAO.getAccountRequest(requestId);
             if (request == null || request.getStatus() != RequestStatus.PENDING) return false;
 
-            if (UserRole.ADMIN.name().equalsIgnoreCase(role) && request.getBranchId() != branchId) {
+            if (UserRole.ADMIN.name().equalsIgnoreCase(role)) {
+                if (branchId == null || !branchId.equals(request.getBranchId())){
                 return false;
+            }
             }
 
             return accountReqDAO.rejectRequest(requestId, adminId, reason);
@@ -158,7 +168,7 @@ public class AccountRequestServiceImpl implements AccountRequestService {
         }
     }
     @Override
-    public List<Long> approveMultipleRequests(List<Long> requestIds, long adminId, String role, long branchId) throws SQLException, QueryException {
+    public List<Long> approveMultipleRequests(List<Long> requestIds, long adminId, String role, Long branchId) throws SQLException, QueryException {
         List<Long> failedIds = new ArrayList<>();
 
         for (Long requestId : requestIds) {
@@ -170,9 +180,11 @@ public class AccountRequestServiceImpl implements AccountRequestService {
                     continue;
                 }
 
-                if ("ADMIN".equalsIgnoreCase(role) && request.getBranchId() != branchId) {
-                    failedIds.add(requestId);
-                    continue;
+                if (UserRole.ADMIN.name().equalsIgnoreCase(role)) {
+                    if (branchId == null || !branchId.equals(request.getBranchId())) {
+                        failedIds.add(requestId);
+                        continue;
+                    }
                 }
 
                 boolean success = accountReqDAO.approveRequest(requestId, adminId);

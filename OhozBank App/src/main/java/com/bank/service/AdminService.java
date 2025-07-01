@@ -1,7 +1,6 @@
 package com.bank.service;
 
 import java.sql.SQLException;
-import java.util.List;
 import java.util.Map;
 
 import com.bank.models.PaginatedResponse;
@@ -14,6 +13,7 @@ public interface AdminService {
     boolean updateEmployeeDetails(Map<String, Object> updates) throws SQLException, QueryException;
     Map<String, Object> getAdminById(long adminId) throws SQLException;
     PaginatedResponse<Map<String, Object>> getAllAdmins(int page, int size) throws SQLException, QueryException ;
+    int getTotalAdminCount() throws SQLException, QueryException;
 
 
 }

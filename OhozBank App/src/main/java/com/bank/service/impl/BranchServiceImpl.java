@@ -1,7 +1,10 @@
 package com.bank.service.impl;
 
+import java.math.BigDecimal;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -87,4 +90,26 @@ public class BranchServiceImpl implements BranchService {
     public Branch getBranchByIfscCode(String ifscCode) throws SQLException, QueryException {
         return branchDAO.findByIfscCode(ifscCode);
     }
+    @Override
+    public int getTotalBranchCount() throws SQLException, QueryException {
+        return branchDAO.countAllBranches();
+    }
+    @Override
+    public List<Branch> getBranchFunds() throws SQLException, QueryException {
+        List<Map<String, Object>> rows = branchDAO.getBranchFunds();
+        List<Branch> summaries = new ArrayList<>();
+
+        for (Map<String, Object> row : rows) {
+            Branch summary = new Branch();
+            summary.setBranchId(((Number) row.get("branchId")).longValue());
+            summary.setBranchName((String) row.get("branchName"));
+            Object total = row.get("totalFunds");
+            summary.setTotalFunds(total != null ? (BigDecimal) total : BigDecimal.ZERO);
+            summaries.add(summary);
+        }
+
+        return summaries;
+    }
+
+
 }

@@ -3,6 +3,11 @@
   <div class="table-header">
     <h2>Account Requests</h2>
   </div>
+  <div class="status-summary">
+    <span>Total Pending: <strong id="pendingCount">0</strong></span>
+    <span>Total Approved: <strong id="approvedCount">0</strong></span>
+    <span>Total Rejected: <strong id="rejectedCount">0</strong></span>
+  </div>
 
   <!-- Filters -->
   <div class="transaction-nav">
@@ -12,7 +17,18 @@
       <button id="filterBtn">Filter</button>
     </div>
   </div>
-
+    <div class="status-filter-group">
+    <label for="statusFilter">Filter by Status:</label>
+    <select id="statusFilter">
+      <option value="PENDING" selected>PENDING</option>
+      <option value="APPROVED">APPROVED</option>
+      <option value="REJECTED">REJECTED</option>
+      <option value="">All</option>
+    </select>
+  </div>
+    <button id="approveBtn">Accept Selected</button>
+    <button id="rejectBtn">Reject Selected</button>
+  </div>
   <!-- Table -->
   <table>
     <thead>
@@ -49,6 +65,19 @@
 
     <div class="pagination-right">
       Showing <span id="showingRange">0 to 0</span> of <span id="totalEntries">0</span> entries
+    </div>
+  </div>
+</div>
+<div id="requestModalOverlay" class="modal-overlay hidden">
+  <div class="modal-box">
+    <h3 class="modal-title">Account Request Details</h3>
+    <div class="modal-body" id="requestDetailsContent">
+      <!-- Details filled by JS -->
+    </div>
+    <div class="modal-footer">
+      <button class="profile-btn logout-btn" onclick="closeRequestModal()">
+        <i class='bx bx-x'></i> Close
+      </button>
     </div>
   </div>
 </div>

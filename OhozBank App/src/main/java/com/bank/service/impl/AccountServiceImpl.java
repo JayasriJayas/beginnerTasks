@@ -102,6 +102,16 @@ public class AccountServiceImpl implements AccountService {
     public BigDecimal getTotalBalanceByUser(long userId) throws SQLException, QueryException {
         return accountDAO.getTotalBalanceByUser(userId);
     }
+    @Override
+    public int getTotalAccountsByBranch(Long branchId) throws SQLException, QueryException {
+        return accountDAO.countAccountsByBranch(branchId);
+    }
+    @Override
+    public int getTotalAccountCount() throws SQLException, QueryException {
+        return accountDAO.countAllAccounts();
+    }
+
+
 
 
 }

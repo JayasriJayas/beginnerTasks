@@ -1,8 +1,11 @@
-<!-- admin-list.html -->
 <div class="admin-table-container">
-  <div class="admin-table-header">
-    <h2>Admin List</h2>
+ <div class="admin-table-header">
+  <h2>Admin List</h2>
+  <div class="add-admin-icon" onclick="openAddAdminModal()" data-tooltip="Add Admin">
+    <i class="bx bx-user-plus"></i>
   </div>
+</div>
+
 
   <table class="admin-table">
     <thead>
@@ -12,7 +15,10 @@
         <th>Name</th>
         <th>Email</th>
         <th>Branch ID</th>
-        <th>Status</th>
+        <th>Phone</th>
+        <th>Created At</th>
+         <th>Modified By</th>
+          <th>Modified At</th>
       </tr>
     </thead>
     <tbody id="adminTableBody">
@@ -20,22 +26,70 @@
     </tbody>
   </table>
 
-  <div class="admin-page-controls" style="margin-top: 0.5rem;">
-    <label for="adminEntriesPerPage">Entries per page:</label>
-    <select id="adminEntriesPerPage">
-      <option value="5">5</option>
-      <option value="10" selected>10</option>
-      <option value="20">20</option>
-    </select>
-  </div>
-
-  <div class="admin-pagination">
-    <button id="adminPrevBtn" class="page-btn">Previous</button>
-    <div class="page-numbers" id="adminPageNumbers"></div>
-    <button id="adminNextBtn" class="page-btn">Next</button>
-
+  <!-- Pagination Controls -->
+  <div class="admin-page-controls">
+    <!-- Entries per page -->
     <div>
+      <label for="adminEntriesPerPage">Entries per page:</label>
+      <select id="adminEntriesPerPage">
+        <option value="5">5</option>
+        <option value="10" selected>10</option>
+        <option value="20">20</option>
+      </select>
+    </div>
+
+    <!-- Pagination buttons -->
+    <div class="admin-pagination">
+      <button id="adminPrevBtn" class="page-btn">Previous</button>
+      <div class="page-numbers" id="adminPageNumbers"></div>
+      <button id="adminNextBtn" class="page-btn">Next</button>
+    </div>
+
+    <!-- Showing range -->
+    <div class="admin-pagination-right">
       Showing <span id="adminShowingRange">0 to 0</span> of <span id="adminTotalEntries">0</span>
     </div>
   </div>
+  
 </div>
+<div id="addAdminModal" class="modal-overlay hidden">
+  <div class="modal-box">
+    <h3>Add Admin</h3>
+    <i class="bx bx-x close-icon" onclick="closeAddAdminModal()" data-tooltip="Close"></i>
+    <form id="addAdminForm">
+      <div class="form-group">
+        <input type="email" id="username" required />
+        <label for="username">Username (email)</label>
+      </div>
+      <div class="form-group">
+        <input type="password" id="password" required />
+        <label for="password">Password</label>
+      </div>
+      <div class="form-group">
+        <input type="text" id="name" required />
+        <label for="name">Full Name</label>
+      </div>
+      <div class="form-group">
+        <input type="email" id="email" required />
+        <label for="email">Email</label>
+      </div>
+      <div class="form-group">
+        <input type="tel" id="phone" required />
+        <label for="phone">Phone</label>
+      </div>
+      <div class="form-group">
+        <select id="gender" required>
+          <option value="MALE">Male</option>
+          <option value="FEMALE">Female</option>
+        </select>
+        <label for="gender">Gender</label>
+      </div>
+      <div class="form-group">
+        <input type="number" id="branchId" required />
+        <label for="branchId">Branch ID</label>
+      </div>
+      <button type="submit" class="form-submit-btn">Add Admin</button>
+    </form>
+  </div>
+</div>
+

@@ -134,6 +134,39 @@ public class BranchDAOImpl implements BranchDAO {
 	    }
 
 	   }
+	   @Override
+	   public int countAllBranches() throws SQLException, QueryException {
+	       QueryBuilder qb = new QueryBuilder(new MySQLDialect());
+	       qb.select().aggregate("COUNT", "*").as("total").from("branch");
+
+	       try (Connection conn = DBConnectionPool.getInstance().getConnection()) {
+	           QueryExecutor qe = new QueryExecutor(conn);
+	           List<Map<String, Object>> result = qe.executeQuery(qb.build());
+	           return result.isEmpty() ? 0 : ((Number) result.get(0).get("total")).intValue();
+	       }
+	   }
+	   @Override
+	   public List<Map<String, Object>> getBranchFunds() throws SQLException, QueryException {
+	       QueryBuilder qb = new QueryBuilder(new MySQLDialect());
+
+	       qb.select("b.branchId")
+	         .select("b.branchName")
+	         .aggregate("SUM", "a.balance").as("totalFunds")
+	         .from("branch b")
+	         .leftJoin("account a", "b.branchId = a.branchId")
+	         .groupBy("b.branchId")
+	         .groupBy("b.branchName");
+
+	       try (Connection conn = DBConnectionPool.getInstance().getConnection()) {
+	           QueryExecutor executor = new QueryExecutor(conn);
+	           return executor.executeQuery(qb.build());
+	       }
+	   }
+
+
+	   
+
+	   
 
 
 }

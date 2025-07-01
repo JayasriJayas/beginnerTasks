@@ -3,8 +3,10 @@ package com.bank.service;
 import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 
 import com.bank.exception.BankingException;
+import com.bank.models.Branch;
 import com.bank.models.PaginatedResponse;
 import com.bank.models.Transaction;
 
@@ -44,7 +46,13 @@ throws SQLException, QueryException, BankingException ;
             throws SQLException, QueryException ;
     
    
-	   
+    List<Branch> getCurrentMonthOutgoingPerBranch() throws SQLException, QueryException;
+    List<Branch> getCurrentMonthIncomingPerBranch() throws SQLException, QueryException;
+    Map<String, BigDecimal> getTransactionTypeSummaryByBranch(long branchId) throws SQLException, QueryException;
+    Map<String, BigDecimal> getTransactionTypeSummaryAllBranches() throws SQLException, QueryException;
+    List<Map<String, Object>> getTopBranchesByTransactionCount(int limit) throws SQLException, QueryException;
+
+
 
 	
 //	boolean transfer(long fromAccountId, long toAccountId, BigDecimal amount, String performedBy);

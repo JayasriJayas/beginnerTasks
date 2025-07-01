@@ -19,7 +19,7 @@ public interface AccountRequestDAO {
     boolean approveRequest(long requestId,long adminId) throws SQLException,QueryException;
     
     boolean rejectRequest(long requestId, long adminId, String reason) throws SQLException, QueryException;
-    Map<String, Long> getStatusCounts(Long branchId) throws SQLException, QueryException;
+    Map<String, Long> getRequestStatusCounts(Long branchId) throws SQLException, QueryException;
     AccountRequest getAccountRequest(long requestId) throws SQLException, QueryException;
 
 }

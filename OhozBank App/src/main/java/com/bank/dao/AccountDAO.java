@@ -18,6 +18,8 @@ public interface AccountDAO {
 	  boolean isAccountInBranch(long accountId, long branchId) throws SQLException, QueryException ;
 	  List<Account> getAccountsByUserId(long userId) throws SQLException, QueryException;
 	  BigDecimal getTotalBalanceByUser(long userId) throws SQLException, QueryException;
+	  int countAccountsByBranch(Long branchId) throws SQLException, QueryException;
+	  int countAllAccounts() throws SQLException, QueryException;
 
 
 

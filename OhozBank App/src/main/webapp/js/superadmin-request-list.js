@@ -9,6 +9,10 @@ function initSuperAdminRequestList() {
   const fromDateInput = document.getElementById("fromDate");
   const toDateInput = document.getElementById("toDate");
   const entriesSelect = document.getElementById("entriesPerPage");
+  const statusFilter = document.getElementById("statusFilter");
+  const approveBtn = document.getElementById("approveBtn");
+  const rejectBtn = document.getElementById("rejectBtn");
+  toggleActionButtons(statusFilter.value);
 
   setDefaultFilters(fromDateInput, toDateInput, entriesSelect);
 
@@ -46,9 +50,22 @@ function initSuperAdminRequestList() {
     const checkboxes = document.querySelectorAll(".rowCheckbox");
     checkboxes.forEach(cb => cb.checked = this.checked);
   });
-
+ 
   loadRequests(fromDateInput.value, toDateInput.value, currentPage, entriesPerPage);
 
+  statusFilter.addEventListener("change", (e) => {
+      toggleActionButtons(e.target.value);
+    });
+
+  function toggleActionButtons(status) {
+      if (status === "PENDING") {
+        approveBtn.style.display = "inline-block"; // Show buttons
+        rejectBtn.style.display = "inline-block";
+      } else {
+        approveBtn.style.display = "none"; // Hide buttons
+        rejectBtn.style.display = "none";
+      }
+    }
   function setDefaultFilters(fromInput, toInput, entriesSelect) {
     const now = new Date();
     const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
@@ -93,7 +110,7 @@ function initSuperAdminRequestList() {
         renderTable();
       })
       .catch(err => {
-        console.error("❌ Failed to load requests:", err);
+        console.error(" Failed to load requests:", err);
         document.getElementById("requestTableBody").innerHTML =
           "<tr><td colspan='9'>Failed to load data.</td></tr>";
       });
@@ -225,7 +242,7 @@ function initSuperAdminRequestList() {
          document.getElementById("requestModalOverlay").classList.remove("hidden");
        })
        .catch((err) => {
-         console.error("❌ View request error:", err);
+         console.error(" View request error:", err);
          alert("Unable to fetch request details.");
        });
    };
@@ -282,15 +299,16 @@ function initSuperAdminRequestList() {
   }
 
   function addActionButtons(itemId, status) {
-    const viewBtn = `<button onclick="viewRequest(${itemId})">🔍</button>`;
-    if (status?.toUpperCase() === "PENDING") {
-      const approveBtn = `<button onclick="approveRequest(${itemId})">✔</button>`;
-      const rejectBtn = `<button onclick="rejectRequest(${itemId})">❌</button>`;
-      return `${viewBtn} ${approveBtn} ${rejectBtn}`;
-    } else {
-      return viewBtn;
-    }
+      const viewBtn = `<button onclick="viewRequest(${itemId})"><i class='bx bx-show'></i></button>`;
+      if (status?.toUpperCase() === "PENDING") {
+        const approveBtn = `<button onclick="approveRequest(${itemId})"><i class='bx bx-check'></i></button>`;
+        const rejectBtn = `<button onclick="rejectRequest(${itemId})"><i class='bx bx-x'></i></button>`;
+        return `${viewBtn} ${approveBtn} ${rejectBtn}`;
+      } else {
+        return viewBtn;
+      }
   }
+
   function fetchStatusCounts() {
     fetch(`${BASE_URL}/api/status-counts/request`, {
       method: "GET",

@@ -80,6 +80,32 @@ public class UserHandler {
             ResponseUtil.sendError(res, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Server error.");
         }
     }
+    public void totalUsers(HttpServletRequest req, HttpServletResponse res) throws IOException {
+        try {
+            HttpSession session = req.getSession(false);
+            if (!SessionUtil.isAdminOrSuperAdmin(session, res)) return;
+
+            String role = (String) session.getAttribute("role");
+            int totalUsers;
+
+            if ("ADMIN".equalsIgnoreCase(role)) {
+                Long branchId = (Long) session.getAttribute("branchId");
+                totalUsers = userService.getTotalUsersOnlyByBranch(branchId);
+            } else {
+                totalUsers = userService.getTotalUsersOnlyCount(); // superadmin: all users
+            }
+
+            JSONObject response = new JSONObject();
+            response.put("totalUsers", totalUsers);
+
+            ResponseUtil.sendJson(res, HttpServletResponse.SC_OK, response);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error fetching total user count", e);
+            ResponseUtil.sendError(res, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Unable to fetch user count.");
+        }
+    }
+
+
 
    
    
