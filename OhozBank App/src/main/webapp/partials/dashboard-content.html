@@ -24,41 +24,47 @@
     </div>
   </div>
 
-  <!-- Right: Dashboard Insights -->
-  <!-- Right: Dashboard Insights -->
 <div class="dashboard-right">
   <h3 class="section-title"><i class='bx bx-bar-chart-alt-2'></i> Insights</h3>
-  
-  <div id="insightsContainer">
-    <div>
-      <label for="accountSelect"><strong>Select Account:</strong></label>
-      <select id="accountSelect">
-        <option value="ALL">All Accounts</option>
-        <!-- Account options will be dynamically injected here -->
-      </select>
-    </div>
-    <div id="totalBalance">
-      <p><strong>Total Balance:</strong></p>
-    </div>
-    <div id="thisMonthCredits">
-      <p><strong>This Month's Credits:</strong></p>
-    </div>
-    <div id="thisMonthDebits">
-      <p><strong>This Month's Debits:</strong></p>
-    </div>
-    <div id="pieChartContainer" style="width: 100%; height: 300px;">
-      <!-- Pie Chart will be rendered here -->
+
+  <div style="margin-bottom: 1rem;">
+    <label for="accountSelect"><strong>Select Account:</strong></label>
+    <select id="accountSelect">
+      <option value="ALL">All Accounts</option>
+    </select>
+  </div>
+
+  <!-- Existing insights layout -->
+  <div id="insightsContainer" class="insight-flex">
+    <div class="pie-chart-box">
       <canvas id="insightChart"></canvas>
+    </div>
+
+    <div class="insight-values">
+      <div class="insight-item" id="totalBalance">
+        <strong>Total Balance:</strong>
+        <p>₹0</p>
+      </div>
+      <div class="insight-item" id="thisMonthCredits">
+        <strong>This Month's Credits:</strong>
+        <p>₹0</p>
+      </div>
+      <div class="insight-item" id="thisMonthDebits">
+        <strong>This Month's Debits:</strong>
+        <p>₹0</p>
+      </div>
     </div>
   </div>
 </div>
+
 
 </section>
 
 <!-- ⬇ Lower Half: Recent Transactions -->
 <section class="dashboard-lower">
   <div class="transaction-preview">
-    <h3><i class='bx bx-history'></i> Recent Transactions</h3>
+    <h3 class="section-title"><i class='bx bx-history'></i> Recent Transactions</h3>
+
     
     <div class="txn-table-scroll">
       <table>

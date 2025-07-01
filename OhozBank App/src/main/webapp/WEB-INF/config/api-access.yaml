@@ -72,7 +72,7 @@ routes:
     role: USER
 
   - path: /api/pending/account-request
-    method: GET
+    method: POST
     role: USER
 
   - path: /api/list/account-request

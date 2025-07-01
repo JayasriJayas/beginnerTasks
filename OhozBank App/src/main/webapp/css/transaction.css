@@ -14,7 +14,6 @@
     .table-container {
       background: var(--white);
       margin-left: var(--sidebar-collapsed-width);
-      margin-top: 64px;
       padding: 1.5rem;
       flex: 1;
       transition: margin-left 0.3s;
@@ -199,6 +198,13 @@
       background-color: var(--primary-color);
       color: var(--white);
     }
+    #prevBtn:disabled,
+#nextBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+    
 
     .page-number.active {
       background-color: var(--primary-color);

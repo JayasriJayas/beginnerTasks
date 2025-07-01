@@ -1,62 +1,59 @@
-/* Account Container Styling */
+
 .account-container {
   padding: 2rem;
-  background-color: #E8ECEB;
   min-height: 100vh;
   margin-left: var(--sidebar-collapsed-width);
-  margin-top: 64px;
   padding: 1.5rem;
   flex: 1;
   transition: margin-left 0.3s;
 }
 
 
-.account-heading {
-  font-size: 2rem;
-  color: #2D3E4E;
-  margin-bottom: 1.5rem;
+.account-heading,
+.pending-heading {
+  font-size: 1.6rem;
   font-weight: 600;
-  text-align: center;
-}
-.account-request-btn {
-  position: absolute;
-  top: 10%;  /* Align at the top of the container */
-  right: 10px;  /* Align to the right */
-  background-color: #8CBDB9;  /* Light blue background */
-  color: #fff;
-  font-size: 1.2rem;
-  padding: 0.8rem 1.2rem;
-  border-radius: 32px;
-  border: none;
-  cursor: pointer;
+  color: #2D3E4E;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  transition: background-color 0.3s, transform 0.2s ease-in-out;
-}
-.account-request-btn:hover {
-  background-color: #E09E50;  /* Hover to orange */
-  transform: translateY(-2px); /* Slight upward movement */
+  gap: 10px;
+  margin-bottom: 1rem;
+  margin-left: 0;
 }
 
-.account-request-btn i {
-  font-size: 1.4rem;
+.account-heading-row,
+.pending-filter-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
 }
 
-/* Tooltip styling */
+.status-filter {
+  padding: 8px 12px;
+  font-size: 0.95rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background: #fff;
+  color: #333;
+}
+
+
+
+
 .tooltip {
   visibility: hidden;
-  width: 140px;
-  background-color: #2D3E4E;  /* Dark background */
+  width: 115px;
+  background-color: #2D3E4E;  
   color: #fff;
   text-align: center;
   padding: 5px;
   border-radius: 6px;
   font-size: 0.9rem;
   position: absolute;
-  bottom: 125%;  /* Place above the button */
+  bottom: 125%;  
   left: 50%;
-  margin-left: -70px;  /* Center the tooltip */
+  margin-left: -70px; 
   opacity: 0;
   transition: opacity 0.3s;
 }
@@ -66,14 +63,14 @@
   opacity: 1;
 }
 
-/* Grid of Cards */
+
 .account-list {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
   gap: 1.5rem;
 }
 
-/* Individual Card Styling */
+
 .account-card {
   background-color: #fff;
   border-radius: 12px;
@@ -82,7 +79,7 @@
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   display: flex;
   flex-direction: column;
-  justify-content: space-between; /* Align content neatly */
+  justify-content: space-between;
 }
 
 .account-card:hover {
@@ -90,7 +87,7 @@
   box-shadow: 0 12px 22px rgba(0, 0, 0, 0.12);
 }
 
-/* Account Card Header */
+
 .account-header {
   display: flex;
   justify-content: space-between;
@@ -116,7 +113,7 @@
   background-color: #4CAF50;
 }
 
-/* Field groups */
+
 .account-details {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -142,7 +139,6 @@
 }
 
 
-/* Pending Table */
 .pending-table {
   width: 100%;
   border-collapse: separate;
@@ -224,9 +220,48 @@
   background-color: #d9534f;
 }
 
+.account-request-btn {
+  background-color: var(--primary-color); /* matches your theme */
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  font-size: 0.95rem;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.account-request-btn:hover {
+  background-color: var(--secondary-color);
+  transform: translateY(-2px);
+}
+
+/* Icon inside button */
+.account-request-btn i {
+  font-size: 1.2rem;
+}
+
+/* Tooltip text styling if needed */
+.account-request-btn .tooltip {
+  font-weight: 500;
+  font-size: 0.95rem;
+}
 
 
+@media (max-width: 480px) {
+  .account-request-btn {
+    font-size: 0.85rem;
+    padding: 8px 12px;
+  }
 
+  .account-request-btn i {
+    font-size: 1rem;
+  }
+}
 
 /* Responsive: Stack details in single column on smaller screens */
 @media (max-width: 600px) {

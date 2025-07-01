@@ -1,9 +1,9 @@
 :root {
-  --primary-color: #E09E50; /* Orange color for active state */
-  --secondary-color: #8CBDB9; /* Light color for inactive states */
-  --text-color: #2D3E4E; /* Dark grey text color */
-  --hover-color: #444; /* Slightly darker color for hover effect */
-  --heading-width: 500px; /* Set the max width of the form container */
+  --primary-color: #E09E50; 
+  --secondary-color: #8CBDB9; 
+  --text-color: #2D3E4E; 
+  --hover-color: #444;
+  --heading-width: 500px; 
 }
 
 .container {

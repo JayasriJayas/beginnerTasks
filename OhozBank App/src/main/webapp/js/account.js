@@ -188,15 +188,20 @@ async function requestNewAccount() {
 // Load pending account requests
 async function loadPendingRequests() {
   const body = document.getElementById("pendingRequestsBody");
-  const filter = document.getElementById("statusFilter")?.value || "ALL";
+  const filter = document.getElementById("statusFilter")?.value;
 
   if (!body) return;
 
   try {
-    const res = await fetch(`${BASE_URL}/api/pending/account-request`, {
-      method: "GET",
-      credentials: "include"
-    });
+	const res = await fetch(`${BASE_URL}/api/pending/account-request`, {
+	  method: "POST",
+	  credentials: "include",
+	  headers: {
+	    "Content-Type": "application/json"
+	  },
+	  body: JSON.stringify({ status: filter })
+	});
+
 
     if (res.status === 403) {
       body.innerHTML = `<tr><td colspan="4" style="color:red;">Unauthorized (403). Please log in.</td></tr>`;
@@ -211,9 +216,7 @@ async function loadPendingRequests() {
     let requests = await res.json();
     if (!Array.isArray(requests)) return;
 
-    if (filter !== "ALL") {
-      requests = requests.filter(req => req.status === filter);
-    }
+    
 
     requests.sort((a, b) => b.createdAt - a.createdAt);
 

@@ -18,12 +18,11 @@ function initTransactionPage() {
   let entriesPerPage = 10;
   let totalEntries = 0;
 
-  // 1️ Init
+
   populateAccounts();
   setDefaultFilters();
   attachFilterListeners();
 
-  // 2️ Populate Account Dropdown (with 'All Accounts')
   async function populateAccounts() {
     try {
       const response = await fetch(BASE_URL + "/api/get-accounts/account", {
@@ -50,7 +49,7 @@ function initTransactionPage() {
     }
   }
 
-  // 3️ Set default filters (date + entries)
+
   function setDefaultFilters() {
     const now = new Date();
     const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
@@ -60,8 +59,6 @@ function initTransactionPage() {
     toDateInput.value = lastDay.toISOString().split("T")[0];
     entriesSelect.value = "10";
   }
-
-  // Tab Navigation (All / Received / Transfer / Deposit / Withdraw)
   document.querySelectorAll(".transaction-tabs button").forEach((btn) => {
     btn.addEventListener("click", () => {
       document.querySelectorAll(".transaction-tabs button").forEach(b => b.classList.remove("active"));
@@ -73,7 +70,6 @@ function initTransactionPage() {
     });
   });
 
-  // Filter listeners
   function attachFilterListeners() {
     accountSelect.addEventListener("change", loadFilteredTransactions);
     fromDateInput.addEventListener("change", loadFilteredTransactions);
@@ -100,7 +96,6 @@ function initTransactionPage() {
     });
   }
 
-  // Load with current filters
   function loadFilteredTransactions() {
     const accountId = accountSelect.value;
     const fromDate = fromDateInput.value;
@@ -122,11 +117,10 @@ function initTransactionPage() {
     loadTransactions(payload);
   }
 
-  //  Fetch transactions with dynamic endpoint
   async function loadTransactions(payload) {
     tbody.innerHTML = "";
 
-    let endpoint = "/api/statement/transaction"; // default
+    let endpoint = "/api/statement/transaction";
 
     const hasAccount = !!payload.accountId;
 
@@ -191,7 +185,6 @@ function initTransactionPage() {
     }
   }
 
-  // 8️⃣ Pagination
   function updatePaginationDisplay() {
     const totalPages = Math.ceil(totalEntries / entriesPerPage);
     pageNumbersContainer.innerHTML = "";
@@ -215,11 +208,11 @@ function initTransactionPage() {
     showingRange.textContent = `${start} to ${end}`;
     totalEntriesEl.textContent = totalEntries;
 
-    prevBtn.disabled = currentPage === 1;
-    nextBtn.disabled = currentPage === totalPages;
+	prevBtn.disabled = currentPage === 1 || totalPages === 0;
+	nextBtn.disabled = currentPage === totalPages || totalPages === 0;
+
   }
 
-  // Format Timestamp
   function formatTimestamp(ms) {
     const date = new Date(ms);
     const dateStr = date.toLocaleDateString("en-IN");
@@ -231,7 +224,6 @@ function initTransactionPage() {
     return `${dateStr}<br><small>${timeStr}</small>`;
   }
 
-  // Status Icons
   function getStatusIcon(status) {
     if (status === "SUCCESS") return `<i class='bx bx-check-circle' style="color:green" title="Success"></i>`;
     if (status === "FAILED") return `<i class='bx bx-error-circle' style="color:red" title="Failed"></i>`;

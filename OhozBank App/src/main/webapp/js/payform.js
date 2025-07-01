@@ -32,7 +32,7 @@ function initPayform() {
   function openModal() {
     if (passwordModal) {
       passwordModal.style.display = "flex";
-      confirmPasswordInput.value = "";
+      confirmPasswordInput.value = ""; // Clear previous password
     }
   }
 
@@ -148,41 +148,50 @@ function initPayform() {
       });
   }
 
-  function openExternalForm() {
-    const internal = document.getElementById("internalTransferForm");
-    const external = document.getElementById("externalTransferForm");
 
-    internal.style.opacity = "0";
-    setTimeout(() => {
-      internal.style.display = "none";
-      external.style.display = "block";
-      external.style.opacity = "1";
-    }, 300);
-  }
 
-  function backToInternal() {
-    const internal = document.getElementById("internalTransferForm");
-    const external = document.getElementById("externalTransferForm");
-
-    external.style.opacity = "0";
-    setTimeout(() => {
-      external.style.display = "none";
-      internal.style.display = "block";
-      internal.style.opacity = "1";
-    }, 300);
-  }
+ 
 
   function closeModal() {
     if (passwordModal) passwordModal.style.display = "none";
   }
+  function switchForm(formIdToShow, btn) {
+    const forms = document.querySelectorAll(".form-wrapper");
+    const buttons = document.querySelectorAll(".nav-btn");
+
+    // Hide all forms
+    forms.forEach(form => {
+      form.style.opacity = "0";
+      setTimeout(() => {
+        form.style.display = "none";
+      }, 300);
+    });
+
+    // Show the selected form
+    const targetForm = document.getElementById(formIdToShow);
+    if (targetForm) {
+      setTimeout(() => {
+        targetForm.style.display = "block";
+        setTimeout(() => {
+          targetForm.style.opacity = "1";
+        }, 50);
+      }, 300);
+    }
+
+    // Update nav button styles
+    buttons.forEach(button => button.classList.remove("active"));
+    btn.classList.add("active");
+  }
+
+  
 
   window.submitTransfer = submitTransfer;
   window.closeModal = closeModal;
-  window.openExternalForm = openExternalForm;
-  window.backToInternal = backToInternal;
+  window.switchForm = switchForm;
+
 }
 
-// ✅ Populates both dropdowns
+//  Populates both dropdowns
 function populateUserAccounts() {
   const fromAccountSelect = document.getElementById("fromAccount");
   const extFromAccountSelect = document.getElementById("extFromAccount");
