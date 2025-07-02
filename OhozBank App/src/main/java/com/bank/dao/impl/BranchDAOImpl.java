@@ -162,6 +162,17 @@ public class BranchDAOImpl implements BranchDAO {
 	           return executor.executeQuery(qb.build());
 	       }
 	   }
+	   @Override
+	   public List<Map<String, Object>> getAllBranches() throws SQLException, QueryException {
+	       QueryBuilder qb = new QueryBuilder(new MySQLDialect());
+	       qb.select("*").from("branch");
+
+	       try (Connection conn = DBConnectionPool.getInstance().getConnection()) {
+	           QueryExecutor qe = new QueryExecutor(conn);
+	           return qe.executeQuery(qb.build());
+	       }
+	   }
+
 
 
 	   

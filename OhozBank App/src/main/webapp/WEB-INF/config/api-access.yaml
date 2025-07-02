@@ -219,6 +219,10 @@ routes:
     method: GET
     role: ADMIN,SUPERADMIN
 
+  - path: /api/daily-counts/transaction
+    method: POST
+    role: ADMIN
+
   - path: /api/transaction-count/transaction
     method: GET
     role: SUPERADMIN
@@ -238,6 +242,10 @@ routes:
   - path: /api/branch-funds/branch
     method: GET
     role: SUPERADMIN
+
+  - path: /api/all-branch/branch
+    method: GET
+    role: USER,ADMIN,SUPERADMIN
 
   - path: /api/get/admin
     method: POST
@@ -262,4 +270,8 @@ routes:
   - path: /api/list-branch/account
     method: POST
     role: ADMIN,SUPERADMIN
+
+  - path: /api/account-summary/transaction
+    method: POST
+    role: ADMIN
  

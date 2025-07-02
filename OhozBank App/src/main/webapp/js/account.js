@@ -31,8 +31,6 @@ function showToast(message, type = "info") {
 
 // Initialize Account Page
 async function initAccountPage() {
-
-
   document.getElementById("statusFilter")?.addEventListener("change", loadPendingRequests);
 
   // Auto refresh every 30 sec
@@ -57,8 +55,8 @@ async function initAccountList() {
     });
 
     if (!res.ok) {
-      const errorData = await res.json();  // Capturing error message from backend
-      throw new Error(errorData.message || "Failed to fetch accounts");  // Use backend message if available
+      const errorData = await res.json();
+      throw new Error(errorData.message || "Failed to fetch accounts");
     }
 
     const accounts = await res.json();
@@ -68,16 +66,14 @@ async function initAccountList() {
       return;
     }
 
-    container.innerHTML = ""; // Clear existing
-
+    container.innerHTML = "";
     accounts.forEach(account => {
       container.appendChild(renderAccountCard(account));
     });
-
   } catch (err) {
     console.error("Error fetching accounts:", err);
     container.innerHTML = `<p style="color:red;">Unable to load account data.</p>`;
-    showToast(err.message || "Unable to load account data.", "error");  // Show toast for error with backend message if available
+    showToast(err.message || "Unable to load account data.", "error");
   }
 }
 
@@ -111,7 +107,6 @@ function renderAccountCard(account) {
   return card;
 }
 
-// Render individual fields in account card
 function renderField(label, value) {
   const icons = {
     "Account ID": "bx-hash",
@@ -131,17 +126,14 @@ function renderField(label, value) {
   `;
 }
 
-// Mask the account ID for display
 function maskAccountId(id) {
   return "XXXX-" + String(id).padStart(4, "0");
 }
 
-// Format currency value
 function formatCurrency(amount) {
   return typeof amount === "number" ? `₹${amount.toLocaleString("en-IN")}` : "--";
 }
 
-// Format date
 function formatDate(timestamp) {
   if (!timestamp) return "--";
   const date = new Date(Number(timestamp));
@@ -152,56 +144,87 @@ function formatDate(timestamp) {
   });
 }
 
-// Request a new account
+// Update requestNewAccount to use dropdown modal
 async function requestNewAccount() {
-  const branchId = prompt("Enter the Branch ID for the new account:");
-
-  if (!branchId || isNaN(branchId)) {
-    showToast("Invalid Branch ID. Please enter a valid number.", "error");  // Show toast for invalid input
-    return;
-  }
-
   try {
-    const res = await fetch(`${BASE_URL}/api/request/account-request`, {
-      method: "POST",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ branchId: Number(branchId) })
+    const res = await fetch(`${BASE_URL}/api/all-branch/branch`, {
+      method: "GET",
+      credentials: "include"
     });
 
-    if (!res.ok) {
-      const errorData = await res.json();
-      throw new Error(errorData.message || "Failed to request account");
-    }
+    if (!res.ok) throw new Error("Failed to fetch branches");
 
-    showToast("Account request sent. Awaiting approval.", "success");  // Show success toast
-    loadPendingRequests(); // Refresh pending requests table
+    const data = await res.json();
+    const branches = data.branches || [];
+
+    const modal = document.createElement("div");
+    modal.className = "modal-overlay";
+    modal.innerHTML = `
+      <div class="modal-box">
+        <h3>Select Branch</h3>
+        <select id="branchSelect">
+          <option value="">-- Choose a branch --</option>
+          ${branches.map(b => `<option value="${b.branchId}">${b.branchId} - ${b.branchName}</option>`).join("")}
+        </select>
+        <div class="modal-buttons">
+          <button type="button" onclick="confirmAccountRequest()">Request</button>
+          <button type="button" onclick="this.closest('.modal-overlay').remove()">Cancel</button>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(modal);
+
+    window.confirmAccountRequest = async function () {
+      const selectedBranchId = document.getElementById("branchSelect").value;
+      if (!selectedBranchId) {
+        showToast("Please select a branch.", "warning");
+        return;
+      }
+
+      try {
+        const res = await fetch(`${BASE_URL}/api/request/account-request`, {
+          method: "POST",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ branchId: Number(selectedBranchId) })
+        });
+
+        const result = await res.json();
+        if (!res.ok) throw new Error(result.message || "Request failed");
+
+        showToast("Account request sent successfully.", "success");
+        
+		console.log("Removing modal overlay...");
+		setTimeout(() => {
+		  document.querySelectorAll(".modal-overlay").forEach(el => el.remove());
+		}, 100);
+
+        loadPendingRequests();
+      } catch (err) {
+        console.error("Error submitting request:", err);
+        showToast(err.message || "Request failed.", "error");
+      }
+    };
 
   } catch (err) {
-    console.error("Error requesting account:", err);
-    showToast(err.message || "Unable to send account request.", "error");  // Show error toast
+    console.error("Error loading branches:", err);
+    showToast("Unable to load branches", "error");
   }
 }
 
-// Load pending account requests
 async function loadPendingRequests() {
   const body = document.getElementById("pendingRequestsBody");
   const filter = document.getElementById("statusFilter")?.value;
-
   if (!body) return;
 
   try {
-	const res = await fetch(`${BASE_URL}/api/pending/account-request`, {
-	  method: "POST",
-	  credentials: "include",
-	  headers: {
-	    "Content-Type": "application/json"
-	  },
-	  body: JSON.stringify({ status: filter })
-	});
-
+    const res = await fetch(`${BASE_URL}/api/pending/account-request`, {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status: filter })
+    });
 
     if (res.status === 403) {
       body.innerHTML = `<tr><td colspan="4" style="color:red;">Unauthorized (403). Please log in.</td></tr>`;
@@ -216,10 +239,7 @@ async function loadPendingRequests() {
     let requests = await res.json();
     if (!Array.isArray(requests)) return;
 
-    
-
     requests.sort((a, b) => b.createdAt - a.createdAt);
-
     body.innerHTML = "";
 
     if (requests.length === 0) {
@@ -247,15 +267,13 @@ async function loadPendingRequests() {
       `;
       body.appendChild(row);
     });
-
   } catch (err) {
     console.error("Error loading pending requests:", err);
     body.innerHTML = `<tr><td colspan="4" style="color:red;">Failed to load.</td></tr>`;
-    showToast(err.message || "Failed to load pending requests", "error");  // Show error toast
+    showToast(err.message || "Failed to load pending requests", "error");
   }
 }
 
-// Format datetime
 function formatDateTime(timestamp) {
   if (!timestamp) return "--";
   const date = new Date(Number(timestamp));

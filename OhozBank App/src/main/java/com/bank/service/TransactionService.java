@@ -51,7 +51,8 @@ throws SQLException, QueryException, BankingException ;
     Map<String, BigDecimal> getTransactionTypeSummaryByBranch(long branchId) throws SQLException, QueryException;
     Map<String, BigDecimal> getTransactionTypeSummaryAllBranches() throws SQLException, QueryException;
     List<Map<String, Object>> getTopBranchesByTransactionCount(int limit) throws SQLException, QueryException;
-
+    List<Map<String, Object>> getDailyTransactionCountsForBranch(long branchId, long fromTimestamp, long toTimestamp) throws SQLException, QueryException;
+    List<Map<String, Object>> getAccountTransactionSummaryByBranch(long branchId, long totalLimit) throws SQLException, QueryException ;
 
 
 	

@@ -20,6 +20,7 @@ import com.bank.enums.UserRole;
 import com.bank.factory.ServiceFactory;
 import com.bank.models.Branch;
 import com.bank.models.PaginatedResponse;
+import com.bank.models.Pagination;
 import com.bank.models.StatementRequest;
 import com.bank.models.Transaction;
 import com.bank.service.TransactionService;
@@ -690,6 +691,46 @@ public class TransactionHandler {
             ResponseUtil.sendError(res, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Failed to fetch data.");
         }
     }
+    
+    public void dailyCounts(HttpServletRequest req, HttpServletResponse res) throws IOException {
+        HttpSession session = req.getSession(false);
+        if (!SessionUtil.isSessionAvailable(session, res)) return;
+
+        long branchId = (Long) session.getAttribute("branchId"); 
+        Pagination payload = RequestParser.parseRequest(req, Pagination.class);
+
+        long fromTimestamp = Instant.parse(payload.getFromDate().trim()+ "T00:00:00Z").toEpochMilli();
+        long toTimestamp = Instant.parse(payload.getToDate().trim() + "T23:59:59Z").toEpochMilli();
+
+
+        try {
+            List<Map<String, Object>> dailyData = transactionService.getDailyTransactionCountsForBranch(branchId, fromTimestamp, toTimestamp);
+            JSONArray jsonArray = new JSONArray(dailyData);
+            ResponseUtil.sendJson(res, HttpServletResponse.SC_OK, jsonArray);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error fetching daily transaction counts", e);
+            ResponseUtil.sendError(res, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Failed to fetch daily transaction data.");
+        }
+    }
+    public void accountSummary(HttpServletRequest req, HttpServletResponse res) throws IOException {
+        HttpSession session = req.getSession(false);
+        if (!SessionUtil.isSessionAvailable(session, res)) return;
+
+        long branchId = (Long) session.getAttribute("branchId"); 
+        long totalLimit = Long.parseLong(req.getParameter("limit"));
+
+        try {
+            List<Map<String, Object>> accountSummary = transactionService.getAccountTransactionSummaryByBranch(branchId, totalLimit);
+            JSONArray jsonArray = new JSONArray(accountSummary);
+            ResponseUtil.sendJson(res, HttpServletResponse.SC_OK, jsonArray);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error fetching account transaction summary", e);
+            ResponseUtil.sendError(res, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Failed to fetch account transaction summary.");
+        }
+    }
+
+
+
     
 
 

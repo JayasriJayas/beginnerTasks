@@ -19,6 +19,8 @@ public interface BranchDAO {
 	   int countGetAllBranch() throws SQLException, QueryException ;
 	   int countAllBranches() throws SQLException, QueryException;
 	   List<Map<String, Object>> getBranchFunds() throws SQLException, QueryException;
+	   List<Map<String, Object>> getAllBranches() throws SQLException, QueryException;
+
 
 
 

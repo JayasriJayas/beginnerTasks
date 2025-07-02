@@ -63,6 +63,10 @@ async function loadTopBar() {
 
   function openAddAdminModal() {
 	const formHTML = `
+	  <div class="modal-header">
+	    <h2>Add New Admin</h2>
+	    <span class="modal-close" onclick="closeModal()">&times;</span>
+	  </div>
 	  <form id="addAdminForm" class="modal-form">
 	    <div class="form-group">
 	      <input name="username" type="email" required />
@@ -98,6 +102,7 @@ async function loadTopBar() {
 	    <button type="submit" class="btn-submit">Add Admin</button>
 	  </form>
 	`;
+
 
 
     openModal("Add New Admin", formHTML);

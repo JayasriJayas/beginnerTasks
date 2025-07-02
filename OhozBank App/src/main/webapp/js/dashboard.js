@@ -34,8 +34,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Initial dashboard load based on role
-  const userRole = "<%= userRole %>"; // Assuming this variable comes from server-side code
+
   loadDashboardContent(userRole);
 
   // Sidebar menu item handling

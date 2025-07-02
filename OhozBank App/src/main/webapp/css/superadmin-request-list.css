@@ -62,13 +62,22 @@
 .status-filter-group label {
   font-weight: 500;
 }
-
-.status-summary {
+.summary-wrapper {
   display: flex;
-  gap: 20px;
-  margin: 10px 0 20px;
-  font-weight: bold;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
 }
+
+.summary-wrapper .status-summary {
+  margin: 0;
+  gap: 20px;
+  display: flex;
+  font-weight: bold;
+  font-size: 0.95rem;
+}
+
+
 
 .status-chip {
   padding: 6px 12px;
@@ -162,13 +171,14 @@ tbody td {
   color: #999;
   cursor: not-allowed;
 }
-
-/* Style for bulk action buttons */
 .bulk-actions {
   display: flex;
-  gap: 10px;
-  margin-bottom: 10px;
+  gap: 16px; /* or try 20px if you want even more space */
+  margin-top: 20px;
 }
+
+/* Style for bulk action buttons */
+
 
 .bulk-actions button {
   background-color: var(--primary-color, #E09E50);
@@ -306,7 +316,7 @@ select:focus {
 .bulk-actions {
   display: flex;
   gap: 10px;
-  justify-content: center;
+
   margin-top: 20px;
 }
 

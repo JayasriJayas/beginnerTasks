@@ -545,6 +545,15 @@ public class TransactionServiceImpl implements TransactionService {
     public List<Map<String, Object>> getTopBranchesByTransactionCount(int limit) throws SQLException, QueryException {
         return transactionDAO.getTopBranchesByTransactionCount(limit);
     }
+    @Override
+    public List<Map<String, Object>> getDailyTransactionCountsForBranch(long branchId, long fromTimestamp, long toTimestamp) throws SQLException, QueryException {
+        return transactionDAO.getDailyTransactionCountsForBranch(branchId, fromTimestamp, toTimestamp);
+    }
+    @Override
+    public List<Map<String, Object>> getAccountTransactionSummaryByBranch(long branchId, long totalLimit) throws SQLException, QueryException {
+        return transactionDAO.getAccountTransactionSummaryByBranch(branchId, totalLimit);
+    }
+
 
 
 

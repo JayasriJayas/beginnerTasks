@@ -2,6 +2,7 @@ package com.bank.handler;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -181,6 +182,18 @@ public class BranchHandler {
             ResponseUtil.sendError(res, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Unable to fetch fund summary.");
         }
     }
+    public void allBranch(HttpServletRequest req, HttpServletResponse res) throws IOException {
+        try {
+            List<Map<String, Object>> branches = branchService.getAllBranch();
+            JSONObject json = new JSONObject();
+            json.put("branches", branches);
+            ResponseUtil.sendJson(res, HttpServletResponse.SC_OK, json);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error fetching branchId and branchName", e);
+            ResponseUtil.sendError(res, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Failed to fetch branch data.");
+        }
+    }
+
 
 
 

@@ -12,7 +12,6 @@ import com.bank.dao.BranchDAO;
 import com.bank.factory.DaoFactory;
 import com.bank.models.Branch;
 import com.bank.models.PaginatedResponse;
-import com.bank.models.Transaction;
 import com.bank.service.BranchService;
 import com.bank.util.PaginationUtil;
 
@@ -110,6 +109,11 @@ public class BranchServiceImpl implements BranchService {
 
         return summaries;
     }
+    @Override
+    public List<Map<String, Object>> getAllBranch() throws SQLException, QueryException {
+        return branchDAO.getAllBranches();
+    }
+
 
 
 }

@@ -876,6 +876,44 @@ System.out.println(qb.build());
             return qe.executeQuery(query);
         }
     }
+    @Override
+    public List<Map<String, Object>> getDailyTransactionCountsForBranch(long branchId, long fromTimestamp, long toTimestamp) throws SQLException, QueryException {
+        QueryBuilder qb = new QueryBuilder(new MySQLDialect());
+        qb.select("DATE(FROM_UNIXTIME(t.timestamp / 1000)) AS date", 
+                  "COUNT(t.transactionId) AS transactionCount")
+          .from("transaction t")
+          .innerJoin("account a", "t.accountId = a.accountId")
+          .where("a.branchId = ?", branchId)
+          .andBetween("t.timestamp", fromTimestamp, toTimestamp)
+          .groupBy("date")
+          .orderBy("date");
+
+        try (Connection conn = DBConnectionPool.getInstance().getConnection()) {
+            QueryExecutor qe = new QueryExecutor(conn);
+            return qe.executeQuery(qb.build(), qb.getParameters());
+        }
+    }
+    @Override
+    public List<Map<String, Object>> getAccountTransactionSummaryByBranch(long branchId, long totalLimit) throws SQLException, QueryException {
+        QueryBuilder qb = new QueryBuilder(new MySQLDialect());
+        qb.select("a.accountId",
+                  "SUM(CASE WHEN t.type = 'WITHDRAW' THEN t.amount ELSE 0 END) AS withdrawal",
+                  "SUM(CASE WHEN t.type = 'DEPOSIT' THEN t.amount ELSE 0 END) AS deposit",
+                  "SUM(CASE WHEN t.type = 'TRANSFER' THEN t.amount ELSE 0 END) AS transfer",
+                  "SUM(t.amount) AS total")
+          .from("transaction t")
+          .innerJoin("account a", "t.accountId = a.accountId")
+          .where("a.branchId = ?", branchId)
+          .groupBy("a.accountId")
+          .having("total <= ?", totalLimit)
+          .orderBy("total DESC");
+
+        try (Connection conn = DBConnectionPool.getInstance().getConnection()) {
+            QueryExecutor qe = new QueryExecutor(conn);
+            return qe.executeQuery(qb.build(), qb.getParameters());
+        }
+    }
+
 
    
 

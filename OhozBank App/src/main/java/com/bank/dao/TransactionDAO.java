@@ -70,7 +70,8 @@ public interface TransactionDAO {
 	 BigDecimal getTotalAmountByTypeAndBranch(String type, long branchId)throws SQLException, QueryException;
 	 BigDecimal getTotalAmountByType(String type) throws SQLException, QueryException;
 	 List<Map<String, Object>> getTopBranchesByTransactionCount(int limit) throws SQLException, QueryException;
-
+	 List<Map<String, Object>> getDailyTransactionCountsForBranch(long branchId, long fromTimestamp, long toTimestamp) throws SQLException, QueryException;
+	 List<Map<String, Object>> getAccountTransactionSummaryByBranch(long branchId, long totalLimit) throws SQLException, QueryException;
 
 }
 

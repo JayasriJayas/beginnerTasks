@@ -32,9 +32,7 @@
 
   <div id="modalOverlay" class="modal-overlay hidden">
     <div class="modal-box">
-    <div class="modal-close" onclick="closeModal()">
-  <i class='bx bx-x'></i>
-</div>
+
     
       <h3 id="modalTitle"></h3>
       <div id="modalBody"></div>
@@ -64,6 +62,9 @@
 	  <!-- Scripts -->
 	  <script>
 	    const BASE_URL = "<%= ctx %>";
+	  </script>
+	  <script>
+ 		 const userRole = "<%= session.getAttribute("role") %>";
 	  </script>
 	  <script src="<%= ctx %>/js/dashboard.js"></script>
 	  <!-- Include the Toast JS file -->

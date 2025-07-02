@@ -1,33 +1,41 @@
 <div class="profile-slideout" id="profileSlide">
   <div class="profile-slide-card">
-    <!-- Close Button with Icon -->
+
     <button class="close-btn" id="closeProfileBtn">
-      <i class='bx bx-x'></i> <!-- Icon for close -->
+      <i class='bx bx-x'></i> 
     </button>
 
-    <!-- Profile Image (set dynamically) -->
     <div class="profile-img-wrapper">
       <img id="userImage" alt="User Profile Image" />
     </div>
 
-    <!-- Username (set dynamically) -->
+
     <h2 id="userName" class="user-name">User Name</h2>
 
-    <!-- Profile Information with separators -->
-    <ul class="profile-info">
-      <li><strong>Name:</strong> <span id="userNameValue"></span></li>
-      <li><strong>Email:</strong> <span id="userEmail"></span></li>
-      <li><strong>Phone:</strong> <span id="userPhone"></span></li>
-      <li><strong>Gender:</strong> <span id="userGender"></span></li>
-      <li><strong>DOB:</strong> <span id="userDOB"></span></li>
-      
-    </ul>
+<ul class="profile-info">
+  <li><strong>Name:</strong> <input type="text" id="editName" readonly /></li>
+  <li><strong>Email:</strong> <input type="email" id="editEmail" readonly disabled /></li>
+  <li><strong>Phone:</strong> <input type="tel" id="editPhone" readonly /></li>
+  <li><strong>Gender:</strong> <input type="text" id="editGender" readonly disabled /></li>
+  <li><strong>DOB:</strong> <input type="date" id="editDOB" readonly /></li>
+  <li><strong>Aadhar No:</strong> <input type="text" id="editAadhar" readonly disabled /></li>
+  <li><strong>PAN No:</strong> <input type="text" id="editPan" readonly disabled /></li>
+  <li><strong>Address:</strong> <textarea id="editAddress" rows="2" readonly></textarea></li>
+  <li><strong>Occupation:</strong> <input type="text" id="editOccupation" readonly /></li>
+  <li><strong>Marital Status:</strong> <input type="text" id="editMaritalStatus" readonly /></li>
+  <li><strong>Annual Income:</strong> <input type="number" id="editIncome" readonly /></li>
+</ul>
+
+<!-- Update Button: hidden initially -->
+<button class="profile-update-btn" id="updateProfileBtn" style="display: none;">
+  <i class='bx bx-upload'></i> Update Profile
+</button>
 
     <!-- Action Menu Items with Icons -->
-    <div class="profile-actions">
-      <div class="profile-action-item" id="viewProfileBtn">
-        <i class='bx bx-user'></i> View Profile
-      </div>
+  <div class="profile-action-item" id="editProfileBtn">
+  <i class='bx bx-edit'></i> Edit Profile
+</div>
+
       <div class="profile-action-item" id="changePasswordBtn">
         <i class='bx bx-lock'></i> Change Password
       </div>

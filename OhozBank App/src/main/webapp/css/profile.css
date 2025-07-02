@@ -1,7 +1,5 @@
-/* Apply box-sizing globally to ensure padding doesn't affect width/height calculations */
-*,
-*::before,
-*::after {
+/* Apply box-sizing globally */
+*, *::before, *::after {
   box-sizing: border-box;
 }
 
@@ -64,6 +62,109 @@
   gap: 15px;
 }
 
+.profile-info li span {
+  color: #E09E50;
+  display: block;
+  word-break: break-word;
+  white-space: pre-wrap;
+}
+
+.profile-info {
+  max-height: 60vh;
+  overflow-y: auto;
+  padding-right: 8px;
+  margin-top: 1.5rem;
+  list-style-type: none;
+  padding: 10px 0;
+  border-top: 1px solid #ddd;
+  border-bottom: 1px solid #ddd;
+}
+
+.profile-info::-webkit-scrollbar {
+  width: 6px;
+}
+
+.profile-info::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.profile-info::-webkit-scrollbar-thumb {
+  background-color: #ccc;
+  border-radius: 10px;
+  transition: background 0.3s;
+}
+
+.profile-info::-webkit-scrollbar-thumb:hover {
+  background-color: #999;
+}
+
+.profile-info li {
+  padding: 8px 0;
+  color: #2D3E4E;
+  font-size: 1rem;
+  text-align: left;
+  margin-bottom: 1rem;
+}
+
+
+/* All profile inputs/textarea with underline style */
+.profile-info input,
+.profile-info textarea {
+  width: 100%;
+  padding: 6px 0;
+  border: none;
+  border-bottom: 2px solid #ccc; /* always solid line */
+  font-size: 0.95rem;
+  background: transparent;
+  outline: none;
+  color: #2D3E4E;
+transition: border-color 0.3s ease;
+
+}
+
+/* Highlight underline on focus */
+.profile-info input:focus,
+.profile-info textarea:focus {
+  border-bottom-color: var(--primary-color);
+}
+
+/* Optional hover effect */
+.profile-info input:hover,
+.profile-info textarea:hover {
+  border-bottom-color: #999;
+}
+
+/* Readonly styling (no dashed line) */
+.profile-info input[readonly],
+.profile-info textarea[readonly] {
+  background: transparent;
+  color: #555;
+  cursor: default;
+}
+/* Editable focus = orange underline */
+.profile-info input:not([readonly]):not([disabled]):focus,
+.profile-info textarea:not([readonly]):not([disabled]):focus {
+  border-bottom-color: var(--primary-color);
+}
+
+
+
+.profile-update-btn {
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  margin-top: 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.3s;
+}
+
+.profile-update-btn:hover {
+  background-color: var(--secondary-color);
+}
+
 .profile-action-item {
   padding: 12px 18px;
   border: none;
@@ -106,176 +207,33 @@
   border: none;
 }
 
-/* Profile Info */
-.profile-info {
-  margin-top: 1.5rem;
-  list-style-type: none;
-  padding: 10px 0;
-  border-top: 1px solid #ddd;
-  border-bottom: 1px solid #ddd;
-}
-
-.profile-info li {
-  padding: 8px 0;
-  color: #2D3E4E;
-  font-size: 1rem;
-  text-align: left;
-  margin-bottom: 1rem;
-}
-
-.profile-info li span {
-  color: #E09E50;
-}
-
-.profile-info li:hover {
-  background-color: #F0F8FF;
-}
-
-/* Modal Header */
-.modal-profile-header {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  padding: 1rem;
-  background-color: #E8ECEB;
-  border-bottom: 1px solid #ccc;
-  border-top-left-radius: 8px;
-  border-top-right-radius: 8px;
-}
-
-.modal-profile-header .profile-img-wrapper {
-  width: 80px;
-  height: 80px;
-  background-color: #2D3E4E;
-  border-radius: 50%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.modal-profile-header h2 {
-  font-size: 1.5rem;
-  color: #2D3E4E;
-  margin: 0;
-  font-weight: bold;
-}
-
-/* Modal Profile Info */
-.modal-profile-info {
-  padding: 1rem;
-  background-color: #fff;
-  border-bottom: 1px solid #ccc;
-  overflow-y: auto;
-}
-
-.profile-info-item {
-  display: flex;
-  justify-content: space-between;
-  padding: 0.5rem 0;
-  border-bottom: 1px solid #f2f2f2;
-  font-size: 1rem;
-}
-
-.profile-info-item strong {
-  color: #2D3E4E;
-}
-
-.profile-info-item span {
-  color: #555;
-  font-weight: normal;
-}
-
-/* Modal Footer */
-.modal-profile-footer {
-  padding: 1rem;
-  display: flex;
-  justify-content: space-around;
-  background-color: #E8ECEB;
-  border-bottom-left-radius: 8px;
-  border-bottom-right-radius: 8px;
-}
-
-.profile-btn {
-  padding: 0.5rem 1rem;
-  border: none;
-  background-color: #E09E50;
-  color: #fff;
-  border-radius: 5px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.profile-btn:hover {
-  background-color: #cf833e;
-}
-
-.profile-btn i {
-  font-size: 1.2rem;
-}
-
-/* Ensure profile icon is always visible in mobile view */
+/* Profile icon for mobile view */
 #profileIcon {
   position: fixed;
-  top: 10px; /* Adjust for placement */
-  right: 10px; /* Adjust for placement */
-  z-index: 9999; /* Ensure it stays above other content */
+  top: 10px;
+  right: 10px;
+  z-index: 9999;
   font-size: 1.5rem;
   cursor: pointer;
   color: #2D3E4E;
 }
-
-
 
 /* Responsive Styles */
 @media (max-width: 768px) {
-  .modal-profile-header h2 {
-    font-size: 1.2rem;
-  }
-
-  .profile-info-item {
-    font-size: 0.9rem;
-  }
-
-  .profile-info-item strong {
-    font-size: 1rem;
-  }
-
-  .modal-profile-info {
-    padding: 0.8rem;
-  }
-
-  .profile-btn {
-    font-size: 0.9rem;
-  }
   .profile-slideout {
     width: 100%;
-    right: -100%; /* Hide slide-out initially */
+    right: -100%;
     transition: right 0.3s ease-in-out;
   }
 
   .profile-slideout.show {
-    right: 0; /* Show slide-out when triggered */
+    right: 0;
   }
 }
 
-
 @media (max-width: 480px) {
-  .modal-profile-header {
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .modal-profile-header .profile-img-wrapper {
-    width: 70px;
-    height: 70px;
-  }
-
   .profile-btn {
     width: 100%;
     text-align: center;
   }
-}
-
 }

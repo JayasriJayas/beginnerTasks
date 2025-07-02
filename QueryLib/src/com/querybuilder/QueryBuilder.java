@@ -268,9 +268,11 @@ public class QueryBuilder {
 	    }
 
 
-	    public QueryBuilder having(String condition) {
+	    public QueryBuilder having(String condition,Object... values) {
 	    	this.havingConditions = initIfNull(this.havingConditions);
+	    	this.parameters = initIfNull(this.parameters);		      
 	        havingConditions.add(condition);
+	        this.parameters.addAll(Arrays.asList(values));
 	        return this;
 	    }
 	    public QueryBuilder andHaving(String condition) {

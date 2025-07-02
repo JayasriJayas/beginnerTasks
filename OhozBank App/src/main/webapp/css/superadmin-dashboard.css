@@ -137,26 +137,37 @@
   background-color: var(--secondary-color);
 }
 
-.modal-close {
-  position: absolute;
-  top: 14px;
-  right: 14px;
-  font-size: 1.6rem;
-  color: #333;
-  cursor: pointer;
-  z-index: 10;
-  transition: color 0.3s;
-}
 
 .modal-close:hover {
   color: var(--primary-color); /* #E09E50 */
 }
+
+.modal-header {
+  position: relative;
+  padding: 1rem 1.5rem 0;
+  border-bottom: 1px solid #ddd;
+}
+
+.modal-header h2 {
+  font-size: 1.4rem;
+  color: #2D3E4E;
+  margin: 0;
+}
+
 .modal-close {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  font-size: 1.5rem;
   background: #f2f2f2;
   border-radius: 50%;
-  padding: 6px;
+  padding: 4px 10px;
   box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  cursor: pointer;
+  z-index: 10;
+  line-height: 1;
 }
+
 
 
 
@@ -321,3 +332,36 @@
 }
 
 
+
+
+/* === MODIFIED STYLES FOR IMPROVED SPACING AND LAYOUT === */
+
+.metric-card {
+  min-height: 140px;
+  padding: 20px;
+  font-size: 1rem;
+}
+.metric-card h2 {
+  font-size: 24px;
+}
+.metric-card p {
+  font-size: 15px;
+}
+.metrics-grid {
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+}
+.metrics-wrapper {
+  flex: 1 1 65%;
+}
+.pie-chart-wrapper {
+  flex: 1 1 30%;
+}
+.dashboard-upper {
+  min-height: 400px;
+}
+.chart-container {
+  width: 100%;
+  max-width: 400px;
+  margin: auto;
+}
