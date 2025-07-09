@@ -133,9 +133,9 @@ System.out.println(qb.build());
 
         qb.select("t.*")
           .from("transaction t")
-          .innerJoin("account a", "a.accountId = t.transactionAccountId") // Join to receiver account
-          .where("a.userId = ?", userId)                                   // Filter if receiver is user
-          .andWhere("t.transactionMode = ?", "INTERNAL")                   // Exclude external transfers
+          .innerJoin("account a", "a.accountId = t.transactionAccountId") 
+          .where("a.userId = ?", userId)                                   
+          .andWhere("t.transactionMode = ?", "INTERNAL")                   
           .andBetween("t.timestamp", fromTimestamp, toTimestamp)
           .orderBy("t.timestamp").orderDirection("DESC")
           .limit(limit)
@@ -156,9 +156,9 @@ System.out.println(qb.build());
 
         qb.select().aggregate("COUNT", "*").as("total")
           .from("transaction t")
-          .innerJoin("account a", "a.accountId = t.transactionAccountId")  // join with receiving account
-          .where("a.userId = ?", userId)                                   // match user who owns receiving account
-          .andWhere("t.transactionMode = ?", "INTERNAL")                   // exclude external transfers
+          .innerJoin("account a", "a.accountId = t.transactionAccountId")  
+          .where("a.userId = ?", userId)                             
+          .andWhere("t.transactionMode = ?", "INTERNAL")                   
           .andBetween("t.timestamp", fromTimestamp, toTimestamp);
 
         try (Connection conn = DBConnectionPool.getInstance().getConnection()) {
@@ -350,8 +350,8 @@ System.out.println(qb.build());
 
         qb.select("t.*")
           .from("transaction t")
-          .innerJoin("account a", "a.accountId = t.accountId")  // 🔗 join with account to map user
-          .where("a.userId = ?", userId)                        // ✅ filter on user
+          .innerJoin("account a", "a.accountId = t.accountId")  
+          .where("a.userId = ?", userId)                       
           .andWhere("t.type = ?", "TRANSFER")
           .andBetween("t.timestamp", fromTimestamp, toTimestamp)
           .orderBy("t.timestamp").orderDirection("DESC")
@@ -373,7 +373,7 @@ System.out.println(qb.build());
 
         qb.select().aggregate("COUNT", "*").as("total")
           .from("transaction t")
-          .innerJoin("account a", "a.accountId = t.accountId")  // Join to user's accounts
+          .innerJoin("account a", "a.accountId = t.accountId")  
           .where("a.userId = ?", userId)
           .andWhere("t.type = ?", "TRANSFER")
           .andBetween("t.timestamp", fromTimestamp, toTimestamp);
@@ -452,16 +452,15 @@ System.out.println(qb.build());
           .from("transaction")
           .openGroup()
             .where("type = ?", "DEPOSIT") 
-            .andWhere("accountId IN ( select accountId from account where userId ="+ userId+")") // Account IDs from subquery
+            .andWhere("accountId IN ( select accountId from account where userId ="+ userId+")") 
           .closeGroup()
-          .orWhere("transactionAccountId IN ( select accountId from account where userId ="+ userId+")") // transactionAccountId in accounts
+          .orWhere("transactionAccountId IN ( select accountId from account where userId ="+ userId+")") 
           .andWhere("type = ?", "TRANSFER") 
           .andWhere("MONTH(FROM_UNIXTIME(timestamp / 1000)) = MONTH(CURRENT_DATE)") 
           .andWhere("YEAR(FROM_UNIXTIME(timestamp / 1000)) = YEAR(CURRENT_DATE)"); 
 
 
 
-        // Execute the query and return the result
         try (Connection conn = DBConnectionPool.getInstance().getConnection()) {
             QueryExecutor qe = new QueryExecutor(conn);
             List<Map<String, Object>> result = qe.executeQuery(qb.build(),qb.getParameters());
@@ -476,7 +475,7 @@ System.out.println(qb.build());
 
     @Override
     public BigDecimal getTotalExpenseByUser(long userId) throws SQLException, QueryException {
-      
+      System.out.println("i am g");
     	QueryBuilder qb = new QueryBuilder(new MySQLDialect());
 //    	QueryBuilder accountIdsSubQuery = new QueryBuilder(new MySQLDialect())
 //    	    .select("accountId")
@@ -515,9 +514,9 @@ System.out.println(qb.build());
           .from("transaction")
           .openGroup()
             .where("type = ?", "DEPOSIT") 
-            .andWhere("accountId = ?", accountId) // Filter by specific accountId
-          .closeGroup()
-          .orWhere("transactionAccountId = ?", accountId) // Include transactionAccountId for transfer
+            .andWhere("accountId = ?", accountId) 
+            .closeGroup()
+          .orWhere("transactionAccountId = ?", accountId) 
           .andWhere("type = ?", "TRANSFER") 
           .andWhere("MONTH(FROM_UNIXTIME(timestamp / 1000)) = MONTH(CURRENT_DATE)") 
           .andWhere("YEAR(FROM_UNIXTIME(timestamp / 1000)) = YEAR(CURRENT_DATE)");
@@ -542,9 +541,9 @@ System.out.println(qb.build());
           .from("transaction")
           .openGroup()
             .where("type = ?", "WITHDRAWAL")
-            .andWhere("accountId = ?", accountId) // Filter by specific accountId
+            .andWhere("accountId = ?", accountId) 
           .closeGroup()
-          .orWhere("accountId = ?", accountId) // Include accountId for transfers
+          .orWhere("accountId = ?", accountId)
           .andWhere("type = ?", "TRANSFER")
           .andWhere("MONTH(FROM_UNIXTIME(timestamp / 1000)) = MONTH(CURRENT_DATE)") 
           .andWhere("YEAR(FROM_UNIXTIME(timestamp / 1000)) = YEAR(CURRENT_DATE)");
@@ -749,8 +748,8 @@ System.out.println(qb.build());
         QueryBuilder qb = new QueryBuilder(new MySQLDialect());
         qb.select("t.*")
           .from("transaction t")
-          .innerJoin("account a", "a.accountId = t.accountId") // 🔗 join transaction → account
-          .where("a.branchId = ?", branchId)                  // ✅ filter only branch accounts
+          .innerJoin("account a", "a.accountId = t.accountId") 
+          .where("a.branchId = ?", branchId)                  
           .andWhere("t.type = ?", "WITHDRAWAL")
           .andBetween("t.timestamp", fromTimestamp, toTimestamp)
           .orderBy("t.timestamp").orderDirection("DESC")
@@ -894,10 +893,10 @@ System.out.println(qb.build());
         }
     }
     @Override
-    public List<Map<String, Object>> getAccountTransactionSummaryByBranch(long branchId, long totalLimit) throws SQLException, QueryException {
+    public List<Map<String, Object>> getAccountTransactionSummaryByBranch(long branchId, int limit) throws SQLException, QueryException {
         QueryBuilder qb = new QueryBuilder(new MySQLDialect());
         qb.select("a.accountId",
-                  "SUM(CASE WHEN t.type = 'WITHDRAW' THEN t.amount ELSE 0 END) AS withdrawal",
+                  "SUM(CASE WHEN t.type = 'WITHDRAWAL' THEN t.amount ELSE 0 END) AS withdrawal",
                   "SUM(CASE WHEN t.type = 'DEPOSIT' THEN t.amount ELSE 0 END) AS deposit",
                   "SUM(CASE WHEN t.type = 'TRANSFER' THEN t.amount ELSE 0 END) AS transfer",
                   "SUM(t.amount) AS total")
@@ -905,49 +904,14 @@ System.out.println(qb.build());
           .innerJoin("account a", "t.accountId = a.accountId")
           .where("a.branchId = ?", branchId)
           .groupBy("a.accountId")
-          .having("total <= ?", totalLimit)
-          .orderBy("total DESC");
+          .orderBy("total DESC")  
+          .limit(limit); 
 
         try (Connection conn = DBConnectionPool.getInstance().getConnection()) {
             QueryExecutor qe = new QueryExecutor(conn);
             return qe.executeQuery(qb.build(), qb.getParameters());
         }
     }
-
-
-   
-
-
-
-
-
-
-
-
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
-
-
-
-
 
 
 

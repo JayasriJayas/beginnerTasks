@@ -8,10 +8,9 @@
 <header class="header" id="header">
   <nav class="nav container">
 
-    <!--  Logo -->
-    <a href="<%= request.getContextPath() %>/login.jsp" class="nav__logo">
-      <img src="<%= request.getContextPath() %>/assets/logo%20im.png" alt="OHOZ Logo" class="nav__logo-img" />
-    </a>
+
+      <img src="<%= request.getContextPath() %>/assets/ologo.png" alt="OHOZ Logo" class="nav__logo-img" />
+
 
     <!--  Navigation Menu -->
     <div class="nav__menu" id="nav-menu">

@@ -6,7 +6,6 @@ window.initDashboardContent = async function initDashboardContent() {
   loadInsights();
   loadRecentTransactions();
 
-  // 🔹 Load top bar with user name and role
   async function loadTopBar() {
     try {
       const res = await fetch(`${BASE_URL}/api/profile/user`, {
@@ -24,10 +23,7 @@ window.initDashboardContent = async function initDashboardContent() {
       };
 
       document.getElementById("userName").textContent = name;
-
-      document.getElementById("userRole").innerHTML = `
-        <i class='bx bx-user'></i> ${roleMap[roleId] || "Unknown"}
-      `;
+      document.getElementById("userRole").innerHTML = `<i class='bx bx-user'></i> ${roleMap[roleId] || "Unknown"}`;
 
       const now = new Date();
       const formattedDate = now.toLocaleDateString("en-IN", {
@@ -37,9 +33,7 @@ window.initDashboardContent = async function initDashboardContent() {
         hour: "2-digit", minute: "2-digit", hour12: true
       });
 
-      document.getElementById("welcomeDate").innerHTML =
-        `<i class='bx bx-time'></i> ${formattedDate} · ${formattedTime}`;
-
+      document.getElementById("welcomeDate").innerHTML = `<i class='bx bx-time'></i> ${formattedDate} · ${formattedTime}`;
     } catch (err) {
       console.error("Failed to load user profile:", err);
       document.getElementById("welcomeText").innerText = "Welcome, User!";
@@ -48,7 +42,6 @@ window.initDashboardContent = async function initDashboardContent() {
     }
   }
 
-  // 🔹 Load Account Cards
   async function loadAccountCards() {
     const container = document.getElementById("accountCardContainer");
     if (!container) return;
@@ -59,16 +52,10 @@ window.initDashboardContent = async function initDashboardContent() {
         credentials: "include"
       });
 
-      if (!res.ok) {
-        const errData = await res.json();
-        showToast(errData.message || "Failed to fetch accounts", "error");
-        throw new Error("Failed to fetch accounts");
-      }
-
       const accounts = await res.json();
       container.innerHTML = "";
 
-      if (accounts.length === 0) {
+      if (!accounts || accounts.length === 0) {
         container.innerHTML = `<p>No active accounts found.</p>`;
         return;
       }
@@ -92,17 +79,14 @@ window.initDashboardContent = async function initDashboardContent() {
             <i class='bx bx-show'></i> View Balance
           </button>
         `;
-
         container.appendChild(card);
       });
-
     } catch (err) {
       console.error("Error loading accounts:", err);
       showToast("Error loading accounts", "error");
     }
   }
 
-  // 🔹 Toggle Balance View
   window.toggleBalance = async function toggleBalance(accountId, btn) {
     const isHidden = btn.innerHTML.includes("bx-show");
 
@@ -119,21 +103,14 @@ window.initDashboardContent = async function initDashboardContent() {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ accountId })
+        body: JSON.stringify({ accountId: Number(accountId) })
       });
-
-      if (!res.ok) {
-        const errData = await res.json();
-        showToast(errData.message || "Failed to fetch balance", "error");
-        throw new Error("Failed to fetch balance");
-      }
 
       const data = await res.json();
       const balance = data.balance ?? "N/A";
 
       btn.innerHTML = `<i class='bx bx-hide'></i> ₹ ${balance.toLocaleString("en-IN")}`;
       showToast("Balance fetched successfully!", "success");
-
     } catch (err) {
       console.error("Error fetching balance:", err);
       btn.innerHTML = `<i class='bx bx-error'></i> Error`;
@@ -143,7 +120,6 @@ window.initDashboardContent = async function initDashboardContent() {
     }
   };
 
-  // 🔹 Load Insights Section
   async function loadInsights() {
     const insightsContainer = document.getElementById("insightsContainer");
     const accountSelect = document.getElementById("accountSelect");
@@ -154,7 +130,6 @@ window.initDashboardContent = async function initDashboardContent() {
       return;
     }
 
-    // Load accounts into dropdown
     try {
       const res = await fetch(`${BASE_URL}/api/get-accounts/account`, {
         method: "POST",
@@ -174,7 +149,6 @@ window.initDashboardContent = async function initDashboardContent() {
       showToast("Failed to load accounts", "error");
     }
 
-    // Initial load
     fetchAndDisplayInsights("ALL");
 
     accountSelect.addEventListener("change", (e) => {
@@ -182,44 +156,63 @@ window.initDashboardContent = async function initDashboardContent() {
       fetchAndDisplayInsights(selectedAccountId);
     });
 
-    // Fetch and show data
     async function fetchAndDisplayInsights(accountId) {
+      const isAll = accountId === "ALL";
+
       try {
-        const isAll = accountId === "ALL";
+		let balanceData = { totalBalance: 0 };
 
-        const balanceRes = await fetch(`${BASE_URL}/api/total-balance/account`, {
-          method: "POST",
-          credentials: "include"
-        });
-        const balanceData = await balanceRes.json();
+		try {
+		  if (isAll) {
+		    // All accounts → use total balance endpoint (no payload)
+		    const res = await fetch(`${BASE_URL}/api/total-balance/account`, {
+		      method: "POST",
+		      credentials: "include"
+		    });
+		    balanceData = await res.json();
+		  } else {
+		    // Specific account → use individual account balance endpoint
+		    const res = await fetch(`${BASE_URL}/api/balance/account`, {
+		      method: "POST",
+		      credentials: "include",
+		      headers: { "Content-Type": "application/json" },
+		      body: JSON.stringify({ accountId: Number(accountId) })
+		    });
+		    const singleAcc = await res.json();
+		    balanceData.totalBalance = singleAcc.balance ?? 0;
+		  }
+		} catch (err) {
+		  console.error("Error loading balance:", err);
+		  showToast("Failed to fetch balance", "error");
+		}
 
-        const creditRes = await fetch(`${BASE_URL}/api/total-income/transaction`, {
+
+        // Credit & Debit: Only send accountId if selected
+        const commonOptions = {
           method: "POST",
           credentials: "include",
-          headers: { "Content-Type": "application/json" },
-          body: isAll ? null : JSON.stringify({ accountId: parseInt(accountId) })
+          headers: { "Content-Type": "application/json" }
+        };
+        const payload = isAll ? undefined : JSON.stringify({ accountId: Number(accountId) });
+
+        const creditRes = await fetch(`${BASE_URL}/api/total-income/transaction`, {
+          ...commonOptions,
+          ...(payload && { body: payload })
         });
         const creditData = await creditRes.json();
 
         const debitRes = await fetch(`${BASE_URL}/api/total-expense/transaction`, {
-          method: "POST",
-          credentials: "include",
-          headers: { "Content-Type": "application/json" },
-          body: isAll ? null : JSON.stringify({ accountId: parseInt(accountId) })
+          ...commonOptions,
+          ...(payload && { body: payload })
         });
         const debitData = await debitRes.json();
 
         const totalCredits = creditData.totalIncome || 0;
         const totalDebits = debitData.totalExpense || 0;
 
-        // ✅ Update p tags only
-        const balanceEl = document.querySelector("#totalBalance p");
-        const creditEl = document.querySelector("#thisMonthCredits p");
-        const debitEl = document.querySelector("#thisMonthDebits p");
-
-        if (balanceEl) balanceEl.textContent = `₹${(balanceData.totalBalance ?? 0).toLocaleString("en-IN")}`;
-        if (creditEl) creditEl.textContent = `₹${(totalCredits).toLocaleString("en-IN")}`;
-        if (debitEl) debitEl.textContent = `₹${(totalDebits).toLocaleString("en-IN")}`;
+        document.querySelector("#totalBalance p").textContent = `₹${(balanceData.totalBalance ?? 0).toLocaleString("en-IN")}`;
+        document.querySelector("#thisMonthCredits p").textContent = `₹${totalCredits.toLocaleString("en-IN")}`;
+        document.querySelector("#thisMonthDebits p").textContent = `₹${totalDebits.toLocaleString("en-IN")}`;
 
         renderChart(totalCredits, totalDebits);
 
@@ -229,11 +222,9 @@ window.initDashboardContent = async function initDashboardContent() {
       }
     }
 
-    // 🔸 Chart renderer
     let chartInstance = null;
     function renderChart(credits, debits) {
       const ctx = document.getElementById('insightChart').getContext('2d');
-
       if (chartInstance) chartInstance.destroy();
 
       chartInstance = new Chart(ctx, {
@@ -242,7 +233,7 @@ window.initDashboardContent = async function initDashboardContent() {
           labels: ['Credits', 'Debits'],
           datasets: [{
             data: [credits, debits],
-            backgroundColor:['#E09E50', '#2D3E4E'],
+            backgroundColor: ['#E09E50', '#2D3E4E'],
             borderColor: '#fff',
             borderWidth: 1
           }]
@@ -264,7 +255,6 @@ window.initDashboardContent = async function initDashboardContent() {
     }
   }
 
-  // 🔹 Load Recent Transactions
   async function loadRecentTransactions() {
     const tbody = document.getElementById("recentTxnBody");
     if (!tbody) return;
@@ -277,12 +267,6 @@ window.initDashboardContent = async function initDashboardContent() {
         body: JSON.stringify({ limit: 10 })
       });
 
-      if (!res.ok) {
-        const errData = await res.json();
-        showToast(errData.message || "Failed to load transactions", "error");
-        throw new Error("Failed to load transactions");
-      }
-
       const data = await res.json();
       tbody.innerHTML = "";
 
@@ -293,11 +277,8 @@ window.initDashboardContent = async function initDashboardContent() {
 
       data.forEach(txn => {
         const date = new Date(txn.timestamp).toLocaleString("en-IN", {
-          day: "2-digit",
-          month: "short",
-          year: "numeric",
-          hour: "2-digit",
-          minute: "2-digit"
+          day: "2-digit", month: "short", year: "numeric",
+          hour: "2-digit", minute: "2-digit"
         });
 
         const typeClass = {
@@ -322,6 +303,7 @@ window.initDashboardContent = async function initDashboardContent() {
     } catch (err) {
       console.error("Error loading recent transactions", err);
       tbody.innerHTML = `<tr><td colspan="5" style="color:red;">Failed to load</td></tr>`;
+
       showToast("Failed to load recent transactions", "error");
     }
   }

@@ -10,10 +10,10 @@
     </span>
   </div>
   <div class="top-bar-right">
-    <button class="btn-add" id="addAdminBtn">
+    <button id="addAdminBtn" class="btn-add" onclick="openDashboardAdminModal()" title="Add Admin">
       <i class='bx bx-user-plus'></i> Add Admin
     </button>
-    <button class="btn-add" id="addBranchBtn">
+    <button class="btn-add" id="addBranchBtn" onclick="openDashboardBranchModal()" title="Add Branch">
       <i class='bx bx-building-house'></i> Add Branch
     </button>
     <span id="currentDateTime">
@@ -35,7 +35,7 @@
           <p>Total Branches</p>
         </div>
       </div>
-      <div class="metric-card clickable" data-action="admin" id="metricAdmins">
+      <div class="metric-card clickable" data-action="admin-list" id="metricAdmins">
         <i class='bx bx-user-voice'></i>
         <div>
           <h2 id="adminCount">--</h2>
@@ -49,21 +49,21 @@
           <p>Pending Account Requests</p>
         </div>
       </div>
-      <div class="metric-card clickable" data-action="superadmin-request-list" id="metricUserReqs">
+      <div class="metric-card clickable" data-action="sauperadmin-request-list" id="metricUserReqs">
         <i class='bx bx-user-check'></i>
         <div>
           <h2 id="userRequestCount">--</h2>
           <p>Pending User Requests</p>
         </div>
       </div>
-      <div class="metric-card" id="metricUsers">
+      <div class="metric-card clickable" id="metricUsers">
         <i class='bx bx-group'></i>
         <div>
           <h2 id="userCount">--</h2>
           <p>Total Users</p>
         </div>
       </div>
-      <div class="metric-card" id="metricAccounts">
+      <div class="metric-card clickable" data-action="superadmin-accounts" id="metricAccounts">
         <i class='bx bx-wallet'></i>
         <div>
           <h2 id="accountCount">--</h2>
@@ -75,11 +75,35 @@
 
   <!-- RIGHT SIDE: Pie Chart -->
   <div class="pie-chart-wrapper">
-    <h3 class="section-title"><i class='bx bx-pie-chart-alt-2'></i> Transaction Breakdown</h3>
-    <div class="chart-container">
+  <h3 class="section-title">
+    <i class='bx bx-pie-chart-alt-2'></i> Transaction Breakdown
+  </h3>
+
+  <div class="pie-chart-content">
+    <!-- Left: Enlarged Chart -->
+    <div class="chart-container large-chart">
       <canvas id="superadminPieChart"></canvas>
     </div>
+
+    <!-- Right: Summary with spacious layout -->
+    <div id="pieSummary" class="pie-summary">
+      <div class="summary-block">
+        <p><strong>Deposit</strong></p>
+        <p class="amount">₹<span id="depositAmt">--</span></p>
+      </div>
+      <div class="summary-block">
+        <p><strong>Transfer</strong></p>
+        <p class="amount">₹<span id="transferAmt">--</span></p>
+      </div>
+      <div class="summary-block">
+        <p><strong>Withdrawal</strong></p>
+        <p class="amount">₹<span id="withdrawAmt">--</span></p>
+      </div>
+    </div>
   </div>
+</div>
+
+
 </section>
 
 
@@ -98,3 +122,75 @@
 </div>
 
 </section>
+
+<div id="dashboardAdminModal" class="modal-overlay hidden">
+  <div class="modal-box">
+    <h3>Add Admin</h3>
+    <i class="bx bx-x close-icon" onclick="closeDashboardAdminModal()" data-tooltip="Close"></i>
+    <form id="addAdminForm">
+      <div class="form-group">
+        <input type="email" id="username" required />
+        <label for="username">Username (email)</label>
+      </div>
+      <div class="form-group">
+        <input type="password" id="password" required />
+        <label for="password">Password</label>
+      </div>
+      <div class="form-group">
+        <input type="text" id="name" required />
+        <label for="name">Full Name</label>
+      </div>
+      <div class="form-group">
+        <input type="email" id="email" required />
+        <label for="email">Email</label>
+      </div>
+      <div class="form-group">
+        <input type="tel" id="phone" required />
+        <label for="phone">Phone</label>
+      </div>
+      <div class="form-group">
+        <select id="gender" required>
+         <option value="" selected disabled>Select Gender</option>
+          <option value="MALE">Male</option>
+          <option value="FEMALE">Female</option>
+          <option value="FEMALE">Other</option>
+        </select>
+        <label for="gender"></label>
+      </div>
+    <div class="form-group">
+  <select id="branchId" required>
+
+  </select>
+  <label for="branchId"></label>
+</div>
+    
+      <button type="submit" class="form-submit-btn">Add Admin</button>
+    </form>
+  </div>
+</div>
+ <div id="dashboardBranchModal" class="modal-overlay hidden">
+  <div class="modal-box">
+    <h3>Add Branch</h3>
+    <i class="bx bx-x close-icon" onclick="closeDashboardBranchModal()" data-tooltip="Close"></i>
+
+    <form id="addBranchForm">
+      <div class="form-group">
+        <input type="text" id="branchName" required />
+        <label for="branchName">Branch Name</label>
+      </div>
+      <div class="form-group">
+        <input type="text" id="ifscCode" required />
+        <label for="ifscCode">IFSC Code</label>
+      </div>
+      <div class="form-group">
+        <input type="text" id="location" required />
+        <label for="location">Location</label>
+      </div>
+      <div class="form-group">
+        <input type="tel" id="contact" required />
+        <label for="contact">Contact Number</label>
+      </div>
+      <button type="submit" class="form-submit-btn">Add Branch</button>
+    </form>
+  </div>
+</div>

@@ -27,6 +27,7 @@ public interface TransactionService {
 	PaginatedResponse<Transaction> getTransferTransactionsForAccount(long accountId, long fromTimestamp, long toTimestamp, int pageNumber, int pageSize)throws SQLException, QueryException;
 	List<Transaction> getRecentTransactionsForUser(long userId, int limit) throws SQLException, QueryException;
 	BigDecimal getTotalIncomeByUser(long userId) throws SQLException, QueryException;
+
 	BigDecimal getTotalExpenseByUser(long userId) throws SQLException, QueryException;
 	BigDecimal getTotalIncomeByAccount(long accountId) throws SQLException, QueryException;
     BigDecimal getTotalExpenseByAccount(long accountId) throws SQLException, QueryException;
@@ -52,7 +53,7 @@ throws SQLException, QueryException, BankingException ;
     Map<String, BigDecimal> getTransactionTypeSummaryAllBranches() throws SQLException, QueryException;
     List<Map<String, Object>> getTopBranchesByTransactionCount(int limit) throws SQLException, QueryException;
     List<Map<String, Object>> getDailyTransactionCountsForBranch(long branchId, long fromTimestamp, long toTimestamp) throws SQLException, QueryException;
-    List<Map<String, Object>> getAccountTransactionSummaryByBranch(long branchId, long totalLimit) throws SQLException, QueryException ;
+    List<Map<String, Object>> getAccountTransactionSummaryByBranch(long branchId, int limit) throws SQLException, QueryException ;
 
 
 	

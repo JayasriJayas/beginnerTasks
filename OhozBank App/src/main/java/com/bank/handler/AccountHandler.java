@@ -17,7 +17,10 @@ import com.bank.enums.UserRole;
 import com.bank.factory.ServiceFactory;
 import com.bank.models.Account;
 import com.bank.models.Branch;
+import com.bank.models.PaginatedResponse;
+import com.bank.models.Pagination;
 import com.bank.service.AccountService;
+import com.bank.util.PaginationUtil;
 import com.bank.util.RequestParser;
 import com.bank.util.ResponseUtil;
 import com.bank.util.SessionUtil;
@@ -139,17 +142,41 @@ public class AccountHandler {
     public void getAll(HttpServletRequest req, HttpServletResponse res) throws IOException {
         try {
             HttpSession session = req.getSession(false);
-            if (!SessionUtil.isSuperAdmin(session, res)) return;
+            if (!SessionUtil.isAdminOrSuperAdmin(session, res)) return;
 
-            List<Account> accounts = accountService.getAllAccounts();
-            JSONArray jsonArray = new JSONArray(gson.toJson(accounts));
-            ResponseUtil.sendJson(res, HttpServletResponse.SC_OK, jsonArray);
+            String role = String.valueOf(session.getAttribute("role"));
+
+          
+            Pagination payload = RequestParser.parseRequest(req, Pagination.class);
+            if (payload == null) {
+                ResponseUtil.sendError(res, HttpServletResponse.SC_BAD_REQUEST, "Missing pagination details.");
+                return;
+            }
+
+            int page = PaginationUtil.validatePageNumber(payload.getPageNumber());
+            int size = PaginationUtil.validatePageSize(payload.getPageSize());
+
+            PaginatedResponse<Account> paginatedAccounts;
+
+            if ("SUPERADMIN".equalsIgnoreCase(role)) {
+                paginatedAccounts = accountService.getPaginatedAccounts(page, size);
+            } else if ("ADMIN".equalsIgnoreCase(role)) {
+                Long branchId = (Long) session.getAttribute("branchId");
+                paginatedAccounts = accountService.getPaginatedAccountsByBranchId(branchId, page, size);
+            } else {
+                ResponseUtil.sendError(res, HttpServletResponse.SC_FORBIDDEN, "Access denied");
+                return;
+            }
+
+            String response = new Gson().toJson(paginatedAccounts);
+            ResponseUtil.sendJson(res, HttpServletResponse.SC_OK, response);
 
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "Error fetching all accounts", e);
+            logger.log(Level.SEVERE, "Error fetching paginated accounts", e);
             ResponseUtil.sendError(res, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Server error");
         }
     }
+
 
     public void getAccounts(HttpServletRequest req, HttpServletResponse res) throws IOException {
         try {
@@ -214,6 +241,33 @@ public class AccountHandler {
             ResponseUtil.sendError(res, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Unable to fetch account count.");
         }
     }
+    public void searchAccounts(HttpServletRequest req, HttpServletResponse res) throws IOException {
+        try {
+            HttpSession session = req.getSession(false);
+            if (!SessionUtil.isAdminOrSuperAdmin(session, res)) return;
+
+            Pagination payload = RequestParser.parseRequest(req, Pagination.class);
+            if (payload == null || payload.getSearch() == null) {
+                ResponseUtil.sendError(res, HttpServletResponse.SC_BAD_REQUEST, "Missing search or pagination input");
+                return;
+            }
+
+            int page = PaginationUtil.validatePageNumber(payload.getPageNumber());
+            int size = PaginationUtil.validatePageSize(payload.getPageSize());
+            String search = payload.getSearch();
+
+            String role = String.valueOf(session.getAttribute("role"));
+            Long branchId = "ADMIN".equalsIgnoreCase(role) ? (Long) session.getAttribute("branchId") : null;
+
+            PaginatedResponse<Account> responseData = accountService.getPaginatedAccounts(search, page, size, branchId);
+            ResponseUtil.sendJson(res, HttpServletResponse.SC_OK, new JSONObject(gson.toJson(responseData)));
+
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error paginating accounts", e);
+            ResponseUtil.sendError(res, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Server error during account fetch.");
+        }
+    }
+
 
   
 }

@@ -222,3 +222,18 @@ function populateUserAccounts() {
       showToast("Unable to load account list", "error");
     });
 }
+function togglePasswordVisibility() {
+  const passwordField = document.getElementById("confirmPassword");
+  const toggleIcon = document.getElementById("togglePassword");
+
+  if (passwordField.type === "password") {
+    passwordField.type = "text";
+    toggleIcon.classList.remove("bx-hide");
+    toggleIcon.classList.add("bx-show");
+  } else {
+    passwordField.type = "password";
+    toggleIcon.classList.remove("bx-show");
+    toggleIcon.classList.add("bx-hide");
+  }
+}
+

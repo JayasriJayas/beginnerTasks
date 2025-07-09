@@ -1,14 +1,11 @@
 <div class="table-container">
-  <div class="table-header">
+  <div class="table-header summary-wrapper">
     <h2>All Account Requests</h2>
+
   </div>
 
   <!-- 🔢 Status Summary -->
-  <div class="status-summary">
-    <span>Total Pending: <strong id="pendingCount">0</strong></span>
-    <span>Total Approved: <strong id="approvedCount">0</strong></span>
-    <span>Total Rejected: <strong id="rejectedCount">0</strong></span>
-  </div>
+ 
   <div class="top-controls">
   <div class="status-filter-group">
     <label for="statusFilter"></label>
@@ -78,7 +75,8 @@
   </div>
 </div>
 
-<!-- 🔍 View Request Modal -->
+<div id="modalOverlay" class="hidden"></div>
+
 <div id="requestModalOverlay" class="modal-overlay hidden">
   <div class="modal-box">
     <h3 class="modal-title">Account Request Details</h3>

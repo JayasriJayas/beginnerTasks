@@ -6,7 +6,6 @@ const progressSteps = document.querySelectorAll(".progress-step");
 
 let formStepsNum = 0;
 
-// Next button logic
 nextBtns.forEach((btn) => {
   btn.addEventListener("click", (e) => {
     e.preventDefault();
@@ -18,7 +17,6 @@ nextBtns.forEach((btn) => {
   });
 });
 
-// Previous button logic
 prevBtns.forEach((btn) => {
   btn.addEventListener("click", (e) => {
     e.preventDefault();
@@ -47,8 +45,28 @@ function updateProgressbar() {
   const progressActive = document.querySelectorAll(".progress-step-active");
   progress.style.width = ((progressActive.length - 1) / (progressSteps.length - 1)) * 100 + "%";
 }
+document.addEventListener("DOMContentLoaded", function() {
+  const branchSelect = document.getElementById("reg-branch");
 
-// Show register form
+  fetch("api/all-branch/branch")
+    .then(response => response.json())
+    .then(data => {
+    
+      const branches = data.branches;
+
+      branches.forEach(branch => {
+        const option = document.createElement("option");
+        option.value = branch.branchId;
+        option.textContent = `${branch.branchId} - ${branch.branchName}`; 
+        branchSelect.appendChild(option);
+      });
+    })
+    .catch(error => {
+      console.error("Error fetching branch data:", error);
+    });
+});
+
+
 function registerFunction() {
   document.querySelector(".login-form").style.display = "none";
   document.querySelector(".register-form").style.display = "block";
@@ -58,7 +76,15 @@ function registerFunction() {
   if (switchLinks) switchLinks.style.display = "none";
 }
 
-// Show login form
+document.addEventListener("DOMContentLoaded", () => {
+  const dobInput = document.getElementById("reg-dob");
+
+  if (dobInput) {
+    const today = new Date().toISOString().split("T")[0];
+    dobInput.setAttribute("max", today);
+  }
+});
+
 function loginFunction() {
   document.querySelector(".login-form").style.display = "block";
   document.querySelector(".register-form").style.display = "none";
@@ -68,7 +94,6 @@ function loginFunction() {
   if (switchLinks) switchLinks.style.display = "block";
 }
 
-// Back button (from register to login)
 function backToLogin() {
   document.querySelector(".login-form").style.display = "block";
   document.querySelector(".register-form").style.display = "none";
@@ -83,7 +108,6 @@ function backToLogin() {
   window.history.replaceState({}, document.title, url);
 }
 
-// Validate each step
 function validateCurrentStep() {
   const currentStep = formSteps[formStepsNum];
   const inputs = currentStep.querySelectorAll("input, select");
@@ -134,15 +158,14 @@ function validateCurrentStep() {
       valid = false;
       break;
     }
+	if (name === "password" && !/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(value)) {
+	  showToast("Password must be at least 8 characters long and contain an uppercase letter, a lowercase letter, a number, and a special character.", "error");
+	  valid = false;
+	  break;
+	}
 
- //   if (name === "password" && !/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(value)) {
- //     showToast("Password must be strong (8+ chars, UPPER, lower, digit, special).", "error");
- //     valid = false;
- //     break;
- //   }
   }
 
-  // If on last step and all valid, show preview
   if (formStepsNum === formSteps.length - 1 && valid) {
     displayPreviewPopup();
   }
@@ -150,10 +173,6 @@ function validateCurrentStep() {
   return valid;
 }
 
-
-
-
-// Toast Notification using Boxicons
 function showToast(message, type = "info") {
   const toastContainer = document.getElementById("toast-container");
   if (!toastContainer) return;
@@ -183,7 +202,6 @@ function showToast(message, type = "info") {
   }, 3500);
 }
 
-// Preview popup
 function displayPreviewPopup() {
   const form = document.getElementById("signupForm");
   const formData = new FormData(form);
@@ -219,7 +237,6 @@ function displayPreviewPopup() {
   });
 }
 
-// Submit registration
 function submitRegistration() {
   const form = document.getElementById("signupForm");
   const formData = new FormData(form);
@@ -245,7 +262,6 @@ function submitRegistration() {
     .catch(err => showToast(err.message, "error"));
 }
 
-// Preview button handler (last step)
 document.addEventListener("DOMContentLoaded", () => {
   const previewBtn = document.querySelector(".btn-preview");
   if (previewBtn) {
@@ -261,20 +277,17 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
-
-// Toggle password visibility for register form
 const toggleEyeRegister = document.getElementById("toggleEyeRegister");
 const passwordRegister = document.getElementById("reg-password");
 
 toggleEyeRegister.addEventListener("click", () => {
   if (passwordRegister.type === "password") {
-    passwordRegister.type = "text"; // Show password
+    passwordRegister.type = "text"; 
     toggleEyeRegister.classList.remove("bx-show");
     toggleEyeRegister.classList.add("bx-hide");
   } else {
-    passwordRegister.type = "password"; // Hide password
+    passwordRegister.type = "password"; 
     toggleEyeRegister.classList.remove("bx-hide");
     toggleEyeRegister.classList.add("bx-show");
   }
 });
-

@@ -17,6 +17,7 @@ public interface UserService  {
     boolean changePassword(long userId, String currentPassword, String newPassword) throws SQLException, QueryException;
     int getTotalUsersOnlyCount() throws SQLException, QueryException;
     int getTotalUsersOnlyByBranch(Long branchId) throws SQLException, QueryException;
+    Map<String, Object> getUserProfile(long userId) throws SQLException, QueryException;
 
 
 }

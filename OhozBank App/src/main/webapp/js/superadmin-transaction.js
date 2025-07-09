@@ -19,18 +19,47 @@ function initAdminTransactionPage() {
   let totalEntries = 0;
 
   setDefaultFilters();
+  fromDateInput.addEventListener("change", () => {
+    const fromDate = fromDateInput.value;
+    toDateInput.setAttribute("min", fromDate);
+
+    if (toDateInput.value < fromDate) {
+      toDateInput.value = fromDate;
+    }
+
+    loadFilteredTransactions(); // optional if you want auto-refresh
+  });
+
+  toDateInput.addEventListener("change", () => {
+    const toDate = toDateInput.value;
+    fromDateInput.setAttribute("max", toDate);
+
+    if (fromDateInput.value > toDate) {
+      fromDateInput.value = toDate;
+    }
+
+    loadFilteredTransactions(); // optional if you want auto-refresh
+  });
+
   attachFilterListeners();
 
   document.querySelectorAll(".transaction-tabs button").forEach((btn) => {
     btn.addEventListener("click", () => {
+      const selectedType = btn.textContent.toUpperCase().replace(" ", "_");
+
+      // 💡 Don't reload if same type is already active
+      if (selectedType === currentTransactionType) return;
+
+      // Switch active button
       document.querySelectorAll(".transaction-tabs button").forEach(b => b.classList.remove("active"));
       btn.classList.add("active");
 
-      currentTransactionType = btn.textContent.toUpperCase().replace(" ", "_");
+      currentTransactionType = selectedType;
       currentPage = 1;
       loadFilteredTransactions();
     });
   });
+
 
   function setDefaultFilters() {
     const now = new Date();
@@ -40,6 +69,9 @@ function initAdminTransactionPage() {
     fromDateInput.value = firstDay.toISOString().split("T")[0];
     toDateInput.value = lastDay.toISOString().split("T")[0];
     entriesSelect.value = "10";
+	fromDateInput.setAttribute("max", toDateInput.value);
+	toDateInput.setAttribute("min", fromDateInput.value);
+
   }
 
   function attachFilterListeners() {
@@ -123,6 +155,7 @@ function initAdminTransactionPage() {
 
       if (transactions.length === 0) {
         tbody.innerHTML = `<tr><td colspan="7">No transactions found.</td></tr>`;
+		
       } else {
         tbody.innerHTML = "";
         transactions.forEach(tx => {
@@ -151,16 +184,24 @@ function initAdminTransactionPage() {
         });
       }
 
-      updatePaginationDisplay();
+      updatePaginationDisplay(transactions.length);
     } catch (err) {
       console.error("Failed to load transactions:", err);
       tbody.innerHTML = `<tr><td colspan="7">Error loading transactions.</td></tr>`;
     }
   }
 
-  function updatePaginationDisplay() {
+  function updatePaginationDisplay(displayedCount) {
     const totalPages = Math.ceil(totalEntries / entriesPerPage);
     pageNumbersContainer.innerHTML = "";
+
+    if (totalEntries === 0 || displayedCount === 0) {
+      showingRange.textContent = "0 to 0";
+      totalEntriesEl.textContent = "0";
+      prevBtn.disabled = true;
+      nextBtn.disabled = true;
+      return;
+    }
 
     for (let i = 1; i <= totalPages; i++) {
       const btn = document.createElement("button");
@@ -181,9 +222,10 @@ function initAdminTransactionPage() {
     showingRange.textContent = `${start} to ${end}`;
     totalEntriesEl.textContent = totalEntries;
 
-	prevBtn.disabled = currentPage === 1;
-	 nextBtn.disabled = currentPage === totalPages || totalPages === 0;
+    prevBtn.disabled = currentPage === 1;
+    nextBtn.disabled = currentPage === totalPages || totalPages === 0;
   }
+
 
   function formatTimestamp(ms) {
     const date = new Date(ms);

@@ -25,6 +25,19 @@ body {
   background-repeat: no-repeat;
   background-size: cover;
 }
+html, body {
+  height: 100%;
+  overflow-x: hidden;  /* Prevent horizontal scroll */
+  overflow-y: auto;    /* Allow vertical scroll */
+}
+
+/* Ensure the main container can scroll if necessary */
+.main-container {
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+  overflow-y: auto; /* Allow scrolling for the main content */
+}
 
 .main-container {
   display: flex;
@@ -244,5 +257,9 @@ text-align: center;
   .wrapper {
     width: 100%;
     max-width: 400px;
+  }
+   .form-step {
+    overflow-y: auto;
+    max-height: 100vh; /* Prevent content from overflowing the screen */
   }
 }

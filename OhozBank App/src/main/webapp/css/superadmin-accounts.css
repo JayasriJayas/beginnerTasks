@@ -1,0 +1,270 @@
+:root {
+  --primary-color: #E09E50;
+  --secondary-color: #8CBDB9;
+  --text-color: #2D3E4E;
+  --background-color: #f9f9f9;
+  --white: #ffffff;
+  --border-color: #ddd;
+  --hover-color: #f4f4f4;
+  --alt-row-color: #fffaf0;
+  --sidebar-width: 250px;
+  --sidebar-collapsed-width: 72px;
+}
+
+/* Container */
+.account-table-container {
+  padding: 1.5rem;
+  background-color: var(--white);
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  overflow-x: auto;
+  margin-left: var(--sidebar-collapsed-width);
+}
+.dashboard-container{
+	  padding: 1.5rem;
+  background-color: var(--white);
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  overflow-x: auto;
+  margin-left: var(--sidebar-collapsed-width);
+}
+.table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+/* Table Header */
+.account-table-header h2 {
+  margin-bottom: 1rem;
+  color: var(--primary-color);
+  font-size: 1.6rem;
+}
+
+.filter-controls {
+  display: flex;
+  justify-content: flex-end;
+  flex-grow: 1;
+}
+
+/* Adjust spacing */
+.table-search {
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  overflow: hidden;
+  max-width: 250px;
+  margin-left: auto;
+}
+.table-search input {
+  padding: 8px 12px;
+  border: none;
+  outline: none;
+  width: 100%;
+}
+
+.table-search button {
+  background: var(--primary-color);
+  color: white;
+  padding: 8px 12px;
+  border: none;
+  cursor: pointer;
+}
+
+.table-search button:hover {
+  background-color: #cf833e;
+}
+
+/* Table */
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  min-width: 600px;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+thead {
+  background: var(--secondary-color);
+  color: white;
+}
+
+th, td {
+  padding: 12px 16px;
+  text-align: left;
+}
+
+thead th:first-child {
+  border-top-left-radius: 12px;
+}
+
+thead th:last-child {
+  border-top-right-radius: 12px;
+}
+
+tbody tr:nth-child(even) {
+  background-color: var(--alt-row-color);
+}
+
+tbody tr:hover {
+  background: var(--hover-color);
+}
+
+tbody td {
+  border-bottom: 1px solid var(--border-color);
+}
+
+/* Pagination */
+.account-pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  font-size: 14px;
+  color: var(--text-color);
+  border-top: 1px solid var(--border-color);
+  padding-top: 1rem;
+}
+
+.account-pagination .page-numbers {
+  display: flex;
+  justify-content: center;
+  gap: 5px;
+}
+
+.account-pagination .page-numbers button {
+  margin: 0 3px;
+  padding: 5px 10px;
+  border: 1px solid #ccc;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.account-pagination .page-numbers button:hover {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.account-pagination .active {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.page-btn {
+  padding: 5px 12px;
+  background-color: white;
+  border: 1px solid #ccc;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.page-btn:hover {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.page-btn:disabled {
+  background-color: #f0f0f0;
+  color: #999;
+  cursor: not-allowed;
+}
+
+.page-btn:disabled:hover {
+  background-color: #f0f0f0;
+  color: #999;
+}
+.pagination-bar{
+	    display: flex
+;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-top: 1.5rem;
+    font-size: 14px;
+    color: var(--text-color);
+    padding-top: 1rem;
+}
+.pagination-center{
+	    display: flex
+;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 14px;
+}
+#pageNumber{
+	  display: flex;
+    justify-content: center;
+    gap: 5px;
+}
+.page-number{
+	  margin: 0 3px;
+    padding: 5px 10px;
+    border: 1px solid #ccc;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.3sease, color 0.3sease;
+	
+	
+}
+button.page-number.active {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.filters-controls{
+	justify-content:flex-end;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .account-table-header h2 {
+    font-size: 1.3rem;
+  }
+
+  .table-search {
+    width: 100%;
+    margin-top: 0.5rem;
+  }
+
+  .account-pagination {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .account-table {
+    font-size: 13px;
+  }
+
+  .account-table thead th,
+  .account-table tbody td {
+    padding: 8px;
+  }
+
+  .dashboard-container,
+  .account-table-container {
+    margin-left: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .account-pagination {
+    font-size: 12px;
+  }
+
+  .account-pagination .page-numbers button,
+  .account-pagination .page-btn {
+    padding: 5px 10px;
+    font-size: 12px;
+  }
+}

@@ -20,7 +20,7 @@ public interface BranchDAO {
 	   int countAllBranches() throws SQLException, QueryException;
 	   List<Map<String, Object>> getBranchFunds() throws SQLException, QueryException;
 	   List<Map<String, Object>> getAllBranches() throws SQLException, QueryException;
-
+	   Map<Long, String> getBranchesWithoutAdmin() throws SQLException, QueryException ;
 
 
 

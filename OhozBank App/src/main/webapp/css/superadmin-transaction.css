@@ -162,7 +162,6 @@
       margin-top: 1.5rem;
       font-size: 14px;
       color: var(--text-color);
-      border-top: 1px solid var(--border-color);
       padding-top: 1rem;
     }
 
@@ -261,4 +260,10 @@
       .pagination {
         justify-content: center;
       }
+        .dashboard-container{
+	 margin-left: 0;
+}
+  .table-container{
+	 margin-left: 0;
+}
     }

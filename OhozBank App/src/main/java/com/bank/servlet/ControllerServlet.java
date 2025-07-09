@@ -14,6 +14,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import com.bank.util.ResponseUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -41,6 +42,14 @@ public class ControllerServlet extends HttpServlet {
             logger.log(Level.SEVERE, "Failed to load route configuration from YAML", e);
             throw new ServletException("Failed to load routes from YAML", e);
         }
+    }
+    public void ping(HttpServletRequest req, HttpServletResponse res) throws IOException {
+        HttpSession session = req.getSession(false);
+        if (session != null) {
+
+            session.setAttribute("lastPing", System.currentTimeMillis());
+        }
+        res.setStatus(HttpServletResponse.SC_OK);
     }
 
     @Override

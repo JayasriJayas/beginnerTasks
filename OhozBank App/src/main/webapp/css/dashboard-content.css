@@ -542,6 +542,10 @@ canvas {
   flex-wrap: wrap;
   margin-top: 1rem;
 }
+canvas#insightChart {
+    width: 381px !important;
+    height: 381px !important;
+}
 
 /* Left: Pie Chart */
 .pie-chart-box {
@@ -589,7 +593,7 @@ canvas {
 }
 .pie-chart-box {
   flex: 1 1 45%;
-  max-width: 360px; /* increased from 300px */
+  max-width: 360px; 
   background: #fff;
   padding: 1.5rem;
   border-radius: 12px;
@@ -597,12 +601,11 @@ canvas {
 }
 
 .pie-chart-box canvas {
-  width: 320px !important;
-  height: 320px !important;
+  width: 400px !important;
+  height: 400px !important;
 }
 
 
-/* Remove background colors if defined before */
 #totalBalance,
 #thisMonthCredits,
 #thisMonthDebits {

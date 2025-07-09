@@ -1,3 +1,8 @@
+ :root{
+	  --alt-row-color: #fffaf0;
+	  --border-color: #ddd;
+	  --hover-color: #f4f4f4;
+}
 .branch-table-container {
   padding: 1.5rem;
   background-color: #fff;
@@ -7,65 +12,76 @@
   margin-left: var(--sidebar-collapsed-width);
 }
 
+/* Table Header */
 .branch-table-header h2 {
   margin-bottom: 1rem;
   color: var(--primary-color);
   font-size: 1.6rem;
 }
 
-.branch-nav {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 1rem;
-  margin-bottom: 1rem;
+.branch-table-header {
+    display: flex
+;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    margin-bottom: 20px;
+    padding-right: 2.5rem;
 }
 
-.branch-page-controls {
-  margin-bottom: 0.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-.branch-page-controls label {
-  font-size: 14px;
-}
 
-.branch-page-controls select {
-  padding: 6px;
-  font-size: 14px;
-  border-radius: 4px;
-}
+ table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      min-width: 600px;
+      border-radius: 12px;
+      overflow: hidden;
+    }
 
-.branch-table {
-  width: 100%;
-  border-collapse: collapse;
-  min-width: 850px;
-  margin-bottom: 1rem;
-}
+    thead {
+      background: var(--secondary-color);
+      color: white;
+    }
 
-.branch-table thead th {
-  background-color: var(--primary-color);
-  color: #fff;
-  text-align: left;
-  padding: 10px;
-  white-space: nowrap;
-}
+    th, td {
+      padding: 12px 16px;
+      text-align: left;
+    }
 
-.branch-table tbody td {
-  padding: 10px;
-  border-bottom: 1px solid #eee;
-  font-size: 14px;
-  white-space: nowrap;
-}
+    thead th:first-child {
+      border-top-left-radius: 12px;
+    }
 
+    thead th:last-child {
+      border-top-right-radius: 12px;
+    }
+
+    tbody tr:nth-child(even) {
+      background-color: var(--alt-row-color);
+    }
+
+    tbody tr:hover {
+      background: var(--hover-color);
+    }
+
+    tbody td {
+      border-bottom: 1px solid var(--border-color);
+    }
+
+/* Pagination Styling */
 .branch-pagination {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 14px;
+     display: flex
+;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-top: 1.5rem;
+    font-size: 14px;
+    color: var(--text-color);
+  
+    padding-top: 1rem;
 }
 
 .branch-pagination .page-numbers {
@@ -73,6 +89,7 @@
   justify-content: center;
   gap: 5px;
 }
+
 .branch-pagination .page-numbers button {
   margin: 0 3px;
   padding: 5px 10px;
@@ -92,6 +109,7 @@
   color: white;
 }
 
+/* Page Button Styling */
 .page-btn {
   padding: 5px 12px;
   background-color: white;
@@ -115,8 +133,9 @@
 .page-btn:disabled:hover {
   background-color: #f0f0f0;
   color: #999;
-  cursor: not-allowed;
 }
+
+/* Add Branch Icon */
 .add-branch-icon {
   font-size: 24px;
   color: var(--primary-color);
@@ -128,27 +147,9 @@
 }
 
 .add-branch-icon:hover {
-  color: #1de9b6; /* Change on hover */
+  color: #008080; /* Change on hover */
 }
 
-.add-branch-icon[data-tooltip] {
-  position: relative;
-  display: inline-block;
-}
-
-.add-branch-icon[data-tooltip]:hover::after {
-  content: attr(data-tooltip);
-  position: absolute;
-  top: -25px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: #333;
-  color: #fff;
-  padding: 5px;
-  border-radius: 4px;
-  font-size: 12px;
-  white-space: nowrap;
-}
 /* Modal Styles */
 .modal-overlay {
   position: fixed;
@@ -177,75 +178,65 @@
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   position: relative;
 }
-
-/* Modal Header */
-.modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  position: relative;
-  margin-bottom: 1rem;
-}
-
-.modal-header h3 {
-  font-size: 1.25rem;
-  color: var(--text-color);
-}
-
 .close-icon {
-  font-size: 24px;
-  color: var(--primary-color);
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  font-size: 20px;
+  color: #333;
   cursor: pointer;
+  z-index: 1;
   transition: color 0.3s ease;
 }
 
 .close-icon:hover {
-  color: #ff4d4d; /* Red color on hover */
+  color: #ff4d4d;
 }
 
-.close-icon[data-tooltip] {
-  position: absolute;
-  top: 0;
-  right: 0;
-  transform: translate(50%, -50%);
-}
 
 /* Form Styles */
+.form-group {
+  position: relative;
+  margin-bottom: 1.5rem;
+}
+
 .form-group input,
 .form-group select {
   width: 100%;
-  padding: 10px;
-  font-size: 14px;
+  padding: 14px 12px;
+  font-size: 15px;
   border-radius: 6px;
   border: 1px solid #ccc;
-  margin-bottom: 1rem;
+  box-sizing: border-box;
 }
 
 .form-group label {
   position: absolute;
-  left: 16px;
+  left: 14px;
   top: 50%;
   transform: translateY(-50%);
-  background: #fff;
-  padding: 0 4px;
+  background: white;
+  padding: 0 6px;
   font-size: 14px;
   color: #888;
   pointer-events: none;
-  transition: var(--transition-speed);
+  transition: 0.2s ease;
+}
+
+/* Only float label on focus */
+.form-group input:focus + label,
+.form-group select:focus + label {
+  top: 2px;
+  left: 10px;
+  font-size: 12px;
+  color: var(--input-focus-color, #008080);
 }
 
 .form-group input:focus,
 .form-group select:focus {
-  border-color: var(--input-focus-color);
+  border-color: var(--input-focus-color, #008080);
 }
 
-.form-group input:focus + label,
-.form-group select:focus + label {
-  top: 6px;
-  left: 12px;
-  font-size: 12px;
-  color: var(--input-focus-color);
-}
 
 .form-submit-btn {
   background-color: var(--primary-color);
@@ -256,13 +247,17 @@
   border-radius: 6px;
   transition: background 0.3s ease;
 }
+.pagination-center{
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
 
 .form-submit-btn:hover {
   background-color: var(--secondary-color);
 }
 
 
-/* ✅ Responsive Design */
 @media (max-width: 768px) {
   .branch-table-header h2 {
     font-size: 1.3rem;
@@ -290,8 +285,13 @@
   .branch-table tbody td {
     padding: 8px;
   }
+    .dashboard-container{
+	 margin-left: 0;
 }
-
+  .branch-table-container{
+	 margin-left: 0;
+}
+}
 @media (max-width: 480px) {
   .branch-page-controls select {
     width: 100%;

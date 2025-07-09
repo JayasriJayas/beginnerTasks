@@ -56,8 +56,8 @@
             <i class="bx bx-show icon" id="toggleEye"></i>
           </div>
           <div class="form-cols">
-            <label><input type="checkbox" id="rememberMe" /> Remember Me</label>
-            <a href="#">Forgot Password?</a>
+            <label><input type="checkbox" id="rememberMe" >Remenber me</label>
+          
           </div>
           <button type="submit" class="btn-submit" id="loginBtn">Login</button>
         </form>
@@ -158,7 +158,9 @@
           <div class="form-step">
             <div class="input-group">
               <label for="reg-branch">Branch ID</label>
-              <input type="number" name="branchId" id="reg-branch" required>
+ 				 <select name="branchId" id="reg-branch" required>
+   				 <option value="">Select Branch</option>
+				 </select>
             </div>
             <div class="input-group">
               <label for="reg-username">Username</label>
@@ -196,5 +198,7 @@
   <script src="js/login.js"></script>
   <script src="js/register.js"></script>
   <script src="js/header.js"></script>
+
+  
 </body>
 </html>

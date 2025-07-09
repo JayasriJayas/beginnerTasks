@@ -1,9 +1,10 @@
 <div class="branch-table-container">
   <div class="branch-table-header">
-    <h2>Branch List</h2>
-    <div class="add-branch-icon" onclick="openAddBranchModal()" data-tooltip="Add Branch">
+    <h2>Branch</h2>
+    <div class="add-branch-icon" onclick="openBranchListModal()" title="Add Branch">
   <i class="bx bx-plus-circle"></i>
 </div>
+
     
   </div>
   
@@ -25,10 +26,8 @@
     </tbody>
   </table>
 
-
-  <!-- Pagination -->
   <div class="branch-pagination">
-    <!-- Showing Entries per page, Previous, Page Numbers, Next in a single row -->
+
     <div class="branch-pagination-left">
       <label for="branchEntriesPerPage">Entries per page:</label>
       <select id="branchEntriesPerPage">
@@ -38,7 +37,7 @@
       </select>
     </div>
     
-    <div class="branch-pagination">
+    <div class="pagination-center">
       <button id="branchPrevBtn" class="page-btn">Previous</button>
       <div class="page-numbers" id="branchPageNumbers"></div>
       <button id="branchNextBtn" class="page-btn">Next</button>

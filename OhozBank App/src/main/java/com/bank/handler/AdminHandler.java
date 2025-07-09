@@ -72,8 +72,9 @@ public class AdminHandler {
 
         userRequest.setRoleId(2);
         long adminId = (long) session.getAttribute("adminId");
+        long branchId = userRequest.getBranchId();
 
-        boolean success = adminService.addAdmin(userRequest, adminId);
+        boolean success = adminService.addAdmin(userRequest, adminId,branchId);
         if (success) {
             logger.info("New admin added by superadmin ID: " + adminId);
             ResponseUtil.sendSuccess(res, HttpServletResponse.SC_OK, "Admin added successfully.");

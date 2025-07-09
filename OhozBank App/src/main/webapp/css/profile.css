@@ -1,9 +1,7 @@
-/* Apply box-sizing globally */
 *, *::before, *::after {
   box-sizing: border-box;
 }
 
-/* Profile Slideout */
 .profile-slideout {
   position: fixed;
   top: 0;
@@ -45,6 +43,69 @@
   height: 100%;
   object-fit: cover;
   border-radius: 50%;
+}
+.modal-box .form-group {
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.modal-box .form-group label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 1rem;
+  color: #555;
+}
+
+.modal-box .form-group input {
+  width: 100%;
+  padding: 10px 40px 10px 10px; /* Add space for icon */
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.modal-box .form-group input:focus {
+  border-color: var(--primary-color, #E09E50);
+}
+
+.modal-box .password-toggle {
+  position: absolute;
+  top: 38px; /* Align with input vertically */
+  right: 12px;
+  font-size: 1.2rem;
+  color: #999;
+  cursor: pointer;
+  z-index: 2;
+}
+
+#newPassword {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.3sease;
+}
+#currentPassword {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.3sease;
+}
+#confirmPassword {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.3sease;
 }
 
 .user-name {
@@ -128,20 +189,18 @@ transition: border-color 0.3s ease;
   border-bottom-color: var(--primary-color);
 }
 
-/* Optional hover effect */
 .profile-info input:hover,
 .profile-info textarea:hover {
   border-bottom-color: #999;
 }
 
-/* Readonly styling (no dashed line) */
 .profile-info input[readonly],
 .profile-info textarea[readonly] {
   background: transparent;
   color: #555;
   cursor: default;
 }
-/* Editable focus = orange underline */
+
 .profile-info input:not([readonly]):not([disabled]):focus,
 .profile-info textarea:not([readonly]):not([disabled]):focus {
   border-bottom-color: var(--primary-color);
@@ -166,7 +225,7 @@ transition: border-color 0.3s ease;
 }
 
 .profile-action-item {
-  padding: 12px 18px;
+  padding: 12px 0px;
   border: none;
   background-color: transparent;
   color: #2D3E4E;
@@ -218,7 +277,99 @@ transition: border-color 0.3s ease;
   color: #2D3E4E;
 }
 
-/* Responsive Styles */
+.modal-box {
+  width: 100%;
+  max-width: 400px;
+  padding: 20px;
+  border-radius: 10px;
+  background-color: #fff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.modal-box h3 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 1.5rem;
+  color: #2D3E4E;
+  margin-bottom: 20px;
+}
+
+.modal-box .form-group {
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.modal-box .form-group label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 1rem;
+  color: #555;
+}
+
+.modal-box .form-group input {
+  width: 100%;
+  padding: 10px 40px 10px 10px; /* Add space for icon */
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.modal-box .form-group input:focus {
+  border-color: var(--primary-color, #E09E50);
+}
+
+.modal-box .password-toggle {
+  position: absolute;
+  top: 38px; /* Align with input vertically */
+  right: 12px;
+  font-size: 1.2rem;
+  color: #999;
+  cursor: pointer;
+  z-index: 2;
+}
+
+.modal-profile-footer {
+  text-align: right;
+  margin-top: 1rem;
+}
+
+.modal-profile-footer button {
+  background-color: #E09E50;
+  border: none;
+  color: white;
+  padding: 8px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.modal-profile-footer button:hover {
+  background-color: #D88F44;
+}
+
+.logout-btn {
+  background-color: #FF6A6A;
+  margin-left: 10px;
+}
+
+.logout-btn:hover {
+  background-color: #FF4D4D;
+}
+
+/* Close Icon */
+.close-icon {
+  font-size: 1.5rem;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
+}
+
+
 @media (max-width: 768px) {
   .profile-slideout {
     width: 100%;
@@ -230,10 +381,18 @@ transition: border-color 0.3s ease;
     right: 0;
   }
 }
-
 @media (max-width: 480px) {
-  .profile-btn {
+  .modal-box {
+    padding: 15px;
+    width: 90%;
+  }
+
+  .modal-profile-footer {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .modal-profile-footer button {
     width: 100%;
-    text-align: center;
   }
 }

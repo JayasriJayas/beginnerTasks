@@ -18,6 +18,7 @@ public interface BranchService {
     int getTotalBranchCount() throws SQLException, QueryException;
     public List<Branch> getBranchFunds() throws SQLException, QueryException;
     List<Map<String, Object>> getAllBranch() throws SQLException, QueryException;
+    Map<Long,String>getBranchesWithoutAdmin() throws SQLException, QueryException; 
 
 
 } 

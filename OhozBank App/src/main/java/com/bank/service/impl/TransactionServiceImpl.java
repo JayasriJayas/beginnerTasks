@@ -384,6 +384,7 @@ public class TransactionServiceImpl implements TransactionService {
     }
     @Override
     public BigDecimal getTotalIncomeByUser(long userId) throws SQLException, QueryException {
+    	System.out.println("i am herfe");
         return transactionDAO.getTotalIncomeByUser(userId);
     }
     @Override
@@ -550,8 +551,8 @@ public class TransactionServiceImpl implements TransactionService {
         return transactionDAO.getDailyTransactionCountsForBranch(branchId, fromTimestamp, toTimestamp);
     }
     @Override
-    public List<Map<String, Object>> getAccountTransactionSummaryByBranch(long branchId, long totalLimit) throws SQLException, QueryException {
-        return transactionDAO.getAccountTransactionSummaryByBranch(branchId, totalLimit);
+    public List<Map<String, Object>> getAccountTransactionSummaryByBranch(long branchId, int limit) throws SQLException, QueryException {
+        return transactionDAO.getAccountTransactionSummaryByBranch(branchId, limit);
     }
 
 

@@ -1,6 +1,5 @@
-// superadmin-request-list.js
 function initSuperAdminRequestList() {
-	fetchStatusCounts();
+  fetchStatusCounts();
   let currentPage = 1;
   let entriesPerPage = 10;
   let totalEntries = 0;
@@ -12,14 +11,28 @@ function initSuperAdminRequestList() {
   const statusFilter = document.getElementById("statusFilter");
   const approveBtn = document.getElementById("approveBtn");
   const rejectBtn = document.getElementById("rejectBtn");
-  toggleActionButtons(statusFilter.value);
 
+  toggleActionButtons(statusFilter.value);
   setDefaultFilters(fromDateInput, toDateInput, entriesSelect);
+
+  fromDateInput.addEventListener("change", () => {
+    const fromDateValue = fromDateInput.value;
+    toDateInput.setAttribute("min", fromDateValue);
+  });
+  toDateInput.addEventListener("change", () => {
+    const toDateValue = toDateInput.value;
+    fromDateInput.setAttribute("max", toDateValue);
+
+    if (fromDateInput.value > toDateValue) {
+      fromDateInput.value = toDateValue;
+    }
+  });
+
 
   document.getElementById("filterBtn").addEventListener("click", () => {
     currentPage = 1;
     loadRequests(fromDateInput.value, toDateInput.value, currentPage, entriesPerPage);
-	fetchStatusCounts();
+    fetchStatusCounts();
   });
 
   entriesSelect.addEventListener("change", (e) => {
@@ -50,22 +63,23 @@ function initSuperAdminRequestList() {
     const checkboxes = document.querySelectorAll(".rowCheckbox");
     checkboxes.forEach(cb => cb.checked = this.checked);
   });
- 
+
   loadRequests(fromDateInput.value, toDateInput.value, currentPage, entriesPerPage);
 
   statusFilter.addEventListener("change", (e) => {
-      toggleActionButtons(e.target.value);
-    });
+    toggleActionButtons(e.target.value);
+  });
 
   function toggleActionButtons(status) {
-      if (status === "PENDING") {
-        approveBtn.style.display = "inline-block"; // Show buttons
-        rejectBtn.style.display = "inline-block";
-      } else {
-        approveBtn.style.display = "none"; // Hide buttons
-        rejectBtn.style.display = "none";
-      }
+    if (status === "PENDING") {
+      approveBtn.style.display = "inline-block"; 
+      rejectBtn.style.display = "inline-block";
+    } else {
+      approveBtn.style.display = "none"; 
+      rejectBtn.style.display = "none";
     }
+  }
+  
   function setDefaultFilters(fromInput, toInput, entriesSelect) {
     const now = new Date();
     const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
@@ -76,14 +90,16 @@ function initSuperAdminRequestList() {
     entriesSelect.value = "10";
     entriesPerPage = 10;
 
-	 const statusDropdown = document.getElementById("statusFilter");
-	 if (statusDropdown) {
-	   statusDropdown.value = "PENDING";
-	   statusDropdown.addEventListener("change", () => {
-	      currentPage = 1;
-	      loadRequests(fromDateInput.value, toDateInput.value, currentPage, entriesPerPage);
-	    });
-	 }
+    toInput.setAttribute("min", fromInput.value);
+
+    const statusDropdown = document.getElementById("statusFilter");
+    if (statusDropdown) {
+      statusDropdown.value = "PENDING";
+      statusDropdown.addEventListener("change", () => {
+        currentPage = 1;
+        loadRequests(fromDateInput.value, toDateInput.value, currentPage, entriesPerPage);
+      });
+    }
   }
 
   function loadRequests(from = "", to = "", page = 1, size = 10) {
@@ -92,7 +108,7 @@ function initSuperAdminRequestList() {
       toDate: to,
       pageNumber: page,
       pageSize: size,
-      ...(statusFilter.value ? { status: statusFilter.value } : {}) 
+      ...(statusFilter.value ? { status: statusFilter.value } : {})
     };
 
     fetch(`${BASE_URL}/api/list/request`, {
@@ -110,22 +126,41 @@ function initSuperAdminRequestList() {
         renderTable();
       })
       .catch(err => {
-        console.error(" Failed to load requests:", err);
+        console.error("Failed to load requests:", err);
         document.getElementById("requestTableBody").innerHTML =
           "<tr><td colspan='9'>Failed to load data.</td></tr>";
+		  approveBtn.disabled = true;
+		         rejectBtn.disabled = true;
       });
   }
 
+ 
   function renderTable() {
     const tbody = document.getElementById("requestTableBody");
     tbody.innerHTML = "";
 
     if (!requestData.length) {
       tbody.innerHTML = `<tr><td colspan="9">No requests found.</td></tr>`;
+	  document.getElementById("showingRange").textContent = `0 to 0 of 0 entries`;
+	    document.getElementById("totalEntries").textContent = `0`;
+	       // Disable buttons when there are no transactions
+	       approveBtn.disabled = true;
+	       rejectBtn.disabled = true;
       return;
     }
+	approveBtn.disabled = false;
+	rejectBtn.disabled = false;
+
+	let pendingRequestsExist = false;  // Flag to check if there are any 'PENDING' requests
+	let approvedRequestsExist = false;  // Flag to check if there are any 'APPROVED' requests
+	let rejectedRequestsExist = false;
 
     requestData.forEach((item, idx) => {
+		if (item.status === "PENDING") {
+		       pendingRequestsExist = true;  // Found at least one 'PENDING' request
+		     }
+		  if (item.status === "APPROVED") approvedRequestsExist = true;
+		  if (item.status === "REJECTED") rejectedRequestsExist = true;
       const tr = document.createElement("tr");
       tr.innerHTML = `
         <td><input type="checkbox" class="rowCheckbox" value="${item.id}" /></td>
@@ -136,14 +171,24 @@ function initSuperAdminRequestList() {
         <td>${item.branchId || "-"}</td>
         <td>${formatStatus(item.status)}</td>
         <td>${formatDateTime(item.requestTimestamp)}</td>
-		<td>${addActionButtons(item.id, item.status)}</td>
+        <td>${addActionButtons(item.id, item.status)}</td>
       `;
       tbody.appendChild(tr);
     });
+	// If no 'PENDING' requests are found, display a message
+	if (statusFilter.value === "PENDING" && !pendingRequestsExist) {
+	   tbody.innerHTML = `<tr><td colspan='9'>No pending requests.</td></tr>`;
+	 } else if (statusFilter.value === "APPROVED" && !approvedRequestsExist) {
+	   tbody.innerHTML = `<tr><td colspan='9'>No approved requests.</td></tr>`;
+	 } else if (statusFilter.value === "REJECTED" && !rejectedRequestsExist) {
+	   tbody.innerHTML = `<tr><td colspan='9'>No rejected requests.</td></tr>`;
+	 }
+
 
     updatePaginationControls();
   }
 
+  // Function to update pagination controls
   function updatePaginationControls() {
     const totalPages = Math.ceil(totalEntries / entriesPerPage);
     const pageNumbers = document.getElementById("pageNumbers");
@@ -167,36 +212,221 @@ function initSuperAdminRequestList() {
     document.getElementById("nextBtn").disabled = currentPage === totalPages;
   }
 
+  
   function getSelectedIds() {
-    return Array.from(document.querySelectorAll(".rowCheckbox:checked"))
+    const selected = Array.from(document.querySelectorAll(".rowCheckbox:checked"))
       .map(cb => parseInt(cb.value));
+
+    console.log("Selected IDs:", selected); 
+
+    return selected;
+  }
+  window.viewRequest=function(itemId) {
+	console.log("View button clicked for ID:", itemId);  
+ 
+    const request = requestData.find(r => r.id === itemId);
+
+    if (request) {
+
+      const modalContent = `
+        <div class="modal-box">
+          <h3>Request Details</h3>
+          <p><strong>Username:</strong> ${request.username}</p>
+          <p><strong>Name:</strong> ${request.name}</p>
+          <p><strong>Email:</strong> ${request.email}</p>
+          <p><strong>Phone:</strong> ${request.phone}</p>
+		  <p><strong>Gender:</strong> ${request.gender}</p>
+		  <p><strong>Date Of Birth:</strong> ${request.dob}</p>
+		
+		  <p><strong>Aadhar No:</strong> ${request.aadharNo}</p>
+		  <p><strong>PAN No:</strong> ${request.panNo}</p>
+		  <p><strong>Occupation:</strong> ${request.occupation}</p>
+		  <p><strong>AnualIncome:</strong> ${request.annualIncome}</p>
+		  
+		  <p><strong>Branch ID:</strong> ${request.branchId}</p>
+		  <p><strong>Marital Status:</strong> ${request.maritalStatus}</p>
+           
+      
+          <div class="modal-footer">
+            <button class="btn" onclick="closeModal()">Close</button>
+          </div>
+        </div>
+      `;
+
+      const modalOverlay = document.getElementById("modalOverlay");
+      modalOverlay.innerHTML = modalContent;
+      modalOverlay.classList.remove("hidden");
+    }
   }
 
-  function handleBulkApprove() {
-    const selected = getSelectedIds();
-    if (!selected.length) return alert("Select at least one request.");
+  window.approveRequest=function (itemId) {
 
-    const url = selected.length === 1 ? "/api/approve/request" : "/api/multiple-approve/request";
-    const body = selected.length === 1 ? { id: selected[0] } : selected;
+    const confirmationMessage = `Are you sure you want to approve this request?`;
+    showConfirmationModal("Confirm Approval", confirmationMessage, () => {
+  
+      const url = "/api/approve/request";
+      const body = { id: itemId };
 
-    fetch(`${BASE_URL}${url}`, {
-      method: "POST",
-      credentials: "include",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body)
-    }).then(res => res.json()).then(() => {
-      alert("Approval successful");
-      loadRequests(fromDateInput.value, toDateInput.value, currentPage, entriesPerPage);
-	  fetchStatusCounts()
+      fetch(`${BASE_URL}${url}`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body)
+      })
+      .then(res => res.json())
+      .then(() => {
+        showToast("Approval successful", "success");
+		closeModal();
+        loadRequests(fromDateInput.value, toDateInput.value, currentPage, entriesPerPage);
+        fetchStatusCounts();
+      })
+      .catch(err => {
+        console.error("Error approving request:", err);
+        showToast("Error approving request.", "error");
+      });
     });
   }
 
+  window.rejectRequest = function(itemId) {
+
+    const modalContent = `
+      <div class="modal-box">
+        <h3>Enter Rejection Reason</h3>
+        <textarea id="rejectionReason" placeholder="Please provide a reason for rejection" rows="4"></textarea>
+        <div class="modal-footer">
+          <button id="confirmRejectBtn" class="btn">Confirm Reject</button>
+          <button onclick="closeModal()" class="btn">Cancel</button>
+        </div>
+      </div>
+    `;
+
+    const modalOverlay = document.getElementById("modalOverlay");
+    modalOverlay.innerHTML = modalContent;
+    modalOverlay.classList.remove("hidden");
+
+
+    document.getElementById("confirmRejectBtn").addEventListener("click", () => {
+      const reason = document.getElementById("rejectionReason").value.trim();
+      if (!reason) {
+        showToast("Rejection reason is required.", "warning");
+        return;
+      }
+
+      const url = "/api/reject/request";
+      const body = { id: itemId, rejectionReason: reason };
+
+      fetch(`${BASE_URL}${url}`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body)
+      })
+      .then(res => res.json())
+      .then(() => {
+        showToast("Rejection successful", "success");
+		closeModal();
+        loadRequests(fromDateInput.value, toDateInput.value, currentPage, entriesPerPage);
+        fetchStatusCounts();
+      })
+      .catch(err => {
+        console.error("Error rejecting request:", err);
+        showToast("Error rejecting request.", "error");
+      });
+    });
+  }
+
+
+
+  // Handle bulk approve
+  function handleBulkApprove() {
+    const selected = getSelectedIds();
+    if (!selected.length) return showToast("Select at least one request.", "warning");
+
+    // Show confirmation dialog
+    const confirmationMessage = `Are you sure you want to approve ${selected.length} selected request(s)?`;
+    showConfirmationModal("Confirm Approval", confirmationMessage, () => {
+      const url = selected.length === 1 ? "/api/approve/request" : "/api/multiple-approve/request";
+      const body = selected.length === 1 ? { id: selected[0] } : selected;
+
+      fetch(`${BASE_URL}${url}`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body)
+      })
+      .then(res => res.json())
+      .then(() => {
+        showToast("Approval successful", "success");
+        loadRequests(fromDateInput.value, toDateInput.value, currentPage, entriesPerPage);
+        fetchStatusCounts();
+      })
+      .catch(err => {
+        console.error("Error approving requests:", err);
+        showToast("Error approving requests.", "error");
+      });
+    });
+  }
+
+  function showConfirmationModal(title, message, confirmCallback) {
+    const modalContent = `
+      <div class="modal-box">
+        <h3>${title}</h3>
+        <p>${message}</p>
+        <div class="modal-footer">
+          <button id="confirmBtn" class="btn">Confirm</button>
+          <button onclick="closeModal()" class="btn">Cancel</button>
+        </div>
+      </div>
+    `;
+    const modalOverlay = document.getElementById("modalOverlay");
+    modalOverlay.innerHTML = modalContent;
+    modalOverlay.classList.remove("hidden");
+
+    document.getElementById("confirmBtn").addEventListener("click", () => {
+      confirmCallback();  // Execute the confirmation action (approval)
+      closeModal();
+    });
+  }
+
+  // Handle bulk reject
   function handleBulkReject() {
     const selected = getSelectedIds();
-    if (!selected.length) return alert("Select at least one request.");
-    const reason = prompt("Enter rejection reason:");
-    if (!reason) return;
+    if (!selected.length) return showToast("Select at least one request.", "warning");
 
+    // Show modal to enter rejection reason
+    showRejectionReasonModal(selected);
+  }
+
+  function showRejectionReasonModal(selected) {
+    const modalContent = `
+      <div class="modal-box">
+        <h3>Enter Rejection Reason</h3>
+        <textarea id="rejectionReason" placeholder="Please provide a reason for rejection" rows="4"></textarea>
+        <div class="modal-footer">
+          <button id="confirmRejectBtn" class="btn">Confirm Reject</button>
+          <button onclick="closeModal()" class="btn">Cancel</button>
+        </div>
+      </div>
+    `;
+
+    const modalOverlay = document.getElementById("modalOverlay");
+    modalOverlay.innerHTML = modalContent;
+    modalOverlay.classList.remove("hidden");
+
+    // Handle confirm reject	
+    document.getElementById("confirmRejectBtn").addEventListener("click", () => {
+      const reason = document.getElementById("rejectionReason").value.trim();
+      if (!reason) {
+        showToast("Rejection reason is required.", "warning");
+        return;
+      }
+
+      rejectRequests(selected, reason);
+      closeModal();
+    });
+  }
+
+  function rejectRequests(selected, reason) {
     const url = selected.length === 1 ? "/api/reject/request" : "/api/multiple-reject/request";
     const body = selected.length === 1
       ? { id: selected[0], rejectionReason: reason }
@@ -207,84 +437,25 @@ function initSuperAdminRequestList() {
       credentials: "include",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body)
-    }).then(res => res.json()).then(() => {
-      alert("Rejection successful");
+    })
+    .then(res => res.json())
+    .then(() => {
+      showToast("Rejection successful", "success");
       loadRequests(fromDateInput.value, toDateInput.value, currentPage, entriesPerPage);
-	  fetchStatusCounts()
+      fetchStatusCounts();
+    })
+    .catch(err => {
+      console.error("Error rejecting requests:", err);
+      showToast("Error rejecting requests.", "error");
     });
   }
 
-
-  window.viewRequest = (id) => {
-     fetch(`${BASE_URL}/api/view-details/request`, {
-       method: "POST",
-       credentials: "include",
-       headers: { "Content-Type": "application/json" },
-       body: JSON.stringify({ id })
-     })
-       .then((res) => res.json())
-       .then((data) => {
-         const html = `
-           <div class="detail-row"><strong>Name:</strong> ${data.name}</div>
-           <div class="detail-row"><strong>Email:</strong> ${data.email}</div>
-           <div class="detail-row"><strong>Phone:</strong> ${data.phone}</div>
-           <div class="detail-row"><strong>Gender:</strong> ${data.gender}</div>
-           <div class="detail-row"><strong>DOB:</strong> ${data.dob}</div>
-           <div class="detail-row"><strong>Occupation:</strong> ${data.occupation}</div>
-           <div class="detail-row"><strong>Annual Income:</strong> ₹${data.annualIncome}</div>
-           <div class="detail-row"><strong>Aadhar No:</strong> ${data.aadharNo}</div>
-           <div class="detail-row"><strong>PAN No:</strong> ${data.panNo}</div>
-           <div class="detail-row"><strong>Address:</strong> ${data.address}</div>
-           <div class="detail-row"><strong>Marital Status:</strong> ${data.maritalStatus}</div>
-         `;
-
-         document.getElementById("requestDetailsContent").innerHTML = html;
-         document.getElementById("requestModalOverlay").classList.remove("hidden");
-       })
-       .catch((err) => {
-         console.error(" View request error:", err);
-         alert("Unable to fetch request details.");
-       });
-   };
-
-   window.closeRequestModal = () => {
-     const modal = document.getElementById("requestModalOverlay");
-     if (modal) {
-       modal.classList.add("hidden");
-       document.getElementById("requestDetailsContent").innerHTML = "";
-     }
-   };
+  function formatStatus(status) {
+    const color = { PENDING: "orange", APPROVED: "green", REJECTED: "red" }[status?.toUpperCase()] || "gray";
+    return `<span style="color: ${color}; font-weight: 600;">${status}</span>`;
+  }
 
 
-
-  window.approveRequest = (id) => {
-    fetch(`${BASE_URL}/api/approve/request`, {
-      method: "POST",
-      credentials: "include",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id })
-    }).then(res => res.json()).then(() => {
-      alert("Approved successfully");
-      loadRequests(fromDateInput.value, toDateInput.value, currentPage, entriesPerPage);
-	  fetchStatusCounts()
-    });
-  };
-
-  window.rejectRequest = (id) => {
-    const reason = prompt("Enter rejection reason:");
-    if (!reason) return;
-
-    fetch(`${BASE_URL}/api/reject/request`, {
-      method: "POST",
-      credentials: "include",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id, rejectionReason: reason })
-    }).then(res => res.json()).then(() => {
-      alert("Rejected successfully");
-      loadRequests(fromDateInput.value, toDateInput.value, currentPage, entriesPerPage);
-	  fetchStatusCounts()
-    });
-  };
   function formatDateTime(ts) {
     if (!ts || isNaN(ts)) return "-";
     const date = new Date(Number(ts));
@@ -293,22 +464,19 @@ function initSuperAdminRequestList() {
     return `${dateStr}<br><span style="font-size: 12px; color: #555;">${timeStr}</span>`;
   }
 
-  function formatStatus(status) {
-    const color = { PENDING: "orange", APPROVED: "green", REJECTED: "red" }[status?.toUpperCase()] || "gray";
-    return `<span style="color: ${color}; font-weight: 600;">${status}</span>`;
+    function addActionButtons(itemId, status) {
+    const viewBtn = `<button onclick="viewRequest(${itemId})"><i class='bx bx-show'></i> </button>`;
+    if (status?.toUpperCase() === "PENDING") {
+      const approveBtn = `<button onclick="approveRequest(${itemId})"><i class='bx bx-check'></i> </button>`;
+      const rejectBtn = `<button onclick="rejectRequest(${itemId})"><i class='bx bx-x'></i> </button>`;
+      return `${viewBtn} ${approveBtn} ${rejectBtn}`;
+    } else {
+      return viewBtn;
+    }
   }
 
-  function addActionButtons(itemId, status) {
-      const viewBtn = `<button onclick="viewRequest(${itemId})"><i class='bx bx-show'></i></button>`;
-      if (status?.toUpperCase() === "PENDING") {
-        const approveBtn = `<button onclick="approveRequest(${itemId})"><i class='bx bx-check'></i></button>`;
-        const rejectBtn = `<button onclick="rejectRequest(${itemId})"><i class='bx bx-x'></i></button>`;
-        return `${viewBtn} ${approveBtn} ${rejectBtn}`;
-      } else {
-        return viewBtn;
-      }
-  }
 
+  // Fetch status counts
   function fetchStatusCounts() {
     fetch(`${BASE_URL}/api/status-counts/request`, {
       method: "GET",
@@ -322,7 +490,6 @@ function initSuperAdminRequestList() {
       })
       .catch(err => console.error("Error fetching status counts", err));
   }
-
 
 }
 

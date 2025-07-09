@@ -1,7 +1,5 @@
 function initTransactionPage() {
-  console.log("✅ Transaction page initialized");
 
-  // DOM References
   const pageNumbersContainer = document.getElementById("pageNumbers");
   const accountSelect = document.getElementById("accountFilter");
   const fromDateInput = document.getElementById("fromDate");
@@ -58,6 +56,8 @@ function initTransactionPage() {
     fromDateInput.value = firstDay.toISOString().split("T")[0];
     toDateInput.value = lastDay.toISOString().split("T")[0];
     entriesSelect.value = "10";
+	toDateInput.min = fromDateInput.value;
+
   }
   document.querySelectorAll(".transaction-tabs button").forEach((btn) => {
     btn.addEventListener("click", () => {
@@ -72,7 +72,18 @@ function initTransactionPage() {
 
   function attachFilterListeners() {
     accountSelect.addEventListener("change", loadFilteredTransactions);
-    fromDateInput.addEventListener("change", loadFilteredTransactions);
+	fromDateInput.addEventListener("change", () => {
+	  // Set minimum allowed date for "toDateInput"
+	  toDateInput.min = fromDateInput.value;
+
+	  // If current "toDate" is before new "fromDate", clear it
+	  if (toDateInput.value < fromDateInput.value) {
+	    toDateInput.value = fromDateInput.value;
+	  }
+
+	  loadFilteredTransactions();
+	});
+
     toDateInput.addEventListener("change", loadFilteredTransactions);
     entriesSelect.addEventListener("change", () => {
       entriesPerPage = parseInt(entriesSelect.value);

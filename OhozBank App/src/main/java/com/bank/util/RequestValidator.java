@@ -90,14 +90,14 @@ public class RequestValidator {
     }
     public static String validateEditableFields(Map<String, Object> payload, boolean isAdmin) {
         Set<String> allowedFields = isAdmin ? adminEditableFields : customerEditableFields;
-
+       
         for (Map.Entry<String, Object> entry : payload.entrySet()) {
             String key = entry.getKey();
             Object value = entry.getValue();
 
             
             if (!allowedFields.contains(key)) {
-                return key + " is not editable";
+                continue;
             }
 
             
@@ -115,12 +115,17 @@ public class RequestValidator {
                     break;
 
                 case "phone":
+                	
+                	
                     if (!FormatValidator.isValidPhone(String.valueOf(value))) {
+                    
                     	System.out.println(String.valueOf(value));
                     	System.out.println(!FormatValidator.isValidPhone(String.valueOf(value)));
                         return "Invalid phone number format";
                     }
+                  
                     break;
+                    
 
                 case "annualIncome":
                     try {

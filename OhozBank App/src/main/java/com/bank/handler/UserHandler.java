@@ -12,7 +12,10 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import org.json.JSONObject;
 import com.bank.factory.ServiceFactory;
+import com.bank.models.Transaction;
+import com.bank.models.User;
 import com.bank.service.UserService;
+import com.bank.util.RequestParser;
 import com.bank.util.RequestValidator;
 import com.bank.util.ResponseUtil;
 import com.bank.util.SessionUtil;
@@ -55,10 +58,12 @@ public class UserHandler {
 
         long userId = (Long) session.getAttribute("userId");
         String role = (String) session.getAttribute("role");
-        boolean isAdmin = "ADMIN".equalsIgnoreCase(role);
+        boolean isAdmin = "ADMIN".equalsIgnoreCase(role) || "SUPERADMIN".equalsIgnoreCase(role);
+        
 
         try (BufferedReader reader = req.getReader()) {
             Map<String, Object> payload = gson.fromJson(reader, Map.class);
+         
             
             String error = RequestValidator.validateEditableFields(payload, isAdmin);
             if (error != null) {
@@ -92,7 +97,7 @@ public class UserHandler {
                 Long branchId = (Long) session.getAttribute("branchId");
                 totalUsers = userService.getTotalUsersOnlyByBranch(branchId);
             } else {
-                totalUsers = userService.getTotalUsersOnlyCount(); // superadmin: all users
+                totalUsers = userService.getTotalUsersOnlyCount();
             }
 
             JSONObject response = new JSONObject();
@@ -102,6 +107,23 @@ public class UserHandler {
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error fetching total user count", e);
             ResponseUtil.sendError(res, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Unable to fetch user count.");
+        }
+    }
+    public void getProfile(HttpServletRequest req, HttpServletResponse res) throws IOException {
+        HttpSession session = req.getSession(false);
+        if (!SessionUtil.isSessionAvailable(session, res)) return;
+        
+        User payload = RequestParser.parseRequest(req, User.class);
+     
+        Long userId = payload.getUserId();
+
+        try {
+            Map<String, Object> profile = userService.getUserProfile(userId);
+            JSONObject jsonObject = new JSONObject(gson.toJson(profile));
+            ResponseUtil.sendJson(res, HttpServletResponse.SC_OK, jsonObject);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE,"Error retrieving profile: " , e);
+            ResponseUtil.sendError(res, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error retrieving profile");
         }
     }
 

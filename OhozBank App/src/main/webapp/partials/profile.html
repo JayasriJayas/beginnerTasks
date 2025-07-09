@@ -26,12 +26,10 @@
   <li><strong>Annual Income:</strong> <input type="number" id="editIncome" readonly /></li>
 </ul>
 
-<!-- Update Button: hidden initially -->
 <button class="profile-update-btn" id="updateProfileBtn" style="display: none;">
   <i class='bx bx-upload'></i> Update Profile
 </button>
 
-    <!-- Action Menu Items with Icons -->
   <div class="profile-action-item" id="editProfileBtn">
   <i class='bx bx-edit'></i> Edit Profile
 </div>
@@ -44,4 +42,49 @@
       </div>
     </div>
   </div>
+
+<div class="modal-box">
+  <h3>Change Password</h3>
+  <i class="bx bx-x close-icon" onclick="closeModal()" data-tooltip="Close"></i>
+  
+  <form onsubmit="submitChangePassword(event)">
+    <div class="form-group">
+      <label for="currentPassword">Current Password</label>
+      <input type="password" id="currentPassword" name="currentPassword" required />
+      
+    </div>
+   <div class="form-group">
+  <label for="newPassword">New Password</label>
+  <input type="password" id="newPassword" name="newPassword" required />
+ 
 </div>
+
+    <div class="form-group">
+      <label for="confirmPassword">Confirm New Password</label>
+      <input type="password" id="confirmPassword" name="confirmPassword" required />
+     
+    </div>
+
+    <div class="modal-profile-footer">
+      <button type="submit" class="profile-btn"><i class='bx bx-lock'></i> Change</button>
+      <button type="button" class="profile-btn logout-btn" onclick="closeModal()"><i class='bx bx-x'></i> Cancel</button>
+    </div>
+  </form>
+</div>
+<div id="logoutConfirmOverlay" class="modal-overlay hidden">
+  <div class="modal-box">
+    <h3>Confirm Logout</h3>
+    <p>Are you sure you want to logout?</p>
+    <div class="modal-buttons" style="margin-top: 1rem; text-align: right;">
+      <button class="profile-btn logout-btn" id="cancelLogoutBtn">
+        <i class='bx bx-x'></i> Cancel
+      </button>
+      <button class="profile-btn" id="confirmLogoutBtn">
+        <i class='bx bx-check'></i> Yes, Logout
+      </button>
+    </div>
+  </div>
+</div>
+
+
+  

@@ -3,7 +3,7 @@ package com.bank.models;
 import com.bank.enums.RequestStatus;
 
 public class Pagination {
-
+	private String search;
 	private String fromDate;
 	private String toDate;
 	private int pageNumber;
@@ -45,5 +45,11 @@ public class Pagination {
 	}
 	public void setToDate(String toDate) {
 		this.toDate = toDate;
+	}
+	public String getSearch() {
+		return search;
+	}
+	public void setSearch(String search) {
+		this.search = search;
 	}
 }

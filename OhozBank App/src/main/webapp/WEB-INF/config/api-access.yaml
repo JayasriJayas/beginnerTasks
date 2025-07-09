@@ -27,6 +27,10 @@ routes:
     method: POST
     role: USER,ADMIN,SUPERADMIN
 
+  - path: /api/get-profile/user
+    method: POST
+    role: USER,ADMIN,SUPERADMIN 
+
   - path: /api/edit/user
     method: PUT
     role: USER,ADMIN,SUPERADMIN
@@ -143,6 +147,10 @@ routes:
     method: POST
     role: USER
 
+  - path: /api/search-accounts/account
+    method: POST
+    role: ADMIN,SUPERADMIN
+
   - path: /api/transfer/transaction
     method: POST
     role: USER,ADMIN,SUPERADMIN
@@ -239,13 +247,17 @@ routes:
     method: GET
     role: SUPERADMIN
 
+  - path: /api/without-admin/branch
+    method: GET
+    role: SUPERADMIN
+
   - path: /api/branch-funds/branch
     method: GET
     role: SUPERADMIN
 
   - path: /api/all-branch/branch
     method: GET
-    role: USER,ADMIN,SUPERADMIN
+    role: USER,ADMIN,SUPERADMIN,PUBLIC
 
   - path: /api/get/admin
     method: POST
@@ -265,7 +277,7 @@ routes:
 
   - path: /api/get-all/account
     method: POST
-    role: SUPERADMIN
+    role: SUPERADMIN,ADMIN
 
   - path: /api/list-branch/account
     method: POST

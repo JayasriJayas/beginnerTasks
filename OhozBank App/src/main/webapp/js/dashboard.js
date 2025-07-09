@@ -1,9 +1,13 @@
+
+let currentPage = null;
+
 document.addEventListener("DOMContentLoaded", () => {
   const sidebar = document.getElementById("sidebar");
   const toggleBtn = document.getElementById("sidebarToggleBtn");
   const toggleIcon = toggleBtn?.querySelector("i");
 
-  // Sidebar expand/collapse
+
+
   if (toggleBtn && sidebar && toggleIcon) {
     toggleBtn.addEventListener("click", () => {
       sidebar.classList.toggle("expanded");
@@ -12,7 +16,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Profile icon click
   const profileIcon = document.getElementById("profileIcon");
   if (profileIcon) {
     profileIcon.addEventListener("click", async () => {
@@ -37,7 +40,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   loadDashboardContent(userRole);
 
-  // Sidebar menu item handling
   document.querySelectorAll(".menu-item").forEach((link) => {
     const action = link.getAttribute("data-action");
 
@@ -84,7 +86,18 @@ function loadDashboardContent(role) {
 }
 
 //  Load Content Based on Sidebar Menu Action
-function loadContentByAction(action) {
+function loadContentByAction(action, pushToHistory = true) {
+	if (currentPage === action) {
+	    console.log(`Already on '${action}', skipping reload.`);
+	    return;
+	  }
+
+	  currentPage = action;
+	  if (pushToHistory) {
+	      history.pushState({ action }, "", `#${action}`);
+	    }
+
+	
   switch(action) {
     case "dashboard-admin":
       loadPartial(
@@ -139,10 +152,10 @@ function loadContentByAction(action) {
 	 
 	   case "admin-accountrequest-list":
 	         loadPartial(
-	           `${BASE_URL}/partials/admin-accountrequest-list.html`,
-	           `${BASE_URL}/css/admin-accountrequest-list.css`,
-	           `${BASE_URL}/js/admin-accountrequest-list.js`,
-	           () => initAdminAccountRequestList()
+	           `${BASE_URL}/partials/superadmin-accountrequest-list.html`,
+	           `${BASE_URL}/css/superadmin-accountrequest-list.css`,
+	           `${BASE_URL}/js/superadmin-accountrequest-list.js`,
+	           () => initSuperAdminAccountRequestList()
 	         );
 	     break;
 		 case "admin-request-list":
@@ -223,6 +236,24 @@ function loadContentByAction(action) {
         () => initAccountPage()
       );
       break;
+	  case "admin-accounts":
+	        loadPartial(
+	          `${BASE_URL}/partials/superadmin-accounts.html`,
+	          `${BASE_URL}/css/superadmin-accounts.css`,
+	          `${BASE_URL}/js/superadmin-accounts.js`,
+	          () => initAccountTable()
+	        );
+	        break;
+	    case "superadmin-accounts":
+			  loadPartial(
+			      `${BASE_URL}/partials/superadmin-accounts.html`,
+			       `${BASE_URL}/css/superadmin-accounts.css`,
+			       `${BASE_URL}/js/superadmin-accounts.js`,
+			        () => initAccountTable()
+			      );
+			      break;
+		
+	  
 
     default:
       document.getElementById("dashboardContent").innerHTML =
@@ -230,7 +261,6 @@ function loadContentByAction(action) {
   }
 }
 
-//  Load Partial HTML + CSS + JS Dynamically
 function loadPartial(path, cssPath, jsPath, initCallback) {
   fetch(path)
     .then((res) => {
@@ -242,9 +272,9 @@ function loadPartial(path, cssPath, jsPath, initCallback) {
       contentDiv.innerHTML = html;
 
       requestAnimationFrame(() => {
-        removeAllCSS(); // Remove previously loaded CSS
-        loadCSS(cssPath); // Load the new CSS
-        loadScript(jsPath, initCallback); // Load the JS and execute callback
+        removeAllCSS(); 
+        loadCSS(cssPath); 
+       loadScript(jsPath, initCallback); 
       });
     })
     .catch((err) => {
@@ -278,7 +308,6 @@ function loadCSS(href) {
   document.head.appendChild(link);
 }
 
-// Utility: Remove only specific previously loaded CSS files
 function removeAllCSS() {
 	const removableCSS = [
 	  "admin-dashboard.css",
@@ -288,12 +317,14 @@ function removeAllCSS() {
 	  "superadmin-transaction.css",
 	  "superadmin-user-list.css",
 	  "admin-list.css",
+	  "admin-accountrequest-list",
 	  "superadmin-branch-list.css",
 	  "superadmin-transactions.css",
 	  "dashboard.css",
 	  "payform.css",
 	  "transaction.css",
-	  "account.css"
+	  "account.css",
+	  "superadmin-accounts.css"
 	];
 
 
@@ -306,7 +337,6 @@ function removeAllCSS() {
   });
 }
 
-// Modal utilities (can be reused globally)
 function openModal(title, bodyHTML) {
   document.getElementById("modalTitle").innerText = title;
   document.getElementById("modalBody").innerHTML = bodyHTML;
@@ -317,3 +347,9 @@ function closeModal() {
   document.getElementById("modalOverlay").classList.add("hidden");
   document.getElementById("modalBody").innerHTML = '';
 }
+window.addEventListener("popstate", (e) => {
+  if (e.state?.action) {
+    loadContentByAction(e.state.action, false); // Do not push again
+  }
+});
+

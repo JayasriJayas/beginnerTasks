@@ -1,7 +1,7 @@
 <div class="admin-table-container">
  <div class="admin-table-header">
-  <h2>Admin List</h2>
-  <div class="add-admin-icon" onclick="openAddAdminModal()" data-tooltip="Add Admin">
+  <h2>Admin</h2>
+  <div class="add-admin-icon" onclick="openAddAdminModal()" title="Add Admin">
     <i class="bx bx-user-plus"></i>
   </div>
 </div>
@@ -26,9 +26,8 @@
     </tbody>
   </table>
 
-  <!-- Pagination Controls -->
   <div class="admin-page-controls">
-    <!-- Entries per page -->
+
     <div>
       <label for="adminEntriesPerPage">Entries per page:</label>
       <select id="adminEntriesPerPage">
@@ -38,21 +37,20 @@
       </select>
     </div>
 
-    <!-- Pagination buttons -->
+   
     <div class="admin-pagination">
       <button id="adminPrevBtn" class="page-btn">Previous</button>
       <div class="page-numbers" id="adminPageNumbers"></div>
       <button id="adminNextBtn" class="page-btn">Next</button>
     </div>
 
-    <!-- Showing range -->
     <div class="admin-pagination-right">
       Showing <span id="adminShowingRange">0 to 0</span> of <span id="adminTotalEntries">0</span>
     </div>
   </div>
   
 </div>
-<div id="addAdminModal" class="modal-overlay hidden">
+<div id="addAdminModal" class="modal-overlay hidden">s
   <div class="modal-box">
     <h3>Add Admin</h3>
     <i class="bx bx-x close-icon" onclick="closeAddAdminModal()" data-tooltip="Close"></i>
@@ -79,15 +77,20 @@
       </div>
       <div class="form-group">
         <select id="gender" required>
+         <option value="" selected disabled>Select Gender</option>
           <option value="MALE">Male</option>
           <option value="FEMALE">Female</option>
+          <option value="FEMALE">Other</option>
         </select>
-        <label for="gender">Gender</label>
+        <label for="gender"></label>
       </div>
-      <div class="form-group">
-        <input type="number" id="branchId" required />
-        <label for="branchId">Branch ID</label>
-      </div>
+    <div class="form-group">
+  <select id="branchId" required>
+
+  </select>
+  <label for="branchId"></label>
+</div>
+    
       <button type="submit" class="form-submit-btn">Add Admin</button>
     </form>
   </div>

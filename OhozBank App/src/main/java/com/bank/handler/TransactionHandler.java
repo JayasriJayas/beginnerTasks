@@ -554,36 +554,58 @@ public class TransactionHandler {
             if (!SessionUtil.isSessionAvailable(session, res)) return;
 
             long userId = (Long) session.getAttribute("userId");
+            Transaction payload = RequestParser.parseRequest(req, Transaction.class);
 
-            BigDecimal income = transactionService.getTotalIncomeByUser(userId);
+            BigDecimal income;
+
+            if (payload != null && payload.getAccountId() != null) {
+                System.out.println("Account ID: " + payload.getAccountId());
+                income = transactionService.getTotalIncomeByAccount(payload.getAccountId());
+            } else {
+                System.out.println("Account ID not provided, using userId instead.");
+                income = transactionService.getTotalIncomeByUser(userId);
+            }
 
             JSONObject response = new JSONObject();
             response.put("totalIncome", income);
-
             ResponseUtil.sendJson(res, HttpServletResponse.SC_OK, response);
+
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error calculating income summary", e);
             ResponseUtil.sendError(res, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error fetching income");
         }
     }
+
+
     public void totalExpense(HttpServletRequest req, HttpServletResponse res) throws IOException {
         try {
             HttpSession session = req.getSession(false);
             if (!SessionUtil.isSessionAvailable(session, res)) return;
 
             long userId = (Long) session.getAttribute("userId");
+            Transaction payload = RequestParser.parseRequest(req, Transaction.class);
 
-            BigDecimal expense = transactionService.getTotalExpenseByUser(userId);
+            BigDecimal expense;
+
+            if (payload != null && payload.getAccountId() != null) {
+                System.out.println("Account ID: " + payload.getAccountId());
+                expense = transactionService.getTotalExpenseByAccount(payload.getAccountId());
+            } else {	
+                System.out.println("No account ID provided, calculating by userId");
+                expense = transactionService.getTotalExpenseByUser(userId);
+            }
 
             JSONObject response = new JSONObject();
             response.put("totalExpense", expense);
 
             ResponseUtil.sendJson(res, HttpServletResponse.SC_OK, response);
+
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error calculating expense summary", e);
             ResponseUtil.sendError(res, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error fetching expense");
         }
     }
+
     public void incomeAccount(HttpServletRequest req, HttpServletResponse res) throws IOException {
         try {
             HttpSession session = req.getSession(false);
@@ -715,12 +737,12 @@ public class TransactionHandler {
     public void accountSummary(HttpServletRequest req, HttpServletResponse res) throws IOException {
         HttpSession session = req.getSession(false);
         if (!SessionUtil.isSessionAvailable(session, res)) return;
-
+        Pagination payload = RequestParser.parseRequest(req, Pagination.class);
         long branchId = (Long) session.getAttribute("branchId"); 
-        long totalLimit = Long.parseLong(req.getParameter("limit"));
+        int limit = payload.getLimit();
 
         try {
-            List<Map<String, Object>> accountSummary = transactionService.getAccountTransactionSummaryByBranch(branchId, totalLimit);
+            List<Map<String, Object>> accountSummary = transactionService.getAccountTransactionSummaryByBranch(branchId, limit);
             JSONArray jsonArray = new JSONArray(accountSummary);
             ResponseUtil.sendJson(res, HttpServletResponse.SC_OK, jsonArray);
         } catch (Exception e) {

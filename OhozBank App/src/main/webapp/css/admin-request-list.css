@@ -156,6 +156,9 @@ tbody tr:hover {
   .pagination-left select {
     width: 100%;
   }
+  .table-container {
+ 	margin-left:0;
+}
 
   table {
     font-size: 13px;
@@ -175,4 +178,8 @@ tbody tr:hover {
     font-size: 12px;
     padding: 4px 8px;
   }
+  .dashboard-container {
+ 	margin-left:0;
+}
+  
 }

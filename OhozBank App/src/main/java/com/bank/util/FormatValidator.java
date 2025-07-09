@@ -28,6 +28,8 @@ public class FormatValidator {
     	return PASSWORD_PATTERN.matcher(password).matches();
     }
     public static boolean isValidPhone(String phone) {
+    	
+    	
     	return PHONE_PATTERN.matcher(phone).matches();
     }
     public static boolean isValidAadhar(String aadhar) {

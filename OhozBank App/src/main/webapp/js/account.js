@@ -269,8 +269,8 @@ async function loadPendingRequests() {
     });
   } catch (err) {
     console.error("Error loading pending requests:", err);
-    body.innerHTML = `<tr><td colspan="4" style="color:red;">Failed to load.</td></tr>`;
-    showToast(err.message || "Failed to load pending requests", "error");
+    body.innerHTML = `<tr><td colspan="4" style="color:red;">No pending requests.</td></tr>`;
+    
   }
 }
 

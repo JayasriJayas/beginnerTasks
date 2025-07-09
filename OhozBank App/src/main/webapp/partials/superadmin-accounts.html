@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Accounts</title>
+  <link rel="stylesheet" href="superadmin-transaction.css" />
+  <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+</head>
+<body>
+  <div class="table-container">
+    <div class="table-header">
+  <h2>Accounts</h2>
+
+  <div class="filter-controls">
+    <div class="table-search">
+      <input type="text" id="searchInput" placeholder="Search by Account ID" />
+      <button id="searchBtn">Search</button>
+    </div>
+
+<!--     <select id="branchFilter"> -->
+<!--       <option value="">All Branches</option> -->
+<!--     </select> -->
+  </div>
+</div>
+
+
+    <table>
+      <thead>
+        <tr>
+          <th>Account ID</th>
+          <th>Branch ID</th>
+          <th>User ID</th>
+          <th>Balance</th>
+          <th>Status</th>
+          <th>Created At</th>
+        </tr>
+      </thead>
+      <tbody id="accountTableBody"></tbody>
+    </table>
+
+    <div class="pagination-bar">
+      <div class="pagination-left">
+        Show 
+        <select id="entriesPerPage">
+          <option value="10" selected>10</option>
+          <option value="25">25</option>
+          <option value="50">50</option>
+        </select> entries
+      </div>
+      <div class="pagination-center">
+        <button class="page-btn" id="prevBtn">&laquo; Previous</button>
+        <div id="pageNumbers"></div>
+        <button class="page-btn" id="nextBtn">Next &raquo;</button>
+      </div>
+      <div class="pagination-right">
+        Showing <span id="showingRange">0 to 0</span> of <span id="totalEntries">0</span> entries
+      </div>
+    </div>
+  </div>
+
+  <script src="account-admin.js"></script>
+</body>
+</html>

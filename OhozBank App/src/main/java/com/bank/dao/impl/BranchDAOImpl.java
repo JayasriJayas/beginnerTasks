@@ -2,7 +2,8 @@ package com.bank.dao.impl;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -172,6 +173,29 @@ public class BranchDAOImpl implements BranchDAO {
 	           return qe.executeQuery(qb.build());
 	       }
 	   }
+	   public Map<Long, String> getBranchesWithoutAdmin() throws SQLException, QueryException {
+		   
+		    QueryBuilder qb = new QueryBuilder(new MySQLDialect());
+		    
+		    qb.select("branchId", "branchName")
+		      .from("branch")
+		      .where("adminId IS NULL");
+
+		    Map<Long,String> branches = new HashMap<>();
+
+		    try (Connection conn = DBConnectionPool.getInstance().getConnection()) {
+		        QueryExecutor qe = new QueryExecutor(conn);
+		        List<Map<String, Object>> result = qe.executeQuery(qb.build(), qb.getParameters());
+
+		       
+		        for (Map<String, Object> row : result) {
+		            Long branchId = ((Number) row.get("branchId")).longValue(); 
+		            String branchName = (String) row.get("branchName"); 
+		            branches.put(branchId, branchName); 
+		        }
+		    }
+		    return branches;
+		}
 
 
 

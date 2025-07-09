@@ -108,13 +108,14 @@ function updateAdminPagination() {
   document.getElementById("adminPrevBtn").disabled = adminCurrentPage === 1;
   document.getElementById("adminNextBtn").disabled = adminCurrentPage === totalPages;
 }
-// Open Modal
+
+// In superadmin-branch-list.js
 function openAddAdminModal() {
   const modal = document.getElementById("addAdminModal");
   modal.classList.remove("hidden");
 }
 
-// Close Modal
+
 function closeAddAdminModal() {
   const modal = document.getElementById("addAdminModal");
   modal.classList.add("hidden");
@@ -130,6 +131,26 @@ document.getElementById("addAdminForm").addEventListener("submit", function (e) 
   const phone = document.getElementById("phone").value;
   const gender = document.getElementById("gender").value;
   const branchId = document.getElementById("branchId").value;
+
+  if (!validateUsername(username)) {
+    showToast("Username is invalid. It should be an email address.","error");
+    return;
+  }
+
+  if (!validatePassword(password)) {
+    showToast("Password must be at least 8 characters long and include a mix of letters, numbers, and special characters.","error");
+    return;
+  }
+
+  if (!validateEmail(email)) {
+    showToast("Please enter a valid email address.","error");
+    return;
+  }
+
+  if (!validatePhone(phone)) {
+    showToast("Phone number must be a valid 10-digit number.","error");
+    return;
+  }
 
   const adminData = {
     username,
@@ -154,7 +175,7 @@ document.getElementById("addAdminForm").addEventListener("submit", function (e) 
       if (data.status === "SUCCESS") {
         alert("Admin added successfully");
         closeAddAdminModal();
-        loadAdmins(); 
+        loadAdmins();
       } else {
         alert("Failed to add admin");
       }
@@ -164,5 +185,64 @@ document.getElementById("addAdminForm").addEventListener("submit", function (e) 
       alert("An error occurred while adding the admin");
     });
 });
+
+
+function validateUsername(username) {
+  const re = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  return re.test(username);
+}
+
+function validateEmail(email) {
+  const re = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  return re.test(email);
+}
+function validatePassword(password) {
+  const re = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
+  return re.test(password);
+}
+
+function validatePhone(phone) {
+  const re = /^[0-9]{10}$/;
+  return re.test(phone);
+}
+
+async function fetchBranches() {
+  try {
+    const res = await fetch(`${BASE_URL}/api/without-admin/branch`, {
+      method: "GET",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json"
+      }
+    });
+
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || "Failed to fetch branches");
+
+    const branchSelect = document.getElementById("branchId");
+
+    branchSelect.innerHTML = '';
+
+    const defaultOption = document.createElement("option");
+    defaultOption.value = "";
+    defaultOption.textContent = "Select Branch";
+    branchSelect.appendChild(defaultOption);
+
+
+    Object.entries(data.branches).forEach(([branchId, branchName]) => {
+      const option = document.createElement("option");
+      option.value = branchId; 
+      option.textContent = `${branchName} (${branchId})`; 
+      branchSelect.appendChild(option);
+    });
+
+  } catch (err) {
+    console.error("Error fetching branches:", err);
+    showToast("Failed to load branches.", "error");
+  }
+}
+
+fetchBranches();
+
 
 window.initSuperAdminAdminList = initSuperAdminAdminList;

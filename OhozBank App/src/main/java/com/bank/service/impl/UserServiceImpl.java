@@ -58,6 +58,19 @@ public class UserServiceImpl implements UserService {
 
         return profile;
     }
+    
+    @Override
+    public Map<String, Object> getUserProfile(long userId) throws SQLException, QueryException {
+        logger.info("Fetching profile for userId: " + userId );
+
+        Map<String, Object> profile = new HashMap<>();
+        User user = userDAO.getUserById(userId);
+        profile.put("user", user);
+            Customer customer = customerDAO.getCustomerByUserId(userId);
+            profile.put("customer", customer);      
+        return profile;
+    }
+
 
     @Override
     public boolean updateEditableProfileFields(long userId, Map<String, Object> updates) throws SQLException, QueryException {
@@ -91,11 +104,12 @@ public class UserServiceImpl implements UserService {
         if (updates.containsKey("name") && updates.get("name") != null) user.setName((String) updates.get("name"));
         if (updates.containsKey("email") && updates.get("email") != null) user.setEmail((String) updates.get("email"));
         if (updates.containsKey("phone") && updates.get("phone") != null) {
-            Object phoneObj = updates.get("phone");
-            if (phoneObj instanceof Number) {
-                user.setPhone(((Number) phoneObj).longValue());
-            } else {
-                logger.warning("Phone is not a valid number: " + phoneObj);
+        	String phoneStr = (String) updates.get("phone"); 
+            try {
+                Long phoneLong = Long.parseLong(phoneStr); 
+                user.setPhone(phoneLong); 
+            } catch (NumberFormatException e) {
+                System.err.println("Invalid phone number format: " + phoneStr);
             }
         }
         if (updates.containsKey("gender") && updates.get("gender") != null) {

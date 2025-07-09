@@ -184,6 +184,8 @@ public class BranchHandler {
     }
     public void allBranch(HttpServletRequest req, HttpServletResponse res) throws IOException {
         try {
+        	 HttpSession session = req.getSession(false);
+            
             List<Map<String, Object>> branches = branchService.getAllBranch();
             JSONObject json = new JSONObject();
             json.put("branches", branches);
@@ -193,6 +195,18 @@ public class BranchHandler {
             ResponseUtil.sendError(res, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Failed to fetch branch data.");
         }
     }
+    public void withoutAdmin(HttpServletRequest req, HttpServletResponse res) throws IOException {
+        try {
+        	 Map<Long,String> branchIds = branchService.getBranchesWithoutAdmin();
+        	 JSONObject json = new JSONObject();
+             json.put("branches", branchIds);
+             ResponseUtil.sendJson(res, HttpServletResponse.SC_OK, json);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error fetching branches without admin", e);
+            ResponseUtil.sendError(res, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Failed to fetch branches without admin.");
+        }
+    }
+
 
 
 

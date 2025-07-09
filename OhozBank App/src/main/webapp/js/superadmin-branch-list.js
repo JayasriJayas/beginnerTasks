@@ -98,9 +98,11 @@ function updateBranchPagination() {
   document.getElementById("branchNextBtn").disabled = branchCurrentPage === totalPages;
 }
 
-function openAddBranchModal() {
+// In superadmin-branch-list.js
+function openBranchListModal() {
   document.getElementById("addBranchModal").classList.remove("hidden");
 }
+
 
 
 function closeAddBranchModal() {

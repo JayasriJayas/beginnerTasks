@@ -10,7 +10,9 @@ import java.util.logging.Logger;
 import com.bank.dao.AccountDAO;
 import com.bank.factory.DaoFactory;
 import com.bank.models.Account;
+import com.bank.models.PaginatedResponse;
 import com.bank.service.AccountService;
+import com.bank.util.PaginationUtil;
 
 import exception.QueryException;
 
@@ -81,14 +83,29 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public List<Account> getAllAccounts() throws SQLException {
-        try {
-            return accountDAO.getAllAccounts();
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, "Error fetching all accounts", e);
-            return Collections.emptyList();
-        }
+    public PaginatedResponse<Account> getPaginatedAccounts(int pageNumber, int pageSize) throws SQLException, QueryException {
+        pageNumber = PaginationUtil.validatePageNumber(pageNumber);
+        pageSize = PaginationUtil.validatePageSize(pageSize);
+        int offset = PaginationUtil.calculateOffset(pageNumber, pageSize);
+
+        int total = accountDAO.countAllAccounts();
+        List<Account> accounts = accountDAO.getAllAccounts(pageSize, offset);
+
+        return new PaginatedResponse<>(accounts, pageNumber, pageSize, total);
     }
+
+    @Override
+    public PaginatedResponse<Account> getPaginatedAccountsByBranchId(long branchId, int pageNumber, int pageSize) throws SQLException, QueryException {
+        pageNumber = PaginationUtil.validatePageNumber(pageNumber);
+        pageSize = PaginationUtil.validatePageSize(pageSize);
+        int offset = PaginationUtil.calculateOffset(pageNumber, pageSize);
+
+        int total = accountDAO.countAccountsByBranch(branchId);
+        List<Account> accounts = accountDAO.getAccountsByBranchId(branchId, pageSize, offset);
+
+        return new PaginatedResponse<>(accounts, pageNumber, pageSize, total);
+    }
+
     @Override
     public List<Account> getAccountsByUserId(long userId) throws SQLException {
         try {
@@ -110,6 +127,17 @@ public class AccountServiceImpl implements AccountService {
     public int getTotalAccountCount() throws SQLException, QueryException {
         return accountDAO.countAllAccounts();
     }
+    @Override
+    public PaginatedResponse<Account> getPaginatedAccounts(String search, int page, int limit, Long branchId)
+            throws SQLException ,QueryException{
+        int offset = PaginationUtil.calculateOffset(page, limit);
+
+        List<Account> accounts = accountDAO.searchAccounts(search, limit, offset, branchId);
+        int total = accountDAO.countMatchingAccounts(search, branchId);
+
+        return new PaginatedResponse<>(accounts, page, limit, total);
+    }
+
 
 
 

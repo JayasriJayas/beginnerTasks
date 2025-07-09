@@ -28,7 +28,7 @@ public class AdminServiceImpl implements AdminService {
     private final UserDAO userDAO = DaoFactory.getUserDAO();
 
     @Override
-    public boolean addAdmin(User user, long adminId) {
+    public boolean addAdmin(User user, long adminId,long branchId) {
         try {
             if (adminDAO.isAdminExists(user.getUsername())) {
                 logger.warning("Admin already exists: " + user.getUsername());

@@ -216,6 +216,17 @@
       font-size: 13px;
       opacity: 0.9;
     }
+    .transaction-filters button {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 8px 20px;
+    font-size: 14px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.3sease, transform 0.2sease;
+    }
 
     @media (max-width: 768px) {
       .table-header,
@@ -234,4 +245,12 @@
       .pagination {
         justify-content: center;
       }
+      .dashboard-container{
+      margin-left: 0;
+      }
+       .table-container {
+ 	margin-left:0;
+}
     }
+    
+    

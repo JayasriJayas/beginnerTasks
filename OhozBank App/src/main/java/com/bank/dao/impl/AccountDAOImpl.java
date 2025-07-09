@@ -80,18 +80,36 @@ public class AccountDAOImpl implements AccountDAO {
     }
 
     @Override
-    public List<Account> getAllAccounts() throws SQLException, QueryException {
+    public List<Account> getAccountsByBranchId(long branchId, int limit, int offset) throws SQLException, QueryException {
         QueryBuilder qb = new QueryBuilder(new MySQLDialect());
-        qb.select("*").from("account");
+        qb.select("*")
+          .from("account")
+          .where("branchId = ?", branchId)
+          .limit(limit)
+          .offset(offset);
+
         try (Connection conn = DBConnectionPool.getInstance().getConnection()) {
             QueryExecutor qe = new QueryExecutor(conn);
-         
-        List<Map<String, Object>> rs = qe.executeQuery(qb.build());
+            List<Map<String, Object>> rs = qe.executeQuery(qb.build(), qb.getParameters());
+            return AccountMapper.mapToAccounts(rs);
+        }
+    }
 
-       
-        return AccountMapper.mapToAccounts(rs);
+    @Override
+    public List<Account> getAllAccounts(int limit, int offset) throws SQLException, QueryException {
+        QueryBuilder qb = new QueryBuilder(new MySQLDialect());
+        qb.select("*")
+          .from("account")
+          .limit(limit)
+          .offset(offset);
+
+        try (Connection conn = DBConnectionPool.getInstance().getConnection()) {
+            QueryExecutor qe = new QueryExecutor(conn);
+            List<Map<String, Object>> rs = qe.executeQuery(qb.build());
+            return AccountMapper.mapToAccounts(rs);
+        }
     }
-    }
+
     @Override
     public boolean isAccountInBranch(long accountId, long branchId) throws SQLException, QueryException {
         QueryBuilder qb = new QueryBuilder(new MySQLDialect());
@@ -162,6 +180,50 @@ public class AccountDAOImpl implements AccountDAO {
             return result.isEmpty() ? 0 : ((Number) result.get(0).get("total")).intValue();
         }
     }
+    @Override
+    public List<Account> searchAccounts(String search, int limit, int offset, Long branchId) throws SQLException, QueryException {
+        QueryBuilder qb = new QueryBuilder(new MySQLDialect())
+            .select("*")
+            .from("account")
+            .openGroup()
+                .where("CAST(accountId AS CHAR) LIKE ?", "%" + search + "%")
+           
+            .closeGroup();
+
+        if (branchId != null) {
+            qb.andWhere("branchId = ?", branchId);
+        }
+
+        qb.limit(limit).offset(offset);
+        try (Connection conn = DBConnectionPool.getInstance().getConnection()) {
+            QueryExecutor executor = new QueryExecutor(conn);
+            List<Map<String, Object>> result = executor.executeQuery(qb.build(),qb.getParameters());
+            return AccountMapper.mapToAccounts(result);
+        }
+
+     
+    }
+
+    @Override
+    public int countMatchingAccounts(String search, Long branchId) throws SQLException, QueryException {
+        QueryBuilder qb = new QueryBuilder(new MySQLDialect())
+            .select("COUNT(*) AS total")
+            .from("account")
+            .openGroup()
+                .where("CAST(accountId AS CHAR) LIKE ?", "%" + search + "%")
+            
+            .closeGroup();
+
+        if (branchId != null) {
+            qb.andWhere("branchId = ?", branchId);
+        }
+
+        try (Connection conn = DBConnectionPool.getInstance().getConnection()) {
+            Map<String, Object> result = new QueryExecutor(conn).executeQuery(qb.build(), qb.getParameters()).get(0);
+            return ((Number) result.get("total")).intValue();
+        }
+    }
+
 
 
 

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+    <!-- Top Bar -->
+    <div id="topBar" class="top-bar">
+        <div class="top-bar-left">
+            <span id="welcomeText">
+                <i class='bx bx-smile'></i> Welcome,
+                <span id="userName">Admin</span>!
+            </span>
+            <span id="userRole" class="role-badge">
+                <i class='bx bx-user'></i> Admin
+            </span>
+        </div>
+        <div class="top-bar-right">
+            <span id="currentDateTime">
+                <i class='bx bx-time'></i> Loading...
+            </span>
+        </div>
+    </div>
+
+ 
+    <section class="dashboard-upper">
+
+        <div class="metrics-wrapper">
+            <h3 class="section-title"><i class='bx bx-bar-chart'></i> System Overview</h3>
+
+           
+            <div class="metrics-grid">
+                <div class="metric-card clickable" data-action="admin-accountrequest-list" id="metricDashboard">
+                    <i class='bx bx-envelope'></i>
+                    <div>
+                        <h2 id="accountRequestCount">--</h2>
+                        <p>Pending Account Requests</p>
+                    </div>
+                </div>
+
+                <div class="metric-card clickable" data-action="admin-request-list" id="metricBranchReqs">
+                    <i class='bx bx-user-check'></i>
+                    <div>
+                        <h2 id="userRequestCount">--</h2>
+                        <p>Pending User Requests</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Row 2: Two Metric Cards -->
+            <div class="metrics-grid">
+                <div class="metric-card clickable" data-action="" id="metricUserList">
+                    <i class='bx bx-group'></i>
+                    <div>
+                        <h2 id="userCount">--</h2>
+                        <p>Total Users</p>
+                    </div>
+                </div>
+
+                <div class="metric-card clickable" data-action="" id="metricPayment">
+                    <i class='bx bx-wallet'></i>
+                    <div>
+                        <h2 id="accountCount">--</h2>
+                        <p>Total Accounts</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+       
+        <div class="pie-chart-wrapper">
+            <h3 class="section-title"><i class='bx bx-pie-chart-alt-2'></i> Transaction Breakdown</h3>
+            <div class="chart-container">
+                <canvas id="transactionPieChart"></canvas> <!-- Pie Chart Canvas -->
+            </div>
+        </div>
+    </section>
+
+   <section class="dashboard-bottom">
+  <!-- Left: Daily Transaction Line Chart -->
+  <div class="chart-wrapper">
+    <h3 class="section-title"><i class='bx bx-line-chart'></i> Daily Transaction Counts</h3>
+    <div class="chart-container">
+      <canvas id="dailyTransactionLineChart"></canvas> <!-- Line Chart Canvas -->
+    </div>
+  </div>
+
+  <!-- Right: Account Summary Stacked Bar Chart -->
+  <div class="chart-wrapper">
+    <h3 class="section-title"><i class='bx bx-bar-chart'></i> Account Summary</h3>
+    <div class="chart-container">
+      <canvas id="accountSummaryBarChart"></canvas> <!-- Stacked Bar Chart Canvas -->
+    </div>
+  </div>
+</section>
+
+
+    <script src="admin-dashboard.js"></script>
+</body>
+
+</html>

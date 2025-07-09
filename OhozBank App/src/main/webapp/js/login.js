@@ -37,7 +37,9 @@ document.getElementById("loginForm").addEventListener("submit", async function (
 
     if (response.ok) {
       showToast("Login Successful", "success");
-      setTimeout(() => window.location.href = `${BASE_URL}/dashboard.jsp`, 1000);
+	  window.location.replace(`${BASE_URL}/dashboard.jsp`);
+
+//      setTimeout(() => window.location.href = `${BASE_URL}/dashboard.jsp`, 1000);
     } else {
       const contentType = response.headers.get("Content-Type");
       if (contentType && contentType.includes("application/json")) {

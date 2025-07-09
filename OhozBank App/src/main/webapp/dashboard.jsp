@@ -1,6 +1,16 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%
+
+response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+response.setHeader("Pragma", "no-cache");
+response.setDateHeader("Expires", 0);
+
   String ctx = request.getContextPath();
+  if (session.getAttribute("userId") == null) {
+	    response.sendRedirect(ctx + "/login.jsp");
+	    return;
+	  }
+
  
 %>
 <!DOCTYPE html>
@@ -50,7 +60,7 @@
 
   <footer>
     <div style="text-align: center; padding: 10px;">
-      <p>&copy; 2025 Your Company Name. All rights reserved.</p>
+      <p>&copy; 2025 Ohoz Bank. All rights reserved.</p>
     </div>
   </footer>
 	
@@ -66,9 +76,17 @@
 	  <script>
  		 const userRole = "<%= session.getAttribute("role") %>";
 	  </script>
+	  <script src="<%= ctx %>/js/session-ping.js"></script>
+	  
+	  
 	  <script src="<%= ctx %>/js/dashboard.js"></script>
 	  <!-- Include the Toast JS file -->
 	<script src="<%= ctx %>/js/toast.js"></script>
+
+
+
+
+	
 	  
 	 
 	  

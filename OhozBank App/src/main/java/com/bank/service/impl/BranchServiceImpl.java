@@ -113,6 +113,10 @@ public class BranchServiceImpl implements BranchService {
     public List<Map<String, Object>> getAllBranch() throws SQLException, QueryException {
         return branchDAO.getAllBranches();
     }
+    public Map<Long,String> getBranchesWithoutAdmin() throws SQLException, QueryException {
+        return branchDAO.getBranchesWithoutAdmin();
+    }
+
 
 
 
