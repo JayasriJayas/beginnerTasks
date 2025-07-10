@@ -2,6 +2,16 @@
 let currentPage = null;
 
 document.addEventListener("DOMContentLoaded", () => {
+	
+	const hashAction = window.location.hash.replace("#", "");
+
+	if (hashAction) {
+	 
+	  loadContentByAction(hashAction, false);  
+	} else {
+	 
+	  loadDashboardContent(userRole);
+	}
   const sidebar = document.getElementById("sidebar");
   const toggleBtn = document.getElementById("sidebarToggleBtn");
   const toggleIcon = toggleBtn?.querySelector("i");
@@ -349,7 +359,9 @@ function closeModal() {
 }
 window.addEventListener("popstate", (e) => {
   if (e.state?.action) {
-    loadContentByAction(e.state.action, false); // Do not push again
+    loadContentByAction(e.state.action, false);
+  } else {
+    loadDashboardContent(userRole);
   }
 });
 

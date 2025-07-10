@@ -18,7 +18,7 @@ function initSuperAdminAccountRequestList() {
   fromDateInput.addEventListener("change", () => {
     toDateInput.min = fromDateInput.value;
 
-    // Optional: auto-correct toDate if it's before fromDate
+
     if (toDateInput.value < fromDateInput.value) {
       toDateInput.value = fromDateInput.value;
     }

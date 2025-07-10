@@ -7,40 +7,32 @@ function initAdminPayform() {
   passwordModal = document.getElementById("passwordModal");
   confirmPasswordInput = document.getElementById("confirmPassword");
 
-  // Form listeners
-  document.getElementById("internalTransferForm")?.addEventListener("submit", (e) => {
-    e.preventDefault();
-    currentAction = "internal";
-    openModal();
-  });
 
-  document.getElementById("externalTransferForm")?.addEventListener("submit", (e) => {
-    e.preventDefault();
-    currentAction = "external";
-    openModal();
-  });
+document.getElementById("transferForm")?.addEventListener("submit", (e) => {
+  e.preventDefault();
+  openModal(); // triggers password modal
+});
 
-  document.getElementById("depositForm")?.addEventListener("submit", (e) => {
-    e.preventDefault();
-    currentAction = "deposit";
-    openModal();
-  });
 
-  document.getElementById("withdrawForm")?.addEventListener("submit", (e) => {
-    e.preventDefault();
-    currentAction = "withdraw";
-    openModal();
-  });
 
-  // Modal confirm action
-  window.submitTransfer = () => {
-    switch (currentAction) {
-      case "internal": return submitInternalTransfer();
-      case "external": return submitExternalTransfer();
-      case "deposit": return submitDeposit();
-      case "withdraw": return submitWithdraw();
-    }
-  };
+document.getElementById("universalForm")?.addEventListener("submit", (e) => {
+  e.preventDefault();
+  openModal();
+});
+
+
+window.submitTransfer = () => {
+  switch (currentAction) {
+    case "internal":
+    case "external":
+      return submitUniversalTransfer();
+    case "deposit":
+    case "withdraw":
+      return submitUniversal(currentAction);
+  }
+};
+
+
 
   window.closeModal = closeModal;
 }
@@ -54,25 +46,75 @@ function closeModal() {
   passwordModal.style.display = "none";
 }
 
+//function switchForm(formId, button) {
+//  const allForms = document.querySelectorAll(".form-wrapper");
+//  const allButtons = document.querySelectorAll(".transfer-nav .nav-btn");
+//
+//  allForms.forEach(form => {
+//    form.style.display = "none";
+//    form.style.opacity = "0";
+//  });
+//
+//  allButtons.forEach(btn => btn.classList.remove("active"));
+//
+//  const targetForm = document.getElementById(formId);
+//  if (targetForm) {
+//    targetForm.style.display = "block";
+//    setTimeout(() => (targetForm.style.opacity = "1"), 10);
+//  }
+//
+//  if (button) button.classList.add("active");
+//}
 function switchForm(formId, button) {
   const allForms = document.querySelectorAll(".form-wrapper");
   const allButtons = document.querySelectorAll(".transfer-nav .nav-btn");
 
+  // ✅ Reset all forms before switching
+  allForms.forEach(form => form.reset());
+
+  // Hide all forms
   allForms.forEach(form => {
     form.style.display = "none";
     form.style.opacity = "0";
   });
 
+  // Remove active state from all buttons
   allButtons.forEach(btn => btn.classList.remove("active"));
 
-  const targetForm = document.getElementById(formId);
-  if (targetForm) {
-    targetForm.style.display = "block";
-    setTimeout(() => (targetForm.style.opacity = "1"), 10);
+  if (formId === "depositForm" || formId === "withdrawForm") {
+    currentAction = formId === "depositForm" ? "deposit" : "withdraw";
+
+    const form = document.getElementById("universalForm");
+    form.style.display = "block";
+    setTimeout(() => (form.style.opacity = "1"), 10);
+
+    const label = currentAction.charAt(0).toUpperCase() + currentAction.slice(1);
+    document.getElementById("universalFormTitle").innerText = label;
+    document.getElementById("universalSubmitBtn").innerText = label;
   }
 
+  else if (formId === "internalTransferForm" || formId === "externalTransferForm") {
+    currentAction = formId === "internalTransferForm" ? "internal" : "external";
+
+    const isExternal = currentAction === "external";
+    const form = document.getElementById("transferForm");
+    form.style.display = "block";
+    setTimeout(() => (form.style.opacity = "1"), 10);
+
+    document.getElementById("transferFormTitle").innerText = isExternal ? "External Transfer" : "Internal Transfer";
+    document.getElementById("transferSubmitBtn").innerText = isExternal ? "External Transfer" : "Internal Transfer";
+
+    // Show/hide external fields and required toggle
+    document.getElementById("receiverBankGroup").style.display = isExternal ? "block" : "none";
+    document.getElementById("receiverIfscGroup").style.display = isExternal ? "block" : "none";
+    document.getElementById("receiverBank").required = isExternal;
+    document.getElementById("receiverIfsc").required = isExternal;
+  }
+
+  // Activate button
   if (button) button.classList.add("active");
 }
+
 
 async function verifyPassword(password) {
   const res = await fetch(`${BASE_URL}/api/check-password/auth`, {
@@ -204,6 +246,129 @@ async function submitWithdraw() {
     showToast(result.message || "Withdraw failed", "error");
   }
 }
+async function submitUniversal(type) {
+  const password = confirmPasswordInput.value.trim();
+  const accountId = document.getElementById("universalAccount").value;
+  const amount = parseFloat(document.getElementById("universalAmount").value);
+
+  if (!password || !accountId || isNaN(amount)) {
+    return showToast(`Please fill in all ${type} fields`, "error");
+  }
+
+  const { ok, data } = await verifyPassword(password);
+  if (!ok || data.status !== "SUCCESS") return showToast(data.message || "Invalid password", "error");
+
+  const url = `${BASE_URL}/api/${type}/transaction`;
+  const res = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify({ accountId, amount })
+  });
+  const result = await res.json();
+
+  if (res.ok) {
+    showToast(result.message || `${type.charAt(0).toUpperCase() + type.slice(1)} successful!`, "success");
+    document.getElementById("universalForm").reset();
+    closeModal();
+  } else {
+    showToast(result.message || `${type.charAt(0).toUpperCase() + type.slice(1)} failed`, "error");
+  }
+}
+async function submitUniversalTransfer() {
+  const password = confirmPasswordInput.value.trim();
+  const accountId = document.getElementById("transferFromAccount").value;
+  const transactionAccountId = document.getElementById("transferToAccount").value;
+  const amount = parseFloat(document.getElementById("transferAmount").value);
+  const isExternal = currentAction === "external";
+  const receiverBank = document.getElementById("receiverBank").value.trim();
+  const receiverIFSC = document.getElementById("receiverIfsc").value.trim();
+
+  if (!password || !accountId || !transactionAccountId || isNaN(amount)) {
+    return showToast(`Please fill in all required ${currentAction} fields`, "error");
+  }
+
+  if (isExternal && (!receiverBank || !receiverIFSC)) {
+    return showToast("Please enter external bank details", "error");
+  }
+
+  const { ok, data } = await verifyPassword(password);
+  if (!ok || data.status !== "SUCCESS") return showToast(data.message || "Invalid password", "error");
+
+  const payload = {
+    accountId,
+    transactionAccountId,
+    amount,
+    ...(isExternal && { receiverBank, receiverIFSC })
+  };
+
+  const endpoint = isExternal ? "external-transfer" : "transfer";
+
+  const res = await fetch(`${BASE_URL}/api/${endpoint}/transaction`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify(payload)
+  });
+
+  const result = await res.json();
+
+  if (res.ok) {
+    showToast(result.message || `${currentAction} transfer successful!`, "success");
+    document.getElementById("transferForm").reset();
+    closeModal();
+  } else {
+    showToast(result.message || "Transfer failed", "error");
+  }
+}
+async function submitUniversalTransfer() {
+  const password = confirmPasswordInput.value.trim();
+  const accountId = document.getElementById("transferFromAccount").value;
+  const transactionAccountId = document.getElementById("transferToAccount").value;
+  const amount = parseFloat(document.getElementById("transferAmount").value);
+  const isExternal = currentAction === "external";
+  const receiverBank = document.getElementById("receiverBank").value.trim();
+  const receiverIFSC = document.getElementById("receiverIfsc").value.trim();
+
+  if (!password || !accountId || !transactionAccountId || isNaN(amount)) {
+    return showToast("Please fill in all required fields", "error");
+  }
+
+  if (isExternal && (!receiverBank || !receiverIFSC)) {
+    return showToast("Please enter external bank details", "error");
+  }
+
+  const { ok, data } = await verifyPassword(password);
+  if (!ok || data.status !== "SUCCESS") return showToast(data.message || "Invalid password", "error");
+
+  const payload = {
+    accountId,
+    transactionAccountId,
+    amount,
+    ...(isExternal && { receiverBank, receiverIFSC })
+  };
+
+  const endpoint = isExternal ? "external-transfer" : "transfer";
+
+  const res = await fetch(`${BASE_URL}/api/${endpoint}/transaction`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify(payload)
+  });
+
+  const result = await res.json();
+
+  if (res.ok) {
+    showToast(result.message || `${currentAction} transfer successful`, "success");
+    document.getElementById("transferForm").reset();
+    closeModal();
+  } else {
+    showToast(result.message || "Transfer failed", "error");
+  }
+}
+ssss
+
 
 function showToast(message, type = "info") {
   const container = document.getElementById("toast-container");

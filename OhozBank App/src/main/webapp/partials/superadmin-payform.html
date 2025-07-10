@@ -19,77 +19,55 @@
     <button onclick="switchForm('withdrawForm', this)" class="nav-btn">Withdraw</button>
   </div>
 
-  <!-- Internal Transfer Form -->
-  <form id="internalTransferForm" class="form-wrapper">
-    <h2 class="form-heading">Internal Transfer</h2>
-    <div class="form-group">
-      <input type="number" id="fromAccount" required />
-      <label for="fromAccount">Account Id</label>
-    </div>
-    <div class="form-group">
-      <input type="number" id="toAccount" required />
-      <label for="toAccount">To Account</label>
-    </div>
-    <div class="form-group">
-      <input type="number" id="amount" required />
-      <label for="amount">Amount</label>
-    </div>
-    <button type="submit" class="form-submit-btn">Submit</button>
-  </form>
 
-  <!-- External Transfer Form -->
-  <form id="externalTransferForm" class="form-wrapper" style="display: none; opacity: 0;">
-    <h2 class="form-heading">External Transfer</h2>
-    <div class="form-group">
-      <input type="number" id="extFromAccount" required />
-      <label for="extFromAccount">Account Id</label>
-    </div>
-    <div class="form-group">
-      <input type="number" id="extToAccount" required />
-      <label for="extToAccount">To Account</label>
-    </div>
-    <div class="form-group">
-      <input type="text" id="receiverBank" required />
-      <label for="receiverBank">Receiver Bank Name</label>
-    </div>
-    <div class="form-group">
-      <input type="text" id="receiverIfsc" required />
-      <label for="receiverIfsc">Receiver Bank IFSC</label>
-    </div>
-    <div class="form-group">
-      <input type="number" id="extAmount" required />
-      <label for="extAmount">Amount</label>
-    </div>
-    <button type="submit" class="form-submit-btn">Submit</button>
-  </form>
+<form id="transferForm" class="form-wrapper">
+  <h2 class="form-heading" id="transferFormTitle">Transfer</h2>
 
-
-  <form id="depositForm" class="form-wrapper" style="display: none; opacity: 0;">
-    <h2 class="form-heading">Deposit</h2>
-    <div class="form-group">
-      <input type="number" id="depositAccount" required />
-      <label for="depositAccount">Account</label>
-    </div>
-    <div class="form-group">
-      <input type="number" id="depositAmount" required />
-      <label for="depositAmount">Amount</label>
-    </div>
-    <button type="submit" class="form-submit-btn">Deposit</button>
-  </form>
-
-  <form id="withdrawForm" class="form-wrapper" style="display: none; opacity: 0;">
-    <h2 class="form-heading">Withdraw</h2>
-    <div class="form-group">
-      <input type="number" id="withdrawAccount" required />
-      <label for="withdrawAccount">Account</label>
-    </div>
-    <div class="form-group">
-      <input type="number" id="withdrawAmount" required />
-      <label for="withdrawAmount">Amount</label>
-    </div>
-    <button type="submit" class="form-submit-btn">Withdraw</button>
-  </form>
+  <div class="form-group">
+    <input type="number" id="transferFromAccount" required />
+    <label for="transferFromAccount">From Account</label>
   </div>
+
+  <div class="form-group">
+    <input type="number" id="transferToAccount" required />
+    <label for="transferToAccount">To Account</label>
+  </div>
+
+  <div class="form-group" id="receiverBankGroup" style="display: none;">
+    <input type="text" id="receiverBank" required/>
+    <label for="receiverBank">Receiver Bank Name</label>
+  </div>
+
+  <div class="form-group" id="receiverIfscGroup" style="display: none;">
+    <input type="text" id="receiverIfsc" required/>
+    <label for="receiverIfsc">Receiver Bank IFSC</label>
+  </div>
+
+  
+
+  <div class="form-group">
+    <input type="number" id="transferAmount" required />
+    <label for="transferAmount">Amount</label>
+  </div>
+
+  <button type="submit" class="form-submit-btn" id="transferSubmitBtn">Transfer</button>
+</form>
+
+
+
+<form id="universalForm" class="form-wrapper" style="display: none; opacity: 0;">
+  <h2 class="form-heading" id="universalFormTitle">Deposit</h2>
+  <div class="form-group">
+    <input type="number" id="universalAccount" required />
+    <label for="universalAccount">Account</label>
+  </div>
+  <div class="form-group">
+    <input type="number" id="universalAmount" required />
+    <label for="universalAmount">Amount</label>
+  </div>
+  <button type="submit" class="form-submit-btn" id="universalSubmitBtn">Deposit</button>
+</form>
+
 
   <div id="passwordModal" style="display: none;" class="modal-overlay">
     <div class="modal-box">
