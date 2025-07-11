@@ -1,239 +1,210 @@
+
+
 let passwordModal, confirmPasswordInput;
+let currentTransferType = "internal"; // default
 
 function initPayform() {
   console.log("Payform initialized");
 
-  populateUserAccounts(); // 🔄 Call this once during init
-
-  const transferForm = document.getElementById("internalTransferForm");
-  const externalForm = document.getElementById("externalTransferForm");
-
+  // DOM References
   passwordModal = document.getElementById("passwordModal");
   confirmPasswordInput = document.getElementById("confirmPassword");
 
+  populateUserAccounts();
+
+  const transferForm = document.getElementById("transferForm");
   const fromAccountInput = document.getElementById("fromAccount");
   const toAccountInput = document.getElementById("toAccount");
   const amountInput = document.getElementById("amount");
 
-  // Internal Transfer
+  // Unified submit for both internal/external
   transferForm.addEventListener("submit", (e) => {
     e.preventDefault();
-    window.submitTransfer = submitTransfer;
+
+    window.submitTransfer = currentTransferType === "external"
+      ? submitExternalTransfer
+      : submitInternalTransfer;
+
     openModal();
   });
 
-  // External Transfer
-  externalForm.addEventListener("submit", (e) => {
-    e.preventDefault();
-    window.submitTransfer = submitExternalTransfer;
-    openModal();
-  });
-
-  function openModal() {
-    if (passwordModal) {
-      passwordModal.style.display = "flex";
-      confirmPasswordInput.value = ""; // Clear previous password
-    }
-  }
-
-  async function submitTransfer() {
-    const password = confirmPasswordInput.value.trim();
-    const accountId = fromAccountInput.value.trim();
-    const transactionAccountId = toAccountInput.value.trim();
-    const amount = parseFloat(amountInput.value);
-
-    if (!password || !accountId || !transactionAccountId || isNaN(amount)) {
-      showToast("Please fill in all the fields.", "error");
-      return;
-    }
-
-    try {
-      const verifyRes = await fetch(`${BASE_URL}/api/check-password/auth`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({ password }),
-      });
-
-      const verifyData = await verifyRes.json();
-      if (!verifyRes.ok || verifyData.status !== "SUCCESS") {
-        showToast(verifyData.message || "Invalid password.", "error");
-        return;
-      }
-
-      const res = await fetch(`${BASE_URL}/api/transfer/transaction`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({ accountId, transactionAccountId, amount }),
-      });
-
-      const result = await res.json();
-
-      if (res.ok) {
-        showToast(result.message || "Transfer completed successfully!", "success");
-        transferForm.reset();
-        closeModal();
-      } else {
-        showToast(result.message || "Transfer failed. Please try again.", "error");
-      }
-
-    } catch (err) {
-      console.error("Error:", err);
-      showToast("Unexpected error occurred. Please try again.", "error");
-    }
-  }
-
-  function submitExternalTransfer() {
-    const password = confirmPasswordInput.value.trim();
-    const accountId = parseInt(document.getElementById("extFromAccount").value.trim());
-    const transactionAccountId = parseInt(document.getElementById("extToAccount").value.trim());
-    const receiverBank = document.getElementById("receiverBank").value.trim();
-    const receiverIFSC = document.getElementById("receiverIfsc").value.trim();
-    const amount = parseFloat(document.getElementById("extAmount").value.trim());
-
-    const payload = { accountId, transactionAccountId, receiverBank, receiverIFSC, amount };
-    console.log("External Transfer Input:", { password, ...payload });
-
-    if (
-      !password ||
-      !accountId || isNaN(accountId) ||
-      !transactionAccountId || isNaN(transactionAccountId) ||
-      !receiverBank ||
-      !receiverIFSC ||
-      isNaN(amount)
-    ) {
-      showToast("Please fill in all external transfer fields.", "error");
-      return;
-    }
-
-    // Step 1: Verify password
-    fetch(`${BASE_URL}/api/check-password/auth`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-      body: JSON.stringify({ password }),
-    })
-      .then((verifyRes) => verifyRes.json().then((data) => ({ ok: verifyRes.ok, data })))
-      .then(({ ok, data }) => {
-        if (!ok || data.status !== "SUCCESS") {
-          showToast(data.message || "Invalid password.", "error");
-          throw new Error("Password verification failed");
-        }
-
-        // Step 2: Submit external transfer
-        console.log("Sending POST to:", `${BASE_URL}/api/external-transfer/transaction`);
-        console.log("Payload:", payload);
-
-        return fetch(`${BASE_URL}/api/external-transfer/transaction`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-          body: JSON.stringify(payload),
-        });
-      })
-      .then((res) => res.json().then((data) => ({ ok: res.ok, data })))
-      .then(({ ok, data }) => {
-        if (ok) {
-          showToast(data.message || "External transfer successful!", "success");
-          document.getElementById("externalTransferForm").reset();
-          closeModal();
-        } else {
-          showToast(data.message || "External transfer failed.", "error");
-        }
-      })
-      .catch((err) => {
-        console.error("Error:", err);
-        showToast("Unexpected error in external transfer.", "error");
-      });
-  }
-
-
-
- 
-
-  function closeModal() {
-    if (passwordModal) passwordModal.style.display = "none";
-  }
-  function switchForm(formIdToShow, btn) {
-    const forms = document.querySelectorAll(".form-wrapper");
-    const buttons = document.querySelectorAll(".nav-btn");
-
-    // Hide all forms
-    forms.forEach(form => {
-      form.style.opacity = "0";
-      setTimeout(() => {
-        form.style.display = "none";
-      }, 300);
-    });
-
-    // Show the selected form
-    const targetForm = document.getElementById(formIdToShow);
-    if (targetForm) {
-      setTimeout(() => {
-        targetForm.style.display = "block";
-        setTimeout(() => {
-          targetForm.style.opacity = "1";
-        }, 50);
-      }, 300);
-    }
-
-    // Update nav button styles
-    buttons.forEach(button => button.classList.remove("active"));
-    btn.classList.add("active");
-  }
-
-  
-
-  window.submitTransfer = submitTransfer;
+  // Expose to HTML buttons
+  window.submitTransfer = submitInternalTransfer;
+  window.openModal = openModal;
   window.closeModal = closeModal;
   window.switchForm = switchForm;
-
+  window.togglePasswordVisibility = togglePasswordVisibility;
 }
 
-//  Populates both dropdowns
+function openModal() {
+  passwordModal.style.display = "flex";
+  confirmPasswordInput.value = "";
+}
+
+function closeModal() {
+  passwordModal.style.display = "none";
+}
+
+function switchForm(type, btn) {
+  currentTransferType = type;
+
+  // Update heading and button
+  document.getElementById("transferFormTitle").innerText = type === "external" ? "External Transfer" : "Internal Transfer";
+  document.getElementById("transferSubmitBtn").innerText = type === "external" ? "External Transfer" : "Internal Transfer";
+
+  // Toggle external-specific fields
+  const isExternal = type === "external";
+  document.getElementById("receiverBankGroup").style.display = isExternal ? "block" : "none";
+  document.getElementById("receiverIfscGroup").style.display = isExternal ? "block" : "none";
+  document.getElementById("receiverBank").required = isExternal;
+  document.getElementById("receiverIfsc").required = isExternal;
+
+  // Reset form values
+  document.getElementById("transferForm").reset();
+
+  // Toggle button active
+  document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active"));
+  btn.classList.add("active");
+}
+
+async function submitInternalTransfer() {
+  const password = confirmPasswordInput.value.trim();
+  const accountId = document.getElementById("fromAccount").value.trim();
+  const transactionAccountId = document.getElementById("toAccount").value.trim();
+  const amount = parseFloat(document.getElementById("amount").value);
+
+  if (!password || !accountId || !transactionAccountId || isNaN(amount)) {
+    return showToast("Please fill in all the fields.", "error");
+  }
+
+  const isVerified = await verifyPassword(password);
+  if (!isVerified) return;
+
+  const res = await fetch(`${BASE_URL}/api/transfer/transaction`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify({ accountId, transactionAccountId, amount }),
+  });
+
+  const result = await res.json();
+  if (res.ok) {
+    showToast(result.message || "Transfer successful!", "success");
+    document.getElementById("transferForm").reset();
+    closeModal();
+  } else {
+    showToast(result.message || "Transfer failed.", "error");
+  }
+}
+
+async function submitExternalTransfer() {
+  const password = confirmPasswordInput.value.trim();
+  const accountId = document.getElementById("fromAccount").value.trim();
+  const transactionAccountId = document.getElementById("toAccount").value.trim();
+  const receiverBank = document.getElementById("receiverBank").value.trim();
+  const receiverIFSC = document.getElementById("receiverIfsc").value.trim();
+  const amount = parseFloat(document.getElementById("amount").value);
+
+  if (!password || !accountId || !transactionAccountId || !receiverBank || !receiverIFSC || isNaN(amount)) {
+    return showToast("Please fill in all the external fields.", "error");
+  }
+
+  const isVerified = await verifyPassword(password);
+  if (!isVerified) return;
+
+  const res = await fetch(`${BASE_URL}/api/external-transfer/transaction`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify({ accountId, transactionAccountId, receiverBank, receiverIFSC, amount }),
+  });
+
+  const result = await res.json();
+  if (res.ok) {
+    showToast(result.message || "External transfer successful!", "success");
+    document.getElementById("transferForm").reset();
+    closeModal();
+  } else {
+    showToast(result.message || "Transfer failed.", "error");
+  }
+}
+
+async function verifyPassword(password) {
+  const res = await fetch(`${BASE_URL}/api/check-password/auth`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify({ password }),
+  });
+
+  const data = await res.json();
+  if (!res.ok || data.status !== "SUCCESS") {
+    showToast(data.message || "Invalid password.", "error");
+    return false;
+  }
+
+  return true;
+}
+
+function togglePasswordVisibility() {
+  const pwd = document.getElementById("confirmPassword");
+  const icon = document.getElementById("togglePassword");
+  if (pwd.type === "password") {
+    pwd.type = "text";
+    icon.classList.remove("bx-hide");
+    icon.classList.add("bx-show");
+  } else {
+    pwd.type = "password";
+    icon.classList.remove("bx-show");
+    icon.classList.add("bx-hide");
+  }
+}
+
 function populateUserAccounts() {
   const fromAccountSelect = document.getElementById("fromAccount");
-  const extFromAccountSelect = document.getElementById("extFromAccount");
 
   fetch(`${BASE_URL}/api/get-accounts/account`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     credentials: "include"
   })
-    .then((res) => {
-      if (!res.ok) throw new Error("Failed to fetch accounts");
-      return res.json();
-    })
-    .then((accounts) => {
+    .then(res => res.json())
+    .then(accounts => {
       const options = accounts.map(acc =>
         `<option value="${acc.accountId}">Account ${acc.accountId}</option>`
       ).join("");
-
-      if (fromAccountSelect) {
-        fromAccountSelect.innerHTML = `<option value="">Select Account</option>` + options;
-      }
-      if (extFromAccountSelect) {
-        extFromAccountSelect.innerHTML = `<option value="">Select Account</option>` + options;
-      }
+      fromAccountSelect.innerHTML = `<option value="">Select Account</option>` + options;
     })
-    .catch((err) => {
-      console.error("Error loading user accounts:", err);
-      showToast("Unable to load account list", "error");
+    .catch(err => {
+      console.error("Failed to load accounts:", err);
+      showToast("Unable to fetch accounts.", "error");
     });
 }
-function togglePasswordVisibility() {
-  const passwordField = document.getElementById("confirmPassword");
-  const toggleIcon = document.getElementById("togglePassword");
 
-  if (passwordField.type === "password") {
-    passwordField.type = "text";
-    toggleIcon.classList.remove("bx-hide");
-    toggleIcon.classList.add("bx-show");
-  } else {
-    passwordField.type = "password";
-    toggleIcon.classList.remove("bx-show");
-    toggleIcon.classList.add("bx-hide");
-  }
+function showToast(message, type = "info") {
+  const container = document.getElementById("toast-container");
+  if (!container) return;
+
+  const icons = {
+    info: "bx bx-info-circle",
+    success: "bx bx-check-circle",
+    error: "bx bx-error-circle",
+    warning: "bx bx-error"
+  };
+
+  const toast = document.createElement("div");
+  toast.className = `toast show ${type}`;
+  toast.innerHTML = `
+    <i class="toast-icon ${icons[type] || icons.info}"></i>
+    <span class="toast-msg">${message}</span>
+    <span class="toast-close" onclick="this.parentElement.remove()">&times;</span>
+    <div class="toast-timer"></div>
+  `;
+  container.appendChild(toast);
+
+  setTimeout(() => {
+    toast.classList.remove("show");
+    setTimeout(() => toast.remove(), 300);
+  }, 3500);
 }
-
+	

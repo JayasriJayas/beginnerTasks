@@ -10,7 +10,7 @@
   
   
 
-  <!-- CSS -->
+
   <link rel="stylesheet" href="css/login.css" />
   <link rel="stylesheet" href="css/register.css" />
   <link rel="stylesheet" href="css/header.css" />
@@ -34,17 +34,14 @@
 </div>
 
 
-    <!-- Right: Login & Register Forms -->
     <div class="right-section">
       <div class="wrapper">
 
-        <!-- Form Header -->
         <div class="form-header">
           <h2 class="title-login">Login to Ohoz Bank</h2>
           <h2 class="title-register" style="display: none;">Create Your Account</h2>
         </div>
 
-        <!-- Login Form -->
         <form id="loginForm" class="login-form">
           <div class="input-box">
             <input type="text" id="username" class="input-field" required />
@@ -178,23 +175,19 @@
           </div>
         </form>
 
-        <!-- Switch Links -->
      <div class="switch-form" id="switchLinks">
   <p>
     Don’t have an account? <a href="#" onclick="registerFunction()">Register</a>
   </p>
 </div>
 
-        <!-- Error Message -->
         <div id="errorMsg"></div>
       </div>
     </div>
   </main>
 
-  <!-- Toast Container -->
   <div id="toast-container" class="toast-container"></div>
 
-  <!-- JS -->
   <script src="js/login.js"></script>
   <script src="js/register.js"></script>
   <script src="js/header.js"></script>
